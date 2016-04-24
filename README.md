@@ -1,4 +1,4 @@
-# FresherNote
+# Ruckus
 
 [Heroku link][heroku] **NB:** This should be a link to your production site
 
@@ -54,18 +54,20 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 - [ ] user signup/signin pages
 - [ ] blank landing page after signin
 
-### Phase 2: Notes Model, API, and basic APIUtil (1.5 days)
+### Phase 2: Track Model, API, and basic APIUtil (1.5 days)
 
 **Objective:** Notes can be created, read, edited and destroyed through
 the API.
 
-- [ ] create `Note` model
+- [ ] create `Track` model
 - [ ] seed the database with a small amount of test data
-- [ ] CRUD API for notes (`NotesController`)
-- [ ] jBuilder views for notes
+- [ ] CRUD API for tracks (`TracksController`)
+- [ ] jBuilder views for tracks
 - [ ] setup Webpack & Flux scaffold
 - [ ] setup `APIUtil` to interact with the API
 - [ ] test out API interaction in the console.
+
+Tracks must have a title and description, along with the actual file.
 
 ### Phase 3: Flux Architecture and Router (1.5 days)
 
@@ -74,55 +76,44 @@ user interface.
 
 - [ ] setup the flux loop with skeleton files
 - [ ] setup React Router
-- implement each note component, building out the flux loop as needed.
-  - [ ] `NotesIndex`
-  - [ ] `NoteIndexItem`
-  - [ ] `NoteForm`
-- [ ] save Notes to the DB when the form loses focus or is left idle
-  after editing.
+- implement each track component, building out the flux loop as needed.
+  - [ ] `TrackIndex`
+  - [ ] `TrackIndexItem`
+  - [ ] `TrackDetail`
+  - [ ] `TrackForm`
+  - [ ] `SearchIndex`
+- Build out Search functionality
 
-### Phase 4: Start Styling (0.5 days)
+### Phase 4: Build the Player
 
-**Objective:** Existing pages (including singup/signin) will look good.
+**Objective** The Player will be initialized on play, and Player will continue
+to play during other rendering.
+
+- [ ] setup the flux loop with skeleton files
+- [ ] setup React Router
+- [ ] ensure track plays
+- [ ] ensure track stays playing while other actions are taken
+
+
+### Phase 5: Start Styling (0.5 days)
+
+**Objective:** Existing pages (including signup/signin) will look good.
 
 - [ ] create a basic style guide
 - [ ] position elements on the page
 - [ ] add basic colors & styles
 
-### Phase 5: Notebooks (1 day)
+### Phase 6: Playlists (1 day)
 
-**Objective:** Notes belong to Notebooks, and can be viewed by notebook.
+**Objective:** Tracks can be in a playlist, and could be viewed within a playlist.
 
-- [ ] create `Notebook` model
+- [ ] create `Playlist` model
 - build out API, Flux loop, and components for:
-  - [ ] Notebook CRUD
-  - [ ] adding notes requires a notebook
-  - [ ] moving notes to a different notebook
-  - [ ] viewing notes by notebook
+  - [ ] Playlist CRUD
+  - [ ] any track can be added to a playlist
+  - [ ] moving tracks to a different playlist
+  - [ ] viewing tracks within a playlist
 - Use CSS to style new views
-
-Phase 3 adds organization to the Notes. Notes belong to a Notebook,
-which has its own `Index` view.
-
-### Phase 6: Tags (1.5 days)
-
-**Objective:** Notes can be tagged with multiple tags, and tags are searchable.
-
-- [ ] create `Tag` model and join table
-- build out API, Flux loop, and components for:
-  - [ ] fetching tags for notebook
-  - [ ] adding tags to notebook
-  - [ ] creating tags while adding to notebooks
-  - [ ] searching notebooks by tag
-- [ ] Style new elements
-
-### Phase 7: Allow Complex Styling in Notes (0.5 days)
-
-**objective:** Enable complex styling of notes.
-
-- [ ] Integrate `react-quill` (based on Quill.js).
-- [ ] Use Rails helpers to sanitize HTML before rendering.
-- [ ] Style the new Quill elements.
 
 ### Phase 8: Styling Cleanup and Seeding (1 day)
 
@@ -133,14 +124,13 @@ which has its own `Index` view.
 - [ ] Add modals, transitions, and other styling flourishes.
 
 ### Bonus Features (TBD)
-- [ ] Search through notes for blocks of text
-- [ ] Pagination / infinite scroll for Notes Index
-- [ ] Set reminders on notes
-- [ ] Changelogs for Notes
+- [ ] Add comments to each track
+- [ ] Pagination / infinite scroll for Tracks Index
+- [ ] Reward users for listening to new music
 - [ ] Multiple sessions
 
 [phase-one]: ./docs/phases/phase1.md
 [phase-two]: ./docs/phases/phase2.md
 [phase-three]: ./docs/phases/phase3.md
 [phase-four]: ./docs/phases/phase4.md
-[phase-five]: ./docs/phases/phase5.md
+[phase-six]: ./docs/phases/phase6.md

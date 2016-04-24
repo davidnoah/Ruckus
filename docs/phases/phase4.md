@@ -1,4 +1,4 @@
-# Phase 4: Allow Complex Styling in Notes (1 day)
+# Phase 4: Build Player (1 day)
 
 ## Rails
 ### Models
@@ -9,10 +9,13 @@
 
 ## Flux
 ### Views (React Components)
+  * `TrackPlayer`
 
 ### Stores
+* `PlayerStore`
 
 ### Actions
+* PlayerActions#addToPlayerStore
+* PlayerActions#removeFromPlayerStore
 
 ## Gems/Libraries
-* react-quill (npm)

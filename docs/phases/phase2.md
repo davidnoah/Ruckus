@@ -2,37 +2,12 @@
 
 ## Rails
 ### Models
+* Track
 
 ### Controllers
+* TracksController
 
 ### Views
-
-## Flux
-### Views (React Components)
-* NotesIndex
-  - NotesIndexItem
-* NoteForm
-
-### Stores
-* Note
-
-### Actions
-* ApiActions.receiveAllNotes -> triggered by ApiUtil
-* ApiActions.receiveSingleNote
-* ApiActions.deleteNote
-* NoteActions.fetchAllNotes -> triggers ApiUtil
-* NoteActions.fetchSingleNote 
-* NoteActions.createNote
-* NoteActions.editNote 
-* NoteActions.destroyNote
-
-### ApiUtil
-* ApiUtil.fetchAllNotes
-* ApiUtil.fetchSingleNote
-* ApiUtil.createNote
-* ApiUtil.editNote
-* ApiUtil.destroyNote
-
-## Gems/Libraries
-* Flux Dispatcher (npm)
-* Twitter Bootstrap
+* render json.jbuilder partials
+  - `tracks/index.json.jbuilder`
+  - `tracks/show.json.jbuilder`
