@@ -54,6 +54,8 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 - [ ] user signup/signin pages
 - [ ] blank landing page after signin
 
+This phase is all about creating the ability to Sign In and out of Ruckus while also being able to Sign Up. It will be important to remember to create a GUEST login!
+
 ### Phase 2: Track Model, API, and basic APIUtil (1.5 days)
 
 **Objective:** Notes can be created, read, edited and destroyed through
@@ -67,11 +69,11 @@ the API.
 - [ ] setup `APIUtil` to interact with the API
 - [ ] test out API interaction in the console.
 
-Tracks must have a title and description, along with the actual file.
+Tracks must have a title and description, along with the actual audio url and image url. It will be important for keeping the seed data nice and pretty! In this phase, we are still dealing with the backend.. Looking forward, Ill also add a 'num_of_views' column for easy sorting on the Explore page.
 
 ### Phase 3: Flux Architecture and Router (1.5 days)
 
-**Objective:** Notes can be created, read, edited and destroyed with the
+**Objective:** Tracks can be created, read, edited and destroyed with the
 user interface.
 
 - [ ] setup the flux loop with skeleton files
@@ -84,6 +86,8 @@ user interface.
   - [ ] `SearchIndex`
 - Build out Search functionality
 
+This is a very important phase. Here I will begin to build out the logic for actually rendering a track. The track components will ultimately give me the ability to render all the tracks at once, or one at a time. Also, in this phase I want to implement the ability to search for a track by genre, artist, or album.
+
 ### Phase 4: Build the Player
 
 **Objective** The Player will be initialized on play, and Player will continue
@@ -94,6 +98,7 @@ to play during other rendering.
 - [ ] ensure track plays
 - [ ] ensure track stays playing while other actions are taken
 
+In my opinion, this is the most crucial phase. I must implement the ability to play a track! The track must remain playing no matter what the user does. If other urls are rendered, the track will remain.
 
 ### Phase 5: Start Styling (0.5 days)
 
