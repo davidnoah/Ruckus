@@ -3,10 +3,10 @@
 ## New User/Session
 ![new-user]
 
-## Explore Page! TrackIndex / TrackIndexItem
+## Explore Page! TrackIndex / TrackIndexItem / TrackDetail / SearchIndex
 ![tracks]
 
-## User Profile! TrackIndexItem / Playlist
+## User Profile! TrackIndexItem / TrackDetail / PlaylistIndex / PlaylistIndexItem
 ![profile]
 
 ## Upload Track! TrackForm
