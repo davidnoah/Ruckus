@@ -1,22 +1,18 @@
 # View Wireframes
 
-## New User
+## New User/Session
 ![new-user]
 
-## New Session
-![new-session]
+## Explore Page! TrackIndex / TrackIndexItem
+![tracks]
 
-## NotesIndex / NoteIndexItem / NoteForm
-![notes]
+## User Profile! TrackIndexItem / Playlist
+![profile]
 
-## NotebooksIndex / NotebookIndexItem
-![notebooks]
+## Upload Track! TrackForm
+![upload]
 
-## NotebookForm
-![notebook-form]
-
-[new-user]: ./wireframes/new_user.png
-[new-session]: ./wireframes/new_session.png
-[notes]: ./wireframes/root_notes.png
-[notebooks]: ./wireframes/root_notebooks.png
-[notebook-form]: ./wireframes/notebook_form.png
+[new-user]: ./wireframes/Ruckus_Wireframe_Login.png
+[tracks]: ./wireframes/Ruckus_Wireframe_Explore.png
+[profile]: ./wireframes/Ruckus_Wireframe_User.png
+[upload]: ./wireframes/Ruckus_Wireframe_Upload.png
