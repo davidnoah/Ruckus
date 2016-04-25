@@ -91,7 +91,7 @@ user interface.
 
 This is a very important phase. Here I will begin to build out the logic for actually rendering a track. The track components will ultimately give me the ability to render all the tracks at once, or one at a time. Also, in this phase I want to implement the ability to search for a track by genre, artist, or album.
 
-### Phase 4: Build the Player
+### Phase 4: Build the Player(1 day)
 
 **Objective** The Player will be initialized on play, and Player will continue
 to play during other rendering.
@@ -125,7 +125,7 @@ In my opinion, this is the most crucial phase. I must implement the ability to p
 
 In this phase I will need to not only migrate a playlist table but also migrate a join table called `playlistings`. This will allow me to simulate a many to many relationship. A track doesn't necessarily always belong to a playlist.
 
-### Phase 8: Styling Cleanup and Seeding (1 day)
+### Phase 7: Styling Cleanup and Seeding (1 day)
 
 **objective:** Make the site feel more cohesive and awesome.
 

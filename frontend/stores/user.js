@@ -17,6 +17,31 @@ var loginUser = function(user) {
   _loggedIn = true;
 };
 
+var logoutUser = function() {
+  _loggedIn = false;
+  _currentUser = null;
+};
+
+UserStore.clearErrors = function() {
+  _authErrors = [];
+};
+
+UserStore.allErrors = function() {
+  return _authErrors;
+};
+
+var recieveError = function(error) {
+  var errors = JSON.parse(error);
+  if (errors.length >= 1) {
+    errors.forEach(function(message) {
+      _authErrors.push(message);
+    });
+  } else {
+    _authErrors.push(errors);
+  }
+};
+
+
 UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
     case UserConstants.LOGIN_RECIEVED:

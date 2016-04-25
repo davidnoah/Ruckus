@@ -28,7 +28,7 @@ module.exports = {
 
   destroyUser: function (user) {
     Dispatcher.dispatch({
-      actionType: UserConstants.CREATE_USER,
+      actionType: UserConstants.DESTROY_USER,
       user: user
     });
   },
