@@ -12,9 +12,9 @@ because once you start implementing your flux loops, that's precisely
 what you'll need to do.
 
 
-## Note Cycles
+## Track Cycles
 
-### Notes API Request Actions
+### Tracks API Request Actions
 
 * `fetchAllTracks`
   0. invoked from `TrackIndex` `didMount`/`willReceiveProps`
@@ -22,7 +22,7 @@ what you'll need to do.
   0. `receiveAllTracks` is set as the callback.
 
 * `createTrack`
-  0. invoked from new note button `onClick`
+  0. invoked from new track button `onClick`
   0. `POST /api/tracks` is called.
   0. `receiveSingleTrack` is set as the callback.
 
@@ -37,7 +37,7 @@ what you'll need to do.
   0. `receiveSingleTrack` is set as the callback.
 
 * `destroyTrack`
-  0. invoked from delete note button `onClick`
+  0. invoked from delete track button `onClick`
   0. `DELETE /api/tracks/:id` is called.
   0. `removeTrack` is set as the callback.
 
@@ -90,7 +90,7 @@ what you'll need to do.
   0. `DELETE /api/playlists/:id` is called.
   0. `removePlaylist` is set as the callback.
 
-### Notebooks API Response Actions
+### Playlists API Response Actions
 
 * `receiveAllPlaylists`
   0. invoked from an API callback.

@@ -1,4 +1,4 @@
-var ServerActions = require('../actions/server_actions.js');
+var UserActions = require('../actions/user_actions.js');
 
 module.exports = {
   loginUser: function(formData) {
@@ -7,8 +7,10 @@ module.exports = {
       method: 'POST',
       data: formData,
       success: function(user) {
-        console.log(user);
-        ServerActions.loginUser(user);
+        UserActions.loginUser(user);
+      },
+      error: function(response) {
+        UserActions.recieveError(error.responseText);
       }
     });
   }
