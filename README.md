@@ -53,6 +53,9 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 - [ ] authentication
 - [ ] user signup/signin pages
 - [ ] blank landing page after signin
+  - [ ] `Login`
+  - [ ] `Signup` Components
+  ** There is potential use for third-party auth help here. My plan at this moment is to create all the auth myself, assuming that it integrates very easily into React.
 
 This phase is all about creating the ability to Sign In and out of Ruckus while also being able to Sign Up. It will be important to remember to create a GUEST login!
 
@@ -98,7 +101,7 @@ to play during other rendering.
 - [ ] ensure track plays
 - [ ] ensure track stays playing while other actions are taken
 
-In my opinion, this is the most crucial phase. I must implement the ability to play a track! The track must remain playing no matter what the user does. If other urls are rendered, the track will remain.
+In my opinion, this is the most crucial phase. I must implement the ability to play a track! The track must remain playing no matter what the user does. If other urls are rendered, the track will remain. My initial game plan is to create a React store solely for the music player.
 
 ### Phase 5: Start Styling (0.5 days)
 
@@ -119,6 +122,8 @@ In my opinion, this is the most crucial phase. I must implement the ability to p
   - [ ] moving tracks to a different playlist
   - [ ] viewing tracks within a playlist
 - Use CSS to style new views
+
+In this phase I will need to not only migrate a playlist table but also migrate a join table called `playlistings`. This will allow me to simulate a many to many relationship. A track doesn't necessarily always belong to a playlist.
 
 ### Phase 8: Styling Cleanup and Seeding (1 day)
 

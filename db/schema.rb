@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160424222241) do
+ActiveRecord::Schema.define(version: 20160424231150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,14 +31,14 @@ ActiveRecord::Schema.define(version: 20160424222241) do
   add_index "tracks", ["uploader_id"], name: "index_tracks_on_uploader_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",                                                                                                            null: false
-    t.string   "password_disgest",                                                                                                    null: false
-    t.string   "session_token",                                                                                                       null: false
+    t.string   "username",                                                                                                           null: false
+    t.string   "session_token",                                                                                                      null: false
     t.string   "email"
-    t.string   "picture",          default: "http://res.cloudinary.com/davidnoah/image/upload/v1461518475/batman_default_pq4bvl.jpg"
-    t.datetime "created_at",                                                                                                          null: false
-    t.datetime "updated_at",                                                                                                          null: false
+    t.string   "picture",         default: "http://res.cloudinary.com/davidnoah/image/upload/v1461518475/batman_default_pq4bvl.jpg"
+    t.datetime "created_at",                                                                                                         null: false
+    t.datetime "updated_at",                                                                                                         null: false
     t.string   "description"
+    t.string   "password_digest",                                                                                                    null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
