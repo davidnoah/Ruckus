@@ -6,8 +6,9 @@ module.exports = {
       url: 'api/session',
       method: 'POST',
       data: formData,
-      success: function(data) {
-        ServerActions.loginUser(data.username, data.password);
+      success: function(user) {
+        console.log(user);
+        ServerActions.loginUser(user);
       }
     });
   }

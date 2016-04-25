@@ -1,11 +1,11 @@
 var Dispatcher = require('../dispatcher/dispatcher.js');
+var SessionConstants = require('../constants/sessionConstants.js');
 
 module.exports = {
-  loginUser: function (username, password) {
+  loginUser: function (user) {
     Dispatcher.dispatch({
-      actionType: RuckusConstants.LOGIN_RECIEVED,
-      username: username,
-      password: password
+      actionType: SessionConstants.LOGIN_RECIEVED,
+      user: user
     });
   }
 };

@@ -9049,8 +9049,9 @@
 	      url: 'api/session',
 	      method: 'POST',
 	      data: formData,
-	      success: function (data) {
-	        ServerActions.loginUser(data.username, data.password);
+	      success: function (user) {
+	        console.log(user);
+	        ServerActions.loginUser(user);
 	      }
 	    });
 	  }
@@ -9061,13 +9062,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Dispatcher = __webpack_require__(94);
+	var SessionConstants = __webpack_require__(233);
 
 	module.exports = {
-	  loginUser: function (username, password) {
+	  loginUser: function (user) {
 	    Dispatcher.dispatch({
-	      actionType: RuckusConstants.LOGIN_RECIEVED,
-	      username: username,
-	      password: password
+	      actionType: SessionConstants.LOGIN_RECIEVED,
+	      user: user
 	    });
 	  }
 	};
@@ -25787,6 +25788,15 @@
 	var ReactMount = __webpack_require__(222);
 
 	module.exports = ReactMount.renderSubtreeIntoContainer;
+
+/***/ },
+/* 232 */,
+/* 233 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  LOGIN_RECIEVED: "LOGIN_RECIEVED"
+	};
 
 /***/ }
 /******/ ]);
