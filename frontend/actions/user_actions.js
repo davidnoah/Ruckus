@@ -7,15 +7,16 @@ module.exports = {
   },
 
   loginUser: function (user) {
+    console.log("dispatched to store!");
     Dispatcher.dispatch({
-      actionType: UserConstants.LOGIN_RECIEVED,
+      actionType: UserConstants.LOGIN_USER,
       user: user
     });
   },
 
   logoutUser: function () {
     Dispatcher.dispatch({
-      actionType: UserConstants.LOGOUT_RECIEVED,
+      actionType: UserConstants.LOGOUT_USER,
     });
   },
 
@@ -35,7 +36,7 @@ module.exports = {
 
   recieveError: function(error) {
     Dispatcher.dispatch({
-      actionType: UserConstants.RECIEVE_ERROR,
+      actionType: UserConstants.RECEIVE_ERROR,
       error: error
     });
   }

@@ -9,7 +9,7 @@ class Api::UsersController < ApplicationController
     if @user.save!
       render :show
     else
-      render json: @user.errors.full_messages, status: 422
+      render :errors
     end
   end
 
@@ -19,7 +19,7 @@ class Api::UsersController < ApplicationController
     if @user.update_attributes(user_params)
       render :show
     else
-      render json: @user.errors.full_messages, status: 422
+      render :errors
     end
   end
 

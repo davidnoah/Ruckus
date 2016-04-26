@@ -50,8 +50,9 @@
 	    Route = __webpack_require__(32).Route,
 	    HashHistory = __webpack_require__(32).hashHistory;
 
-	window.apiUtil = __webpack_require__(92);
-	Login = __webpack_require__(91);
+	window.apiUtil = __webpack_require__(235);
+	var Login = __webpack_require__(91);
+	var Signup = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./components/signup.jsx\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	// var routes = (
 	//   <Route path="/" component={Login}>
@@ -59,11 +60,7 @@
 	// );
 
 	document.addEventListener("DOMContentLoaded", function () {
-	  ReactDOM.render(React.createElement(
-	    'div',
-	    null,
-	    'Hello'
-	  ), document.getElementById('root'));
+	  ReactDOM.render(React.createElement(Signup, null), document.getElementById('root'));
 	});
 
 /***/ },
@@ -9033,47 +9030,70 @@
 
 /***/ },
 /* 91 */
-/***/ function(module, exports) {
-
-	
-
-/***/ },
-/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ServerActions = __webpack_require__(93);
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(234);
 
-	module.exports = {
-	  loginUser: function (formData) {
-	    $.ajax({
-	      url: 'api/session',
-	      method: 'POST',
-	      data: formData,
-	      success: function (user) {
-	        console.log(user);
-	        ServerActions.loginUser(user);
-	      }
-	    });
+	var Login = React.createClass({
+	  displayName: 'Login',
+
+	  getInitialState: function () {
+	    return { username: "", password: "" };
+	  },
+
+	  handleSubmit: function (event) {
+	    event.preventDefault();
+	    var user = { user: {
+	        username: this.state.username,
+	        password: this.state.password
+	      } };
+	    console.log("submitted");
+	    ClientActions.loginUser(user);
+	  },
+
+	  onChange: function (event) {
+	    var state = {};
+	    state[event.target.id] = event.target.value;
+	    this.setState(state);
+	  },
+
+	  render: function () {
+	    return React.createElement(
+	      'form',
+	      { className: 'login', onSubmit: this.handleSubmit },
+	      React.createElement(
+	        'label',
+	        { className: 'formLabel' },
+	        'Username:',
+	        React.createElement('br', null),
+	        React.createElement('input', { type: 'text',
+	          value: this.state.username,
+	          onChange: this.onChange,
+	          id: 'username' })
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'label',
+	        { className: 'formLabel' },
+	        'Password:',
+	        React.createElement('br', null),
+	        React.createElement('input', { type: 'password',
+	          value: this.state.password,
+	          onChange: this.onChange,
+	          id: 'password' })
+	      ),
+	      React.createElement('br', null),
+	      React.createElement('input', { type: 'submit', value: 'Login' })
+	    );
 	  }
-	};
+	});
+
+	module.exports = Login;
 
 /***/ },
-/* 93 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Dispatcher = __webpack_require__(94);
-	var SessionConstants = __webpack_require__(233);
-
-	module.exports = {
-	  loginUser: function (user) {
-	    Dispatcher.dispatch({
-	      actionType: SessionConstants.LOGIN_RECIEVED,
-	      user: user
-	    });
-	  }
-	};
-
-/***/ },
+/* 92 */,
+/* 93 */,
 /* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -25791,11 +25811,98 @@
 
 /***/ },
 /* 232 */,
-/* 233 */
+/* 233 */,
+/* 234 */
+/***/ function(module, exports, __webpack_require__) {
+
+	UserUtil = __webpack_require__(235);
+
+	module.exports = {
+	  loginUser: function (user) {
+	    console.log("client action");
+	    UserUtil.loginUser(user);
+	  }
+	};
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserActions = __webpack_require__(236);
+
+	module.exports = {
+	  loginUser: function (formData) {
+	    $.ajax({
+	      url: 'api/session',
+	      method: 'POST',
+	      data: formData,
+	      success: function (user) {
+	        console.log("ajax loginUser request success!");
+	        UserActions.loginUser(user);
+	      },
+	      error: function (response) {
+	        UserActions.recieveError(error.responseText);
+	      }
+	    });
+	  }
+	};
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(94);
+	var UserConstants = __webpack_require__(237);
+
+	module.exports = {
+	  fetchCurrentUser: function () {},
+
+	  loginUser: function (user) {
+	    console.log("dispatched to store!");
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGIN_USER,
+	      user: user
+	    });
+	  },
+
+	  logoutUser: function () {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGOUT_USER
+	    });
+	  },
+
+	  createUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.CREATE_USER,
+	      user: user
+	    });
+	  },
+
+	  destroyUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.DESTROY_USER,
+	      user: user
+	    });
+	  },
+
+	  recieveError: function (error) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.RECEIVE_ERROR,
+	      error: error
+	    });
+	  }
+	};
+
+/***/ },
+/* 237 */
 /***/ function(module, exports) {
 
 	module.exports = {
-	  LOGIN_RECIEVED: "LOGIN_RECIEVED"
+	  LOGIN_USER: "LOGIN_USER",
+	  ERROR_RECEIVED: "RECEIVE_ERROR",
+	  LOGOUT_USER: "LOGOUT_USER",
+	  DESTROY_USER: "DESTROY_USER",
+	  CREATE_USER: "CREATE_USER"
 	};
 
 /***/ }

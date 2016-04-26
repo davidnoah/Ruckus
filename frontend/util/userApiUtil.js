@@ -7,6 +7,7 @@ module.exports = {
       method: 'POST',
       data: formData,
       success: function(user) {
+        console.log("ajax loginUser request success!");
         UserActions.loginUser(user);
       },
       error: function(response) {
