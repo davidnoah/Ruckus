@@ -15,6 +15,19 @@ module.exports = {
     });
   },
 
+  logoutUser: function() {
+    $.ajax({
+      url: 'api/session',
+      method: 'DELETE',
+      success: function() {
+        UserActions.logoutUser();
+      },
+      error: function(response) {
+        UserActions.receiveError(error.responseText);
+      }
+    });
+  },
+
   createUser: function(formData) {
     $.ajax({
       url: 'api/users',

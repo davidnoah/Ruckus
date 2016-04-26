@@ -5,6 +5,10 @@ module.exports = {
     UserUtil.loginUser(user);
   },
 
+  logoutUser: function() {
+    UserUtil.logoutUser();
+  },
+
   createUser: function(user) {
     UserUtil.createUser(user);
   }

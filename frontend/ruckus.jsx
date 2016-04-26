@@ -1,19 +1,22 @@
 var React = require('react'),
     ReactDOM = require('react-dom'),
+    Modal = require('react-modal'),
 
     Router = require('react-router').Router,
     Route = require('react-router').Route,
     HashHistory = require('react-router').hashHistory,
 
-    SessionStore = require('./stores/session.js');
-    window.Signup = require('./components/signup.jsx');
-    Login = require('./components/login.jsx');
+    App = require('./components/app.jsx'),
+    SessionStore = require('./stores/session.js'),
+    Signup = require('./components/auth/signup.jsx'),
+    Login = require('./components/auth/login.jsx');
 
 window.apiUtil = require('./util/userApiUtil.js');
 
 document.addEventListener("DOMContentLoaded", function () {
+  Modal.setAppElement('#root');
   ReactDOM.render(
-    <Signup />,
+    <App />,
     document.getElementById('root')
   );
 });

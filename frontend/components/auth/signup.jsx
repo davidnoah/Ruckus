@@ -1,5 +1,7 @@
 var React = require('react');
-var ClientActions = require('../actions/client_actions.js');
+var ClientActions = require('../../actions/client_actions.js');
+var Dropzone = require('react-dropzone');
+
 
 var Signup = React.createClass({
   getInitialState: function() {
@@ -19,8 +21,9 @@ var Signup = React.createClass({
       password: this.state.password,
       picture: this.state.picture,
       description: this.state.description
-    }}
+    }};
     ClientActions.createUser(user);
+    this.props.parent.closeModal();
   },
 
   onChange: function(event) {
@@ -29,7 +32,15 @@ var Signup = React.createClass({
     this.setState(state);
   },
 
+  onDrop: function(file) {
+    console.log('Received files: ', file);
+    this.setState({picture: file[0]});
+  },
+
   render: function() {
+
+    var picture_preview = (this.state.picture !== null) ? <img src={this.state.picture.preview}/> : null;
+
     return (
       <div className='signupForm'>
         <form className='signup' onSubmit={this.handleSubmit}>
@@ -65,16 +76,6 @@ var Signup = React.createClass({
           <br/>
 
           <label className="formLabel">
-            Picture URL:
-            <br/>
-            <input type="text"
-              value={this.state.picture}
-              onChange={this.onChange}
-              id="picture"/>
-          </label>
-          <br/>
-
-          <label className="formLabel">
             Description:
             <br/>
             <input type="text"
@@ -87,6 +88,16 @@ var Signup = React.createClass({
           <input type="submit" value="Create Profile"/>
 
         </form>
+
+        <Dropzone onDrop={this.onDrop} multiple={false}>
+        <p>
+          Drag and drop a picture here.
+        </p>
+        </Dropzone>
+
+        <div>
+        {picture_preview}
+        </div>
 
       </div>
     );

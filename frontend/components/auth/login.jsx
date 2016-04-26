@@ -1,5 +1,5 @@
 var React = require('react');
-var ClientActions = require('../actions/client_actions.js');
+var ClientActions = require('../../actions/client_actions.js');
 
 var Login = React.createClass({
   getInitialState: function() {
@@ -11,9 +11,10 @@ var Login = React.createClass({
     var user = {user: {
       username: this.state.username,
       password: this.state.password
-    }}
+    }};
     console.log("submitted");
     ClientActions.loginUser(user);
+    this.props.parent.closeModal();
   },
 
   onChange: function(event) {
