@@ -7,11 +7,24 @@ module.exports = {
       method: 'POST',
       data: formData,
       success: function(user) {
-        console.log("ajax loginUser request success!");
         UserActions.loginUser(user);
       },
       error: function(response) {
-        UserActions.recieveError(error.responseText);
+        UserActions.receiveError(error.responseText);
+      }
+    });
+  },
+
+  createUser: function(formData) {
+    $.ajax({
+      url: 'api/users',
+      method: 'POST',
+      data: formData,
+      success: function(user) {
+        UserActions.loginUser(user);
+      },
+      error: function(response) {
+        UserActions.receiveError(error.responseText);
       }
     });
   }

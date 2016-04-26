@@ -10,6 +10,18 @@ UserStore.all = function () {
   return Object.assign({}, _users);
 };
 
-UserStore.__onDispatch = function (payload) {
+var addUser = function() {
+  _users[user.id] = user;
+};
 
+var findUser = function(id) {
+  return _user[id];
+};
+
+UserStore.__onDispatch = function (payload) {
+  switch(payload.actionType) {
+    case UserConstants.CREATE_USER:
+      addUser(payload.user);
+      break;
+  }
 };

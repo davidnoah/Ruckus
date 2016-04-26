@@ -2,12 +2,9 @@ var Dispatcher = require('../dispatcher/dispatcher.js');
 var UserConstants = require('../constants/userConstants.js');
 
 module.exports = {
-  fetchCurrentUser: function () {
-
-  },
 
   loginUser: function (user) {
-    console.log("dispatched to store!");
+    console.log("user logged in!");
     Dispatcher.dispatch({
       actionType: UserConstants.LOGIN_USER,
       user: user
@@ -20,13 +17,6 @@ module.exports = {
     });
   },
 
-  createUser: function (user) {
-    Dispatcher.dispatch({
-      actionType: UserConstants.CREATE_USER,
-      user: user
-    });
-  },
-
   destroyUser: function (user) {
     Dispatcher.dispatch({
       actionType: UserConstants.DESTROY_USER,
@@ -34,7 +24,7 @@ module.exports = {
     });
   },
 
-  recieveError: function(error) {
+  receiveError: function(error) {
     Dispatcher.dispatch({
       actionType: UserConstants.RECEIVE_ERROR,
       error: error
