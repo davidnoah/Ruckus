@@ -2,7 +2,6 @@ var React = require('react');
 var ClientActions = require('../../actions/client_actions.js');
 var Dropzone = require('react-dropzone');
 
-
 var Signup = React.createClass({
   getInitialState: function() {
     return {username: "",
@@ -33,8 +32,8 @@ var Signup = React.createClass({
   },
 
   onDrop: function(file) {
-    console.log('Received files: ', file);
-    this.setState({picture: file[0]});
+    console.log('Received files: ', req);
+    this.setState({picture: file});
   },
 
   render: function() {
@@ -89,7 +88,7 @@ var Signup = React.createClass({
 
         </form>
 
-        <Dropzone onDrop={this.onDrop} multiple={false}>
+        <Dropzone onDrop={this.onDrop} multiple={false} >
         <p>
           Drag and drop a picture here.
         </p>

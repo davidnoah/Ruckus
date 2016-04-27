@@ -1,0 +1,36 @@
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #323232;
+  width: auto;
+ }
+
+.navbar li {
+ display:inline-block;
+ float:right;
+}
+
+.navbar_buttons {
+ text-decoration:none;
+ background-color: #323232;
+ vertical-align: middle;
+ text-align: center;
+ width:auto;
+ height:auto;
+ line-height: 50px;
+}
+
+.navbar_buttons button {
+ display: block;
+ text-align: center;
+ padding: 19px 16px;
+ color: white;
+ background-color: #323232;
+ border-top: 0px;
+ border-bottom: 0px;
+ border-right: 0px;
+ border-color: white;
+ border-width: 1px;
+}

@@ -27,6 +27,7 @@
     "babel-preset-react": "^6.5.0",
     "flux": "^2.1.1",
     "react": "^15.0.1",
+    "react-cloudinary-img": "0.0.5",
     "react-dom": "^15.0.1",
     "react-dropzone": "^2.2.4",
     "react-modal": "^1.2.1",

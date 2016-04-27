@@ -51,7 +51,7 @@
 	    Route = __webpack_require__(186).Route,
 	    HashHistory = __webpack_require__(186).hashHistory,
 	    App = __webpack_require__(245),
-	    SessionStore = __webpack_require__(258),
+	    SessionStore = __webpack_require__(259),
 	    Signup = __webpack_require__(255),
 	    Login = __webpack_require__(246);
 
@@ -27384,7 +27384,7 @@
 	    ReactDOM = __webpack_require__(32),
 	    Login = __webpack_require__(246),
 	    Signup = __webpack_require__(255),
-	    NavBar = __webpack_require__(276),
+	    NavBar = __webpack_require__(258),
 	    Modal = __webpack_require__(166);
 
 	var App = React.createClass({
@@ -27498,7 +27498,8 @@
 	        UserActions.loginUser(user);
 	      },
 	      error: function (response) {
-	        UserActions.receiveError(error.responseText);
+	        console.log(response);
+	        UserActions.receiveError(response.responseText);
 	      }
 	    });
 	  },
@@ -27511,7 +27512,7 @@
 	        UserActions.logoutUser();
 	      },
 	      error: function (response) {
-	        UserActions.receiveError(error.responseText);
+	        UserActions.receiveError(response.responseText);
 	      }
 	    });
 	  },
@@ -27525,7 +27526,8 @@
 	        UserActions.loginUser(user);
 	      },
 	      error: function (response) {
-	        UserActions.receiveError(error.responseText);
+	        console.log(response);
+	        UserActions.receiveError(response.responseText);
 	      }
 	    });
 	  }
@@ -27936,8 +27938,8 @@
 	  },
 
 	  onDrop: function (file) {
-	    console.log('Received files: ', file);
-	    this.setState({ picture: file[0] });
+	    console.log('Received files: ', req);
+	    this.setState({ picture: file });
 	  },
 
 	  render: function () {
@@ -28248,7 +28250,127 @@
 /* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Store = __webpack_require__(259).Store;
+	var React = __webpack_require__(1),
+	    ReactDOM = __webpack_require__(32),
+	    Login = __webpack_require__(246),
+	    Signup = __webpack_require__(255),
+	    SessionStore = __webpack_require__(259),
+	    ModalStyle = __webpack_require__(277),
+	    ClientActions = __webpack_require__(247),
+	    Modal = __webpack_require__(166);
+
+	var NavBar = React.createClass({
+	  displayName: 'NavBar',
+
+	  getInitialState: function () {
+	    return {
+	      modalIsOpen: false,
+	      signUpClicked: false,
+	      logInClicked: false,
+	      current_user: SessionStore.currentUser()
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    SessionStore.addListener(this.onChange);
+	  },
+
+	  onChange: function () {
+	    this.setState({ current_user: SessionStore.currentUser() });
+	  },
+
+	  logoutUser: function () {
+	    ClientActions.logoutUser();
+	  },
+
+	  openModal: function (event) {
+	    var state = {};
+	    if (event.target.id === "signUpClicked") {
+	      this.setState({ modalIsOpen: true, signUpClicked: true });
+	    } else if (event.target.id === "logInClicked") {
+	      this.setState({ modalIsOpen: true, logInClicked: true });
+	    }
+	  },
+
+	  closeModal: function () {
+	    this.setState({ modalIsOpen: false, logInClicked: false, signUpClicked: false });
+	  },
+
+	  render: function () {
+	    var modalContents = null;
+	    if (this.state.signUpClicked === true) {
+	      modalContents = React.createElement(Signup, { parent: this });
+	    } else if (this.state.logInClicked === true) {
+	      modalContents = React.createElement(Login, { parent: this });
+	    }
+
+	    var navbarContents = React.createElement(
+	      'ul',
+	      null,
+	      React.createElement(
+	        'li',
+	        { className: 'navbar_buttons' },
+	        React.createElement(
+	          'button',
+	          { onClick: this.openModal, id: 'signUpClicked' },
+	          'Sign Up'
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'navbar_buttons' },
+	        React.createElement(
+	          'button',
+	          { onClick: this.openModal, id: 'logInClicked' },
+	          'Login'
+	        )
+	      )
+	    );
+
+	    if (this.state.current_user !== null) {
+	      navbarContents = React.createElement(
+	        'ul',
+	        null,
+	        React.createElement(
+	          'li',
+	          { className: 'navbar_buttons' },
+	          React.createElement(
+	            'button',
+	            { onClick: this.logoutUser, id: 'logoutClicked' },
+	            'Logout'
+	          )
+	        )
+	      );
+	    }
+
+	    return React.createElement(
+	      'ul',
+	      { className: 'navbar' },
+	      navbarContents,
+	      React.createElement(
+	        Modal,
+	        {
+	          isOpen: this.state.modalIsOpen,
+	          onRequestClose: this.closeModal,
+	          style: ModalStyle },
+	        React.createElement(
+	          'button',
+	          { onClick: this.closeModal },
+	          'close'
+	        ),
+	        modalContents
+	      )
+	    );
+	  }
+	});
+
+	module.exports = NavBar;
+
+/***/ },
+/* 259 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(260).Store;
 	var Dispatcher = __webpack_require__(250);
 	var UserConstants = __webpack_require__(254);
 
@@ -28312,7 +28434,7 @@
 	module.exports = SessionStore;
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -28324,15 +28446,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Container = __webpack_require__(260);
-	module.exports.MapStore = __webpack_require__(263);
-	module.exports.Mixin = __webpack_require__(275);
-	module.exports.ReduceStore = __webpack_require__(264);
-	module.exports.Store = __webpack_require__(265);
+	module.exports.Container = __webpack_require__(261);
+	module.exports.MapStore = __webpack_require__(264);
+	module.exports.Mixin = __webpack_require__(276);
+	module.exports.ReduceStore = __webpack_require__(265);
+	module.exports.Store = __webpack_require__(266);
 
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28354,10 +28476,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxStoreGroup = __webpack_require__(261);
+	var FluxStoreGroup = __webpack_require__(262);
 
 	var invariant = __webpack_require__(253);
-	var shallowEqual = __webpack_require__(262);
+	var shallowEqual = __webpack_require__(263);
 
 	var DEFAULT_OPTIONS = {
 	  pure: true,
@@ -28515,7 +28637,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 261 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28596,7 +28718,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports) {
 
 	/**
@@ -28651,7 +28773,7 @@
 	module.exports = shallowEqual;
 
 /***/ },
-/* 263 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28672,8 +28794,8 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxReduceStore = __webpack_require__(264);
-	var Immutable = __webpack_require__(274);
+	var FluxReduceStore = __webpack_require__(265);
+	var Immutable = __webpack_require__(275);
 
 	var invariant = __webpack_require__(253);
 
@@ -28801,7 +28923,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 264 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28822,9 +28944,9 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxStore = __webpack_require__(265);
+	var FluxStore = __webpack_require__(266);
 
-	var abstractMethod = __webpack_require__(273);
+	var abstractMethod = __webpack_require__(274);
 	var invariant = __webpack_require__(253);
 
 	var FluxReduceStore = (function (_FluxStore) {
@@ -28908,7 +29030,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 265 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28927,7 +29049,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _require = __webpack_require__(266);
+	var _require = __webpack_require__(267);
 
 	var EventEmitter = _require.EventEmitter;
 
@@ -29091,7 +29213,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 266 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29104,14 +29226,14 @@
 	 */
 
 	var fbemitter = {
-	  EventEmitter: __webpack_require__(267)
+	  EventEmitter: __webpack_require__(268)
 	};
 
 	module.exports = fbemitter;
 
 
 /***/ },
-/* 267 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29130,11 +29252,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var EmitterSubscription = __webpack_require__(268);
-	var EventSubscriptionVendor = __webpack_require__(270);
+	var EmitterSubscription = __webpack_require__(269);
+	var EventSubscriptionVendor = __webpack_require__(271);
 
-	var emptyFunction = __webpack_require__(272);
-	var invariant = __webpack_require__(271);
+	var emptyFunction = __webpack_require__(273);
+	var invariant = __webpack_require__(272);
 
 	/**
 	 * @class BaseEventEmitter
@@ -29308,7 +29430,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29329,7 +29451,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var EventSubscription = __webpack_require__(269);
+	var EventSubscription = __webpack_require__(270);
 
 	/**
 	 * EmitterSubscription represents a subscription with listener and context data.
@@ -29361,7 +29483,7 @@
 	module.exports = EmitterSubscription;
 
 /***/ },
-/* 269 */
+/* 270 */
 /***/ function(module, exports) {
 
 	/**
@@ -29415,7 +29537,7 @@
 	module.exports = EventSubscription;
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29434,7 +29556,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(271);
+	var invariant = __webpack_require__(272);
 
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -29524,7 +29646,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29579,7 +29701,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 272 */
+/* 273 */
 /***/ function(module, exports) {
 
 	/**
@@ -29621,7 +29743,7 @@
 	module.exports = emptyFunction;
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29648,7 +29770,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34632,7 +34754,7 @@
 	}));
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -34649,7 +34771,7 @@
 
 	'use strict';
 
-	var FluxStoreGroup = __webpack_require__(261);
+	var FluxStoreGroup = __webpack_require__(262);
 
 	var invariant = __webpack_require__(253);
 
@@ -34755,131 +34877,6 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 276 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1),
-	    ReactDOM = __webpack_require__(32),
-	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(255),
-	    SessionStore = __webpack_require__(258),
-	    ModalStyle = __webpack_require__(277),
-	    ClientActions = __webpack_require__(247),
-	    Modal = __webpack_require__(166);
-
-	var NavBar = React.createClass({
-	  displayName: 'NavBar',
-
-	  getInitialState: function () {
-	    return {
-	      modalIsOpen: false,
-	      signUpClicked: false,
-	      logInClicked: false,
-	      current_user: SessionStore.currentUser()
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    SessionStore.addListener(this.onChange);
-	  },
-
-	  onChange: function () {
-	    this.setState({ current_user: SessionStore.currentUser() });
-	  },
-
-	  logoutUser: function () {
-	    ClientActions.logoutUser();
-	  },
-
-	  openModal: function (event) {
-	    var state = {};
-	    if (event.target.id === "signUpClicked") {
-	      this.setState({ modalIsOpen: true, signUpClicked: true });
-	    } else if (event.target.id === "logInClicked") {
-	      this.setState({ modalIsOpen: true, logInClicked: true });
-	    }
-	  },
-
-	  afterOpenModal: function () {
-	    this.refs.subtitle.style.color = '#f00';
-	  },
-
-	  closeModal: function () {
-	    this.setState({ modalIsOpen: false, logInClicked: false, signUpClicked: false });
-	  },
-
-	  render: function () {
-	    var modalContents = null;
-	    if (this.state.signUpClicked === true) {
-	      modalContents = React.createElement(Signup, { parent: this });
-	    } else if (this.state.logInClicked === true) {
-	      modalContents = React.createElement(Login, { parent: this });
-	    }
-
-	    var navbarContents = React.createElement(
-	      'ul',
-	      null,
-	      React.createElement(
-	        'li',
-	        { className: 'navbar_buttons' },
-	        React.createElement(
-	          'button',
-	          { onClick: this.openModal, id: 'signUpClicked' },
-	          'Sign Up'
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'navbar_buttons' },
-	        React.createElement(
-	          'button',
-	          { onClick: this.openModal, id: 'logInClicked' },
-	          'Login'
-	        )
-	      )
-	    );
-
-	    if (this.state.current_user !== null) {
-	      navbarContents = React.createElement(
-	        'ul',
-	        null,
-	        React.createElement(
-	          'li',
-	          { className: 'navbar_buttons' },
-	          React.createElement(
-	            'button',
-	            { onClick: this.logoutUser, id: 'logoutClicked' },
-	            'Logout'
-	          )
-	        )
-	      );
-	    }
-
-	    return React.createElement(
-	      'ul',
-	      { className: 'navbar' },
-	      navbarContents,
-	      React.createElement(
-	        Modal,
-	        {
-	          isOpen: this.state.modalIsOpen,
-	          onAfterOpen: this.afterOpenModal,
-	          onRequestClose: this.closeModal,
-	          style: ModalStyle.CONTENT_STYLE },
-	        React.createElement(
-	          'button',
-	          { onClick: this.closeModal },
-	          'close'
-	        ),
-	        modalContents
-	      )
-	    );
-	  }
-	});
-
-	module.exports = NavBar;
-
-/***/ },
 /* 277 */
 /***/ function(module, exports) {
 
@@ -34894,11 +34891,11 @@
 	  },
 	  content: {
 	    position: 'absolute',
-	    top: '40px',
-	    left: '40px',
-	    right: '40px',
-	    bottom: '40px',
-	    border: '1px solid #ccc',
+	    top: '200px',
+	    left: '200px',
+	    right: '200px',
+	    bottom: '300px',
+	    border: '1px solid black',
 	    background: '#fff',
 	    overflow: 'auto',
 	    WebkitOverflowScrolling: 'touch',
@@ -34908,6 +34905,8 @@
 
 	  }
 	};
+
+	module.exports = CONTENT_STYLE;
 
 /***/ }
 /******/ ]);

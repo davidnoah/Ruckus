@@ -9,11 +9,11 @@ CONTENT_STYLE = {
   },
   content : {
     position                   : 'absolute',
-    top                        : '40px',
-    left                       : '40px',
-    right                      : '40px',
-    bottom                     : '40px',
-    border                     : '1px solid #ccc',
+    top                        : '200px',
+    left                       : '200px',
+    right                      : '200px',
+    bottom                     : '300px',
+    border                     : '1px solid black',
     background                 : '#fff',
     overflow                   : 'auto',
     WebkitOverflowScrolling    : 'touch',
@@ -23,3 +23,5 @@ CONTENT_STYLE = {
 
   }
 };
+
+module.exports = CONTENT_STYLE;

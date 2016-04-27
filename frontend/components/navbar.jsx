@@ -38,10 +38,6 @@ var NavBar = React.createClass({
     }
   },
 
-  afterOpenModal: function() {
-    this.refs.subtitle.style.color = '#f00';
-  },
-
   closeModal: function() {
     this.setState({modalIsOpen: false, logInClicked: false, signUpClicked: false});
   },
@@ -76,9 +72,8 @@ var NavBar = React.createClass({
         {navbarContents}
         <Modal
           isOpen={this.state.modalIsOpen}
-          onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
-          style={ModalStyle.CONTENT_STYLE} >
+          style={ModalStyle} >
 
           <button onClick={this.closeModal}>close</button>
           {modalContents}

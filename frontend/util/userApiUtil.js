@@ -10,7 +10,8 @@ module.exports = {
         UserActions.loginUser(user);
       },
       error: function(response) {
-        UserActions.receiveError(error.responseText);
+        console.log(response);
+        UserActions.receiveError(response.responseText);
       }
     });
   },
@@ -23,7 +24,7 @@ module.exports = {
         UserActions.logoutUser();
       },
       error: function(response) {
-        UserActions.receiveError(error.responseText);
+        UserActions.receiveError(response.responseText);
       }
     });
   },
@@ -37,7 +38,8 @@ module.exports = {
         UserActions.loginUser(user);
       },
       error: function(response) {
-        UserActions.receiveError(error.responseText);
+        console.log(response);
+        UserActions.receiveError(response.responseText);
       }
     });
   }
