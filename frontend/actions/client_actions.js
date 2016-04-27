@@ -1,4 +1,5 @@
 UserUtil = require('../util/userApiUtil.js');
+TrackUtil = require('../util/trackApiUtil.js');
 
 module.exports = {
   loginUser: function(user) {
@@ -11,5 +12,13 @@ module.exports = {
 
   createUser: function(user) {
     UserUtil.createUser(user);
+  },
+
+  checkLoggedIn: function(user) {
+    UserUtil.checkLoggedIn();
+  },
+
+  fetchTracks: function() {
+    TrackUtil.fetchAllTracks();
   }
 };

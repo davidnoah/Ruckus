@@ -1,6 +1,19 @@
 var UserActions = require('../actions/user_actions.js');
 
 module.exports = {
+  checkLoggedIn: function() {
+    $.ajax({
+      url: 'api/session',
+      method: 'GET',
+      success: function(response) {
+        UserActions.loggedInResponse(response);
+      },
+      errors: function(response) {
+        UserActions.receiveError(response.responseText);
+      }
+    });
+  },
+
   loginUser: function(formData) {
     $.ajax({
       url: 'api/session',

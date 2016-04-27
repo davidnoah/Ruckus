@@ -49,17 +49,30 @@
 	    Modal = __webpack_require__(166),
 	    Router = __webpack_require__(186).Router,
 	    Route = __webpack_require__(186).Route,
+	    IndexRoute = __webpack_require__(186).IndexRoute,
 	    HashHistory = __webpack_require__(186).hashHistory,
 	    App = __webpack_require__(245),
-	    SessionStore = __webpack_require__(259),
-	    Signup = __webpack_require__(255),
-	    Login = __webpack_require__(246);
+	    SessionStore = __webpack_require__(257),
+	    TrackStore = __webpack_require__(282),
+	    Signup = __webpack_require__(256),
+	    Login = __webpack_require__(246),
+	    TrackIndex = __webpack_require__(280);
 
-	window.apiUtil = __webpack_require__(248);
+	var routes = React.createElement(
+	  Route,
+	  { path: '/', component: App },
+	  React.createElement(Route, { path: 'tracks/', component: TrackIndex })
+	);
 
 	document.addEventListener("DOMContentLoaded", function () {
+	  var root = document.getElementById('root');
 	  Modal.setAppElement('#root');
-	  ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+
+	  ReactDOM.render(React.createElement(
+	    Router,
+	    { history: HashHistory },
+	    routes
+	  ), root);
 	});
 
 /***/ },
@@ -27383,15 +27396,26 @@
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(32),
 	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(255),
-	    NavBar = __webpack_require__(258),
+	    Signup = __webpack_require__(256),
+	    NavBar = __webpack_require__(278),
+	    TrackIndex = __webpack_require__(280),
 	    Modal = __webpack_require__(166);
 
 	var App = React.createClass({
 	  displayName: 'App',
 
 	  render: function () {
-	    return React.createElement(NavBar, null);
+	    return React.createElement(
+	      'div',
+	      { className: 'app' },
+	      React.createElement(NavBar, null),
+	      React.createElement(
+	        'div',
+	        { className: 'splash' },
+	        React.createElement(TrackIndex, null),
+	        this.props.children
+	      )
+	    );
 	  }
 
 	});
@@ -27418,7 +27442,6 @@
 	        username: this.state.username,
 	        password: this.state.password
 	      } };
-	    console.log("submitted");
 	    ClientActions.loginUser(user);
 	    this.props.parent.closeModal();
 	  },
@@ -27431,31 +27454,35 @@
 
 	  render: function () {
 	    return React.createElement(
-	      'form',
-	      { className: 'login', onSubmit: this.handleSubmit },
+	      'div',
+	      { className: 'loginForm' },
 	      React.createElement(
-	        'label',
-	        { className: 'formLabel' },
-	        'Username:',
+	        'form',
+	        { className: 'login', onSubmit: this.handleSubmit },
+	        React.createElement(
+	          'label',
+	          { className: 'formLabel' },
+	          'Username:',
+	          React.createElement('br', null),
+	          React.createElement('input', { type: 'text',
+	            value: this.state.username,
+	            onChange: this.onChange,
+	            id: 'username' })
+	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'text',
-	          value: this.state.username,
-	          onChange: this.onChange,
-	          id: 'username' })
-	      ),
-	      React.createElement('br', null),
-	      React.createElement(
-	        'label',
-	        { className: 'formLabel' },
-	        'Password:',
+	        React.createElement(
+	          'label',
+	          { className: 'formLabel' },
+	          'Password:',
+	          React.createElement('br', null),
+	          React.createElement('input', { type: 'password',
+	            value: this.state.password,
+	            onChange: this.onChange,
+	            id: 'password' })
+	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'password',
-	          value: this.state.password,
-	          onChange: this.onChange,
-	          id: 'password' })
-	      ),
-	      React.createElement('br', null),
-	      React.createElement('input', { type: 'submit', value: 'Login' })
+	        React.createElement('input', { type: 'submit', value: 'Login' })
+	      )
 	    );
 	  }
 	});
@@ -27467,6 +27494,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	UserUtil = __webpack_require__(248);
+	TrackUtil = __webpack_require__(249);
 
 	module.exports = {
 	  loginUser: function (user) {
@@ -27479,6 +27507,14 @@
 
 	  createUser: function (user) {
 	    UserUtil.createUser(user);
+	  },
+
+	  checkLoggedIn: function (user) {
+	    UserUtil.checkLoggedIn();
+	  },
+
+	  fetchTracks: function () {
+	    TrackUtil.fetchAllTracks();
 	  }
 	};
 
@@ -27486,9 +27522,22 @@
 /* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserActions = __webpack_require__(249);
+	var UserActions = __webpack_require__(283);
 
 	module.exports = {
+	  checkLoggedIn: function () {
+	    $.ajax({
+	      url: 'api/session',
+	      method: 'GET',
+	      success: function (response) {
+	        UserActions.loggedInResponse(response);
+	      },
+	      errors: function (response) {
+	        UserActions.receiveError(response.responseText);
+	      }
+	    });
+	  },
+
 	  loginUser: function (formData) {
 	    $.ajax({
 	      url: 'api/session',
@@ -27537,36 +27586,16 @@
 /* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(250);
-	var UserConstants = __webpack_require__(254);
+	var TrackActions = __webpack_require__(250);
 
 	module.exports = {
-
-	  loginUser: function (user) {
-	    console.log("user logged in!");
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.LOGIN_USER,
-	      user: user
-	    });
-	  },
-
-	  logoutUser: function () {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.LOGOUT_USER
-	    });
-	  },
-
-	  destroyUser: function (user) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.DESTROY_USER,
-	      user: user
-	    });
-	  },
-
-	  receiveError: function (error) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.RECEIVE_ERROR,
-	      error: error
+	  fetchAllTracks: function () {
+	    $.ajax({
+	      url: 'api/tracks',
+	      method: 'GET',
+	      success: function (tracks) {
+	        TrackActions.getTracks(tracks);
+	      }
 	    });
 	  }
 	};
@@ -27575,11 +27604,27 @@
 /* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(251).Dispatcher;
-	module.exports = new Dispatcher();
+	var Dispatcher = __webpack_require__(251);
+	var TrackConstants = __webpack_require__(255);
+
+	module.exports = {
+	  getTracks: function (tracks) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.GET_TRACKS,
+	      tracks: tracks
+	    });
+	  }
+	};
 
 /***/ },
 /* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(252).Dispatcher;
+	module.exports = new Dispatcher();
+
+/***/ },
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -27591,11 +27636,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(252);
+	module.exports.Dispatcher = __webpack_require__(253);
 
 
 /***/ },
-/* 252 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27617,7 +27662,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	var _prefix = 'ID_';
 
@@ -27832,7 +27877,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 253 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27887,24 +27932,21 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports) {
 
 	module.exports = {
-	  LOGIN_USER: "LOGIN_USER",
-	  ERROR_RECEIVED: "RECEIVE_ERROR",
-	  LOGOUT_USER: "LOGOUT_USER",
-	  DESTROY_USER: "DESTROY_USER",
-	  CREATE_USER: "CREATE_USER"
+	  GET_TRACKS: "GET_TRACKS"
 	};
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
-	var Dropzone = __webpack_require__(256);
+	var SessionStore = __webpack_require__(257);
+	var Dropzone = __webpack_require__(276);
 
 	var Signup = React.createClass({
 	  displayName: 'Signup',
@@ -28019,360 +28061,12 @@
 	module.exports = Signup;
 
 /***/ },
-/* 256 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var React = __webpack_require__(1);
-	var accept = __webpack_require__(257);
-
-	var Dropzone = React.createClass({
-	  displayName: 'Dropzone',
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      disableClick: false,
-	      multiple: true
-	    };
-	  },
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      isDragActive: false
-	    };
-	  },
-
-	  propTypes: {
-	    onDrop: React.PropTypes.func,
-	    onDropAccepted: React.PropTypes.func,
-	    onDropRejected: React.PropTypes.func,
-	    onDragEnter: React.PropTypes.func,
-	    onDragLeave: React.PropTypes.func,
-
-	    style: React.PropTypes.object,
-	    activeStyle: React.PropTypes.object,
-	    className: React.PropTypes.string,
-	    activeClassName: React.PropTypes.string,
-	    rejectClassName: React.PropTypes.string,
-
-	    disableClick: React.PropTypes.bool,
-	    multiple: React.PropTypes.bool,
-	    accept: React.PropTypes.string
-	  },
-
-	  componentDidMount: function componentDidMount() {
-	    this.enterCounter = 0;
-	  },
-
-	  allFilesAccepted: function allFilesAccepted(files) {
-	    var _this = this;
-
-	    return files.every(function (file) {
-	      return accept(file, _this.props.accept);
-	    });
-	  },
-
-	  onDragEnter: function onDragEnter(e) {
-	    e.preventDefault();
-
-	    // Count the dropzone and any children that are entered.
-	    ++this.enterCounter;
-
-	    // This is tricky. During the drag even the dataTransfer.files is null
-	    // But Chrome implements some drag store, which is accesible via dataTransfer.items
-	    var dataTransferItems = e.dataTransfer && e.dataTransfer.items ? e.dataTransfer.items : [];
-
-	    // Now we need to convert the DataTransferList to Array
-	    var itemsArray = Array.prototype.slice.call(dataTransferItems);
-	    var allFilesAccepted = this.allFilesAccepted(itemsArray);
-
-	    this.setState({
-	      isDragActive: allFilesAccepted,
-	      isDragReject: !allFilesAccepted
-	    });
-
-	    if (this.props.onDragEnter) {
-	      this.props.onDragEnter(e);
-	    }
-	  },
-
-	  onDragOver: function onDragOver(e) {
-	    e.preventDefault();
-	  },
-
-	  onDragLeave: function onDragLeave(e) {
-	    e.preventDefault();
-
-	    // Only deactivate once the dropzone and all children was left.
-	    if (--this.enterCounter > 0) {
-	      return;
-	    }
-
-	    this.setState({
-	      isDragActive: false,
-	      isDragReject: false
-	    });
-
-	    if (this.props.onDragLeave) {
-	      this.props.onDragLeave(e);
-	    }
-	  },
-
-	  onDrop: function onDrop(e) {
-	    e.preventDefault();
-
-	    // Reset the counter along with the drag on a drop.
-	    this.enterCounter = 0;
-
-	    this.setState({
-	      isDragActive: false,
-	      isDragReject: false
-	    });
-
-	    var droppedFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-	    var max = this.props.multiple ? droppedFiles.length : 1;
-	    var files = [];
-
-	    for (var i = 0; i < max; i++) {
-	      var file = droppedFiles[i];
-	      file.preview = URL.createObjectURL(file);
-	      files.push(file);
-	    }
-
-	    if (this.props.onDrop) {
-	      this.props.onDrop(files, e);
-	    }
-
-	    if (this.allFilesAccepted(files)) {
-	      if (this.props.onDropAccepted) {
-	        this.props.onDropAccepted(files, e);
-	      }
-	    } else {
-	      if (this.props.onDropRejected) {
-	        this.props.onDropRejected(files, e);
-	      }
-	    }
-	  },
-
-	  onClick: function onClick() {
-	    if (!this.props.disableClick) {
-	      this.open();
-	    }
-	  },
-
-	  open: function open() {
-	    var fileInput = React.findDOMNode(this.refs.fileInput);
-	    fileInput.value = null;
-	    fileInput.click();
-	  },
-
-	  render: function render() {
-
-	    var className;
-	    if (this.props.className) {
-	      className = this.props.className;
-	      if (this.state.isDragActive && this.props.activeClassName) {
-	        className += ' ' + this.props.activeClassName;
-	      };
-	      if (this.state.isDragReject && this.props.rejectClassName) {
-	        className += ' ' + this.props.rejectClassName;
-	      };
-	    };
-
-	    var style, activeStyle;
-	    if (this.props.style || this.props.activeStyle) {
-	      if (this.props.style) {
-	        style = this.props.style;
-	      }
-	      if (this.props.activeStyle) {
-	        activeStyle = this.props.activeStyle;
-	      }
-	    } else if (!className) {
-	      style = {
-	        width: 200,
-	        height: 200,
-	        borderWidth: 2,
-	        borderColor: '#666',
-	        borderStyle: 'dashed',
-	        borderRadius: 5
-	      };
-	      activeStyle = {
-	        borderStyle: 'solid',
-	        backgroundColor: '#eee'
-	      };
-	    }
-
-	    var appliedStyle;
-	    if (activeStyle && this.state.isDragActive) {
-	      appliedStyle = _extends({}, style, activeStyle);
-	    } else {
-	      appliedStyle = _extends({}, style);
-	    };
-
-	    return React.createElement(
-	      'div',
-	      {
-	        className: className,
-	        style: appliedStyle,
-	        onClick: this.onClick,
-	        onDragEnter: this.onDragEnter,
-	        onDragOver: this.onDragOver,
-	        onDragLeave: this.onDragLeave,
-	        onDrop: this.onDrop
-	      },
-	      this.props.children,
-	      React.createElement('input', {
-	        type: 'file',
-	        ref: 'fileInput',
-	        style: { display: 'none' },
-	        multiple: this.props.multiple,
-	        accept: this.props.accept,
-	        onChange: this.onDrop
-	      })
-	    );
-	  }
-
-	});
-
-	module.exports = Dropzone;
-
-
-/***/ },
 /* 257 */
-/***/ function(module, exports) {
-
-	module.exports=function(t){function n(e){if(r[e])return r[e].exports;var o=r[e]={exports:{},id:e,loaded:!1};return t[e].call(o.exports,o,o.exports,n),o.loaded=!0,o.exports}var r={};return n.m=t,n.c=r,n.p="",n(0)}([function(t,n,r){"use strict";n.__esModule=!0,r(8),r(9),n["default"]=function(t,n){if(t&&n){var r=function(){var r=n.split(","),e=t.name||"",o=t.type||"",i=o.replace(/\/.*$/,"");return{v:r.some(function(t){var n=t.trim();return"."===n.charAt(0)?e.toLowerCase().endsWith(n.toLowerCase()):/\/\*$/.test(n)?i===n.replace(/\/.*$/,""):o===n})}}();if("object"==typeof r)return r.v}return!0},t.exports=n["default"]},function(t,n){var r=t.exports={version:"1.2.2"};"number"==typeof __e&&(__e=r)},function(t,n){var r=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=r)},function(t,n,r){var e=r(2),o=r(1),i=r(4),u=r(19),c="prototype",f=function(t,n){return function(){return t.apply(n,arguments)}},s=function(t,n,r){var a,p,l,d,y=t&s.G,h=t&s.P,v=y?e:t&s.S?e[n]||(e[n]={}):(e[n]||{})[c],x=y?o:o[n]||(o[n]={});y&&(r=n);for(a in r)p=!(t&s.F)&&v&&a in v,l=(p?v:r)[a],d=t&s.B&&p?f(l,e):h&&"function"==typeof l?f(Function.call,l):l,v&&!p&&u(v,a,l),x[a]!=l&&i(x,a,d),h&&((x[c]||(x[c]={}))[a]=l)};e.core=o,s.F=1,s.G=2,s.S=4,s.P=8,s.B=16,s.W=32,t.exports=s},function(t,n,r){var e=r(5),o=r(18);t.exports=r(22)?function(t,n,r){return e.setDesc(t,n,o(1,r))}:function(t,n,r){return t[n]=r,t}},function(t,n){var r=Object;t.exports={create:r.create,getProto:r.getPrototypeOf,isEnum:{}.propertyIsEnumerable,getDesc:r.getOwnPropertyDescriptor,setDesc:r.defineProperty,setDescs:r.defineProperties,getKeys:r.keys,getNames:r.getOwnPropertyNames,getSymbols:r.getOwnPropertySymbols,each:[].forEach}},function(t,n){var r=0,e=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++r+e).toString(36))}},function(t,n,r){var e=r(20)("wks"),o=r(2).Symbol;t.exports=function(t){return e[t]||(e[t]=o&&o[t]||(o||r(6))("Symbol."+t))}},function(t,n,r){r(26),t.exports=r(1).Array.some},function(t,n,r){r(25),t.exports=r(1).String.endsWith},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n){var r={}.toString;t.exports=function(t){return r.call(t).slice(8,-1)}},function(t,n,r){var e=r(10);t.exports=function(t,n,r){if(e(t),void 0===n)return t;switch(r){case 1:return function(r){return t.call(n,r)};case 2:return function(r,e){return t.call(n,r,e)};case 3:return function(r,e,o){return t.call(n,r,e,o)}}return function(){return t.apply(n,arguments)}}},function(t,n){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n,r){t.exports=function(t){var n=/./;try{"/./"[t](n)}catch(e){try{return n[r(7)("match")]=!1,!"/./"[t](n)}catch(o){}}return!0}},function(t,n){t.exports=function(t){try{return!!t()}catch(n){return!0}}},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n,r){var e=r(16),o=r(11),i=r(7)("match");t.exports=function(t){var n;return e(t)&&(void 0!==(n=t[i])?!!n:"RegExp"==o(t))}},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n,r){var e=r(2),o=r(4),i=r(6)("src"),u="toString",c=Function[u],f=(""+c).split(u);r(1).inspectSource=function(t){return c.call(t)},(t.exports=function(t,n,r,u){"function"==typeof r&&(o(r,i,t[n]?""+t[n]:f.join(String(n))),"name"in r||(r.name=n)),t===e?t[n]=r:(u||delete t[n],o(t,n,r))})(Function.prototype,u,function(){return"function"==typeof this&&this[i]||c.call(this)})},function(t,n,r){var e=r(2),o="__core-js_shared__",i=e[o]||(e[o]={});t.exports=function(t){return i[t]||(i[t]={})}},function(t,n,r){var e=r(17),o=r(13);t.exports=function(t,n,r){if(e(n))throw TypeError("String#"+r+" doesn't accept regex!");return String(o(t))}},function(t,n,r){t.exports=!r(15)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n){var r=Math.ceil,e=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?e:r)(t)}},function(t,n,r){var e=r(23),o=Math.min;t.exports=function(t){return t>0?o(e(t),9007199254740991):0}},function(t,n,r){"use strict";var e=r(3),o=r(24),i=r(21),u="endsWith",c=""[u];e(e.P+e.F*r(14)(u),"String",{endsWith:function(t){var n=i(this,t,u),r=arguments,e=r.length>1?r[1]:void 0,f=o(n.length),s=void 0===e?f:Math.min(o(e),f),a=String(t);return c?c.call(n,a,s):n.slice(s-a.length,s)===a}})},function(t,n,r){var e=r(5),o=r(3),i=r(1).Array||Array,u={},c=function(t,n){e.each.call(t.split(","),function(t){void 0==n&&t in i?u[t]=i[t]:t in[]&&(u[t]=r(12)(Function.call,[][t],n))})};c("pop,reverse,shift,keys,values,entries",1),c("indexOf,every,some,forEach,map,filter,find,findIndex,includes",3),c("join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill"),o(o.S,"Array",u)}]);
-
-/***/ },
-/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1),
-	    ReactDOM = __webpack_require__(32),
-	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(255),
-	    SessionStore = __webpack_require__(259),
-	    ModalStyle = __webpack_require__(277),
-	    ClientActions = __webpack_require__(247),
-	    Modal = __webpack_require__(166);
-
-	var NavBar = React.createClass({
-	  displayName: 'NavBar',
-
-	  getInitialState: function () {
-	    return {
-	      modalIsOpen: false,
-	      signUpClicked: false,
-	      logInClicked: false,
-	      current_user: SessionStore.currentUser()
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    SessionStore.addListener(this.onChange);
-	  },
-
-	  onChange: function () {
-	    this.setState({ current_user: SessionStore.currentUser() });
-	  },
-
-	  logoutUser: function () {
-	    ClientActions.logoutUser();
-	  },
-
-	  openModal: function (event) {
-	    var state = {};
-	    if (event.target.id === "signUpClicked") {
-	      this.setState({ modalIsOpen: true, signUpClicked: true });
-	    } else if (event.target.id === "logInClicked") {
-	      this.setState({ modalIsOpen: true, logInClicked: true });
-	    }
-	  },
-
-	  closeModal: function () {
-	    this.setState({ modalIsOpen: false, logInClicked: false, signUpClicked: false });
-	  },
-
-	  render: function () {
-	    var modalContents = null;
-	    if (this.state.signUpClicked === true) {
-	      modalContents = React.createElement(Signup, { parent: this });
-	    } else if (this.state.logInClicked === true) {
-	      modalContents = React.createElement(Login, { parent: this });
-	    }
-
-	    var navbarContents = React.createElement(
-	      'ul',
-	      null,
-	      React.createElement(
-	        'li',
-	        { className: 'navbar_buttons' },
-	        React.createElement(
-	          'button',
-	          { onClick: this.openModal, id: 'signUpClicked' },
-	          'Sign Up'
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'navbar_buttons' },
-	        React.createElement(
-	          'button',
-	          { onClick: this.openModal, id: 'logInClicked' },
-	          'Login'
-	        )
-	      )
-	    );
-
-	    if (this.state.current_user !== null) {
-	      navbarContents = React.createElement(
-	        'ul',
-	        null,
-	        React.createElement(
-	          'li',
-	          { className: 'navbar_buttons' },
-	          React.createElement(
-	            'button',
-	            { onClick: this.logoutUser, id: 'logoutClicked' },
-	            'Logout'
-	          )
-	        )
-	      );
-	    }
-
-	    return React.createElement(
-	      'ul',
-	      { className: 'navbar' },
-	      navbarContents,
-	      React.createElement(
-	        Modal,
-	        {
-	          isOpen: this.state.modalIsOpen,
-	          onRequestClose: this.closeModal,
-	          style: ModalStyle },
-	        React.createElement(
-	          'button',
-	          { onClick: this.closeModal },
-	          'close'
-	        ),
-	        modalContents
-	      )
-	    );
-	  }
-	});
-
-	module.exports = NavBar;
-
-/***/ },
-/* 259 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(260).Store;
-	var Dispatcher = __webpack_require__(250);
-	var UserConstants = __webpack_require__(254);
+	var Store = __webpack_require__(258).Store;
+	var Dispatcher = __webpack_require__(251);
+	var UserConstants = __webpack_require__(275);
 
 	var SessionStore = new Store(Dispatcher);
 
@@ -28385,9 +28079,11 @@
 	};
 
 	var loginUser = function (user) {
-	  _currentUser = user;
-	  _loggedIn = true;
-	  SessionStore.__emitChange();
+	  if (user.message !== "No Current User") {
+	    _currentUser = user;
+	    _loggedIn = true;
+	    SessionStore.__emitChange();
+	  }
 	};
 
 	var logoutUser = function () {
@@ -28428,13 +28124,16 @@
 	    case UserConstants.ERROR_RECEIVED:
 	      recieveError(payload.error);
 	      break;
+	    case UserConstants.LOGGEDIN_RESPONSE:
+	      loginUser(payload.user);
+	      break;
 	  }
 	};
 
 	module.exports = SessionStore;
 
 /***/ },
-/* 260 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -28446,15 +28145,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Container = __webpack_require__(261);
-	module.exports.MapStore = __webpack_require__(264);
-	module.exports.Mixin = __webpack_require__(276);
-	module.exports.ReduceStore = __webpack_require__(265);
-	module.exports.Store = __webpack_require__(266);
+	module.exports.Container = __webpack_require__(259);
+	module.exports.MapStore = __webpack_require__(262);
+	module.exports.Mixin = __webpack_require__(274);
+	module.exports.ReduceStore = __webpack_require__(263);
+	module.exports.Store = __webpack_require__(264);
 
 
 /***/ },
-/* 261 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28476,10 +28175,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxStoreGroup = __webpack_require__(262);
+	var FluxStoreGroup = __webpack_require__(260);
 
-	var invariant = __webpack_require__(253);
-	var shallowEqual = __webpack_require__(263);
+	var invariant = __webpack_require__(254);
+	var shallowEqual = __webpack_require__(261);
 
 	var DEFAULT_OPTIONS = {
 	  pure: true,
@@ -28637,7 +28336,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 262 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28656,7 +28355,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	/**
 	 * FluxStoreGroup allows you to execute a callback on every dispatch after
@@ -28718,7 +28417,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 263 */
+/* 261 */
 /***/ function(module, exports) {
 
 	/**
@@ -28773,7 +28472,7 @@
 	module.exports = shallowEqual;
 
 /***/ },
-/* 264 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28794,10 +28493,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxReduceStore = __webpack_require__(265);
-	var Immutable = __webpack_require__(275);
+	var FluxReduceStore = __webpack_require__(263);
+	var Immutable = __webpack_require__(273);
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	/**
 	 * This is a simple store. It allows caching key value pairs. An implementation
@@ -28923,7 +28622,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 265 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28944,10 +28643,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var FluxStore = __webpack_require__(266);
+	var FluxStore = __webpack_require__(264);
 
-	var abstractMethod = __webpack_require__(274);
-	var invariant = __webpack_require__(253);
+	var abstractMethod = __webpack_require__(272);
+	var invariant = __webpack_require__(254);
 
 	var FluxReduceStore = (function (_FluxStore) {
 	  _inherits(FluxReduceStore, _FluxStore);
@@ -29030,7 +28729,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 266 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29049,11 +28748,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _require = __webpack_require__(267);
+	var _require = __webpack_require__(265);
 
 	var EventEmitter = _require.EventEmitter;
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	/**
 	 * This class should be extended by the stores in your application, like so:
@@ -29213,7 +28912,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 267 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29226,14 +28925,14 @@
 	 */
 
 	var fbemitter = {
-	  EventEmitter: __webpack_require__(268)
+	  EventEmitter: __webpack_require__(266)
 	};
 
 	module.exports = fbemitter;
 
 
 /***/ },
-/* 268 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29252,11 +28951,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var EmitterSubscription = __webpack_require__(269);
-	var EventSubscriptionVendor = __webpack_require__(271);
+	var EmitterSubscription = __webpack_require__(267);
+	var EventSubscriptionVendor = __webpack_require__(269);
 
-	var emptyFunction = __webpack_require__(273);
-	var invariant = __webpack_require__(272);
+	var emptyFunction = __webpack_require__(271);
+	var invariant = __webpack_require__(270);
 
 	/**
 	 * @class BaseEventEmitter
@@ -29430,7 +29129,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 269 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29451,7 +29150,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var EventSubscription = __webpack_require__(270);
+	var EventSubscription = __webpack_require__(268);
 
 	/**
 	 * EmitterSubscription represents a subscription with listener and context data.
@@ -29483,7 +29182,7 @@
 	module.exports = EmitterSubscription;
 
 /***/ },
-/* 270 */
+/* 268 */
 /***/ function(module, exports) {
 
 	/**
@@ -29537,7 +29236,7 @@
 	module.exports = EventSubscription;
 
 /***/ },
-/* 271 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29556,7 +29255,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(272);
+	var invariant = __webpack_require__(270);
 
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -29646,7 +29345,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 272 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29701,7 +29400,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 273 */
+/* 271 */
 /***/ function(module, exports) {
 
 	/**
@@ -29743,7 +29442,7 @@
 	module.exports = emptyFunction;
 
 /***/ },
-/* 274 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29760,7 +29459,7 @@
 
 	'use strict';
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	function abstractMethod(className, methodName) {
 	   true ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Subclasses of %s must override %s() with their own implementation.', className, methodName) : invariant(false) : undefined;
@@ -29770,7 +29469,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 275 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34754,7 +34453,7 @@
 	}));
 
 /***/ },
-/* 276 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -34771,9 +34470,9 @@
 
 	'use strict';
 
-	var FluxStoreGroup = __webpack_require__(262);
+	var FluxStoreGroup = __webpack_require__(260);
 
-	var invariant = __webpack_require__(253);
+	var invariant = __webpack_require__(254);
 
 	/**
 	 * `FluxContainer` should be preferred over this mixin, but it requires using
@@ -34877,7 +34576,369 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
+/* 275 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  LOGIN_USER: "LOGIN_USER",
+	  ERROR_RECEIVED: "RECEIVE_ERROR",
+	  LOGOUT_USER: "LOGOUT_USER",
+	  DESTROY_USER: "DESTROY_USER",
+	  CREATE_USER: "CREATE_USER",
+	  LOGGEDIN_RESPONSE: "LOGGEDIN_RESPONSE"
+	};
+
+/***/ },
+/* 276 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(1);
+	var accept = __webpack_require__(277);
+
+	var Dropzone = React.createClass({
+	  displayName: 'Dropzone',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      disableClick: false,
+	      multiple: true
+	    };
+	  },
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      isDragActive: false
+	    };
+	  },
+
+	  propTypes: {
+	    onDrop: React.PropTypes.func,
+	    onDropAccepted: React.PropTypes.func,
+	    onDropRejected: React.PropTypes.func,
+	    onDragEnter: React.PropTypes.func,
+	    onDragLeave: React.PropTypes.func,
+
+	    style: React.PropTypes.object,
+	    activeStyle: React.PropTypes.object,
+	    className: React.PropTypes.string,
+	    activeClassName: React.PropTypes.string,
+	    rejectClassName: React.PropTypes.string,
+
+	    disableClick: React.PropTypes.bool,
+	    multiple: React.PropTypes.bool,
+	    accept: React.PropTypes.string
+	  },
+
+	  componentDidMount: function componentDidMount() {
+	    this.enterCounter = 0;
+	  },
+
+	  allFilesAccepted: function allFilesAccepted(files) {
+	    var _this = this;
+
+	    return files.every(function (file) {
+	      return accept(file, _this.props.accept);
+	    });
+	  },
+
+	  onDragEnter: function onDragEnter(e) {
+	    e.preventDefault();
+
+	    // Count the dropzone and any children that are entered.
+	    ++this.enterCounter;
+
+	    // This is tricky. During the drag even the dataTransfer.files is null
+	    // But Chrome implements some drag store, which is accesible via dataTransfer.items
+	    var dataTransferItems = e.dataTransfer && e.dataTransfer.items ? e.dataTransfer.items : [];
+
+	    // Now we need to convert the DataTransferList to Array
+	    var itemsArray = Array.prototype.slice.call(dataTransferItems);
+	    var allFilesAccepted = this.allFilesAccepted(itemsArray);
+
+	    this.setState({
+	      isDragActive: allFilesAccepted,
+	      isDragReject: !allFilesAccepted
+	    });
+
+	    if (this.props.onDragEnter) {
+	      this.props.onDragEnter(e);
+	    }
+	  },
+
+	  onDragOver: function onDragOver(e) {
+	    e.preventDefault();
+	  },
+
+	  onDragLeave: function onDragLeave(e) {
+	    e.preventDefault();
+
+	    // Only deactivate once the dropzone and all children was left.
+	    if (--this.enterCounter > 0) {
+	      return;
+	    }
+
+	    this.setState({
+	      isDragActive: false,
+	      isDragReject: false
+	    });
+
+	    if (this.props.onDragLeave) {
+	      this.props.onDragLeave(e);
+	    }
+	  },
+
+	  onDrop: function onDrop(e) {
+	    e.preventDefault();
+
+	    // Reset the counter along with the drag on a drop.
+	    this.enterCounter = 0;
+
+	    this.setState({
+	      isDragActive: false,
+	      isDragReject: false
+	    });
+
+	    var droppedFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+	    var max = this.props.multiple ? droppedFiles.length : 1;
+	    var files = [];
+
+	    for (var i = 0; i < max; i++) {
+	      var file = droppedFiles[i];
+	      file.preview = URL.createObjectURL(file);
+	      files.push(file);
+	    }
+
+	    if (this.props.onDrop) {
+	      this.props.onDrop(files, e);
+	    }
+
+	    if (this.allFilesAccepted(files)) {
+	      if (this.props.onDropAccepted) {
+	        this.props.onDropAccepted(files, e);
+	      }
+	    } else {
+	      if (this.props.onDropRejected) {
+	        this.props.onDropRejected(files, e);
+	      }
+	    }
+	  },
+
+	  onClick: function onClick() {
+	    if (!this.props.disableClick) {
+	      this.open();
+	    }
+	  },
+
+	  open: function open() {
+	    var fileInput = React.findDOMNode(this.refs.fileInput);
+	    fileInput.value = null;
+	    fileInput.click();
+	  },
+
+	  render: function render() {
+
+	    var className;
+	    if (this.props.className) {
+	      className = this.props.className;
+	      if (this.state.isDragActive && this.props.activeClassName) {
+	        className += ' ' + this.props.activeClassName;
+	      };
+	      if (this.state.isDragReject && this.props.rejectClassName) {
+	        className += ' ' + this.props.rejectClassName;
+	      };
+	    };
+
+	    var style, activeStyle;
+	    if (this.props.style || this.props.activeStyle) {
+	      if (this.props.style) {
+	        style = this.props.style;
+	      }
+	      if (this.props.activeStyle) {
+	        activeStyle = this.props.activeStyle;
+	      }
+	    } else if (!className) {
+	      style = {
+	        width: 200,
+	        height: 200,
+	        borderWidth: 2,
+	        borderColor: '#666',
+	        borderStyle: 'dashed',
+	        borderRadius: 5
+	      };
+	      activeStyle = {
+	        borderStyle: 'solid',
+	        backgroundColor: '#eee'
+	      };
+	    }
+
+	    var appliedStyle;
+	    if (activeStyle && this.state.isDragActive) {
+	      appliedStyle = _extends({}, style, activeStyle);
+	    } else {
+	      appliedStyle = _extends({}, style);
+	    };
+
+	    return React.createElement(
+	      'div',
+	      {
+	        className: className,
+	        style: appliedStyle,
+	        onClick: this.onClick,
+	        onDragEnter: this.onDragEnter,
+	        onDragOver: this.onDragOver,
+	        onDragLeave: this.onDragLeave,
+	        onDrop: this.onDrop
+	      },
+	      this.props.children,
+	      React.createElement('input', {
+	        type: 'file',
+	        ref: 'fileInput',
+	        style: { display: 'none' },
+	        multiple: this.props.multiple,
+	        accept: this.props.accept,
+	        onChange: this.onDrop
+	      })
+	    );
+	  }
+
+	});
+
+	module.exports = Dropzone;
+
+
+/***/ },
 /* 277 */
+/***/ function(module, exports) {
+
+	module.exports=function(t){function n(e){if(r[e])return r[e].exports;var o=r[e]={exports:{},id:e,loaded:!1};return t[e].call(o.exports,o,o.exports,n),o.loaded=!0,o.exports}var r={};return n.m=t,n.c=r,n.p="",n(0)}([function(t,n,r){"use strict";n.__esModule=!0,r(8),r(9),n["default"]=function(t,n){if(t&&n){var r=function(){var r=n.split(","),e=t.name||"",o=t.type||"",i=o.replace(/\/.*$/,"");return{v:r.some(function(t){var n=t.trim();return"."===n.charAt(0)?e.toLowerCase().endsWith(n.toLowerCase()):/\/\*$/.test(n)?i===n.replace(/\/.*$/,""):o===n})}}();if("object"==typeof r)return r.v}return!0},t.exports=n["default"]},function(t,n){var r=t.exports={version:"1.2.2"};"number"==typeof __e&&(__e=r)},function(t,n){var r=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=r)},function(t,n,r){var e=r(2),o=r(1),i=r(4),u=r(19),c="prototype",f=function(t,n){return function(){return t.apply(n,arguments)}},s=function(t,n,r){var a,p,l,d,y=t&s.G,h=t&s.P,v=y?e:t&s.S?e[n]||(e[n]={}):(e[n]||{})[c],x=y?o:o[n]||(o[n]={});y&&(r=n);for(a in r)p=!(t&s.F)&&v&&a in v,l=(p?v:r)[a],d=t&s.B&&p?f(l,e):h&&"function"==typeof l?f(Function.call,l):l,v&&!p&&u(v,a,l),x[a]!=l&&i(x,a,d),h&&((x[c]||(x[c]={}))[a]=l)};e.core=o,s.F=1,s.G=2,s.S=4,s.P=8,s.B=16,s.W=32,t.exports=s},function(t,n,r){var e=r(5),o=r(18);t.exports=r(22)?function(t,n,r){return e.setDesc(t,n,o(1,r))}:function(t,n,r){return t[n]=r,t}},function(t,n){var r=Object;t.exports={create:r.create,getProto:r.getPrototypeOf,isEnum:{}.propertyIsEnumerable,getDesc:r.getOwnPropertyDescriptor,setDesc:r.defineProperty,setDescs:r.defineProperties,getKeys:r.keys,getNames:r.getOwnPropertyNames,getSymbols:r.getOwnPropertySymbols,each:[].forEach}},function(t,n){var r=0,e=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++r+e).toString(36))}},function(t,n,r){var e=r(20)("wks"),o=r(2).Symbol;t.exports=function(t){return e[t]||(e[t]=o&&o[t]||(o||r(6))("Symbol."+t))}},function(t,n,r){r(26),t.exports=r(1).Array.some},function(t,n,r){r(25),t.exports=r(1).String.endsWith},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n){var r={}.toString;t.exports=function(t){return r.call(t).slice(8,-1)}},function(t,n,r){var e=r(10);t.exports=function(t,n,r){if(e(t),void 0===n)return t;switch(r){case 1:return function(r){return t.call(n,r)};case 2:return function(r,e){return t.call(n,r,e)};case 3:return function(r,e,o){return t.call(n,r,e,o)}}return function(){return t.apply(n,arguments)}}},function(t,n){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n,r){t.exports=function(t){var n=/./;try{"/./"[t](n)}catch(e){try{return n[r(7)("match")]=!1,!"/./"[t](n)}catch(o){}}return!0}},function(t,n){t.exports=function(t){try{return!!t()}catch(n){return!0}}},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n,r){var e=r(16),o=r(11),i=r(7)("match");t.exports=function(t){var n;return e(t)&&(void 0!==(n=t[i])?!!n:"RegExp"==o(t))}},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n,r){var e=r(2),o=r(4),i=r(6)("src"),u="toString",c=Function[u],f=(""+c).split(u);r(1).inspectSource=function(t){return c.call(t)},(t.exports=function(t,n,r,u){"function"==typeof r&&(o(r,i,t[n]?""+t[n]:f.join(String(n))),"name"in r||(r.name=n)),t===e?t[n]=r:(u||delete t[n],o(t,n,r))})(Function.prototype,u,function(){return"function"==typeof this&&this[i]||c.call(this)})},function(t,n,r){var e=r(2),o="__core-js_shared__",i=e[o]||(e[o]={});t.exports=function(t){return i[t]||(i[t]={})}},function(t,n,r){var e=r(17),o=r(13);t.exports=function(t,n,r){if(e(n))throw TypeError("String#"+r+" doesn't accept regex!");return String(o(t))}},function(t,n,r){t.exports=!r(15)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n){var r=Math.ceil,e=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?e:r)(t)}},function(t,n,r){var e=r(23),o=Math.min;t.exports=function(t){return t>0?o(e(t),9007199254740991):0}},function(t,n,r){"use strict";var e=r(3),o=r(24),i=r(21),u="endsWith",c=""[u];e(e.P+e.F*r(14)(u),"String",{endsWith:function(t){var n=i(this,t,u),r=arguments,e=r.length>1?r[1]:void 0,f=o(n.length),s=void 0===e?f:Math.min(o(e),f),a=String(t);return c?c.call(n,a,s):n.slice(s-a.length,s)===a}})},function(t,n,r){var e=r(5),o=r(3),i=r(1).Array||Array,u={},c=function(t,n){e.each.call(t.split(","),function(t){void 0==n&&t in i?u[t]=i[t]:t in[]&&(u[t]=r(12)(Function.call,[][t],n))})};c("pop,reverse,shift,keys,values,entries",1),c("indexOf,every,some,forEach,map,filter,find,findIndex,includes",3),c("join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill"),o(o.S,"Array",u)}]);
+
+/***/ },
+/* 278 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    ReactDOM = __webpack_require__(32),
+	    Login = __webpack_require__(246),
+	    Signup = __webpack_require__(256),
+	    SessionStore = __webpack_require__(257),
+	    ModalStyle = __webpack_require__(279),
+	    ClientActions = __webpack_require__(247),
+	    Modal = __webpack_require__(166);
+
+	var NavBar = React.createClass({
+	  displayName: 'NavBar',
+
+	  getInitialState: function () {
+	    return {
+	      modalIsOpen: false,
+	      signUpClicked: false,
+	      logInClicked: false,
+	      current_user: SessionStore.currentUser()
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    SessionStore.addListener(this.onChange);
+	    ClientActions.checkLoggedIn();
+	  },
+
+	  onChange: function () {
+	    this.setState({ current_user: SessionStore.currentUser() });
+	  },
+
+	  logoutUser: function () {
+	    ClientActions.logoutUser();
+	  },
+
+	  openModal: function (event) {
+	    var state = {};
+	    if (event.target.id === "signUpClicked") {
+	      this.setState({ modalIsOpen: true, signUpClicked: true });
+	    } else if (event.target.id === "logInClicked") {
+	      this.setState({ modalIsOpen: true, logInClicked: true });
+	    }
+	  },
+
+	  closeModal: function () {
+	    this.setState({ modalIsOpen: false, logInClicked: false, signUpClicked: false });
+	  },
+
+	  render: function () {
+	    var modalContents = null;
+	    if (this.state.signUpClicked === true) {
+	      modalContents = React.createElement(Signup, { parent: this });
+	    } else if (this.state.logInClicked === true) {
+	      modalContents = React.createElement(Login, { parent: this });
+	    }
+
+	    var navbarContents = React.createElement(
+	      'ul',
+	      null,
+	      React.createElement(
+	        'li',
+	        { className: 'navbar_buttons' },
+	        React.createElement(
+	          'button',
+	          { onClick: this.openModal, id: 'signUpClicked' },
+	          'Sign Up'
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'navbar_buttons' },
+	        React.createElement(
+	          'button',
+	          { onClick: this.openModal, id: 'logInClicked' },
+	          'Login'
+	        )
+	      )
+	    );
+
+	    if (this.state.current_user !== null) {
+	      navbarContents = React.createElement(
+	        'ul',
+	        null,
+	        React.createElement(
+	          'li',
+	          { className: 'navbar_buttons' },
+	          React.createElement(
+	            'button',
+	            { onClick: this.logoutUser, id: 'logoutClicked' },
+	            'Logout'
+	          )
+	        )
+	      );
+	    }
+
+	    return React.createElement(
+	      'ul',
+	      { className: 'navbar' },
+	      navbarContents,
+	      React.createElement(
+	        Modal,
+	        {
+	          isOpen: this.state.modalIsOpen,
+	          onRequestClose: this.closeModal,
+	          style: ModalStyle },
+	        React.createElement(
+	          'button',
+	          { onClick: this.closeModal },
+	          'close'
+	        ),
+	        modalContents
+	      )
+	    );
+	  }
+	});
+
+	module.exports = NavBar;
+
+/***/ },
+/* 279 */
 /***/ function(module, exports) {
 
 	CONTENT_STYLE = {
@@ -34891,10 +34952,10 @@
 	  },
 	  content: {
 	    position: 'absolute',
-	    top: '200px',
-	    left: '200px',
-	    right: '200px',
-	    bottom: '300px',
+	    top: '100px',
+	    left: '150px',
+	    right: '150px',
+	    bottom: '100px',
 	    border: '1px solid black',
 	    background: '#fff',
 	    overflow: 'auto',
@@ -34907,6 +34968,172 @@
 	};
 
 	module.exports = CONTENT_STYLE;
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var TrackIndexItem = __webpack_require__(281);
+	var TrackStore = __webpack_require__(282);
+
+	var TrackIndex = React.createClass({
+	  displayName: 'TrackIndex',
+
+	  getInitialState: function () {
+	    return {
+	      tracks: TrackStore.all()
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    TrackStore.addListener(this.onChange);
+	    ClientActions.fetchTracks();
+	  },
+
+	  onChange: function () {
+	    this.setState({ tracks: TrackStore.all() });
+	  },
+
+	  render: function () {
+	    var allTracks = this.state.tracks.map(function (track) {
+	      console.log(track.image_url);
+	      return React.createElement(TrackIndexItem, { track: track, key: track.id });
+	    });
+
+	    return React.createElement(
+	      'ul',
+	      { className: 'trackList' },
+	      allTracks
+	    );
+	  }
+	});
+
+	module.exports = TrackIndex;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var TrackStore = __webpack_require__(282);
+
+	var TrackIndexItem = React.createClass({
+	  displayName: 'TrackIndexItem',
+
+
+	  render: function () {
+	    var track = this.props.track;
+
+	    return React.createElement(
+	      'ul',
+	      { className: 'track' },
+	      React.createElement(
+	        'li',
+	        { className: 'trackTitle' },
+	        track.title
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'trackImage' },
+	        React.createElement('img', { src: track.image_url })
+	      )
+	    );
+	  }
+	});
+
+	module.exports = TrackIndexItem;
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(258).Store;
+	var Dispatcher = __webpack_require__(251);
+	var TrackConstants = __webpack_require__(255);
+	var TrackStore = new Store(Dispatcher);
+
+	_tracks = {};
+
+	TrackStore.all = function () {
+	  var tracks = [];
+	  for (var id in _tracks) {
+	    tracks.push(_tracks[id]);
+	  }
+	  return tracks;
+	};
+
+	TrackStore.find = function (id) {
+	  return _tracks[id];
+	};
+
+	var resetTracks = function (tracks) {
+	  _tracks = {};
+	  tracks.forEach(function (track) {
+	    _tracks[track.id] = track;
+	  });
+	};
+
+	var resetTrack = function (track) {
+	  _tracks[track.id] = track;
+	};
+
+	TrackStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case TrackConstants.GET_TRACKS:
+	      resetTracks(payload.tracks);
+	      break;
+	  }
+	  TrackStore.__emitChange();
+	};
+
+	module.exports = TrackStore;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(251);
+	var UserConstants = __webpack_require__(275);
+
+	module.exports = {
+
+	  loginUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGIN_USER,
+	      user: user
+	    });
+	  },
+
+	  logoutUser: function () {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGOUT_USER
+	    });
+	  },
+
+	  destroyUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.DESTROY_USER,
+	      user: user
+	    });
+	  },
+
+	  receiveError: function (error) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.RECEIVE_ERROR,
+	      error: error
+	    });
+	  },
+
+	  loggedInResponse: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGGEDIN_RESPONSE,
+	      user: user
+	    });
+	  }
+	};
 
 /***/ }
 /******/ ]);

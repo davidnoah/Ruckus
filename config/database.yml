@@ -78,8 +78,3 @@ test:
 #   production:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
-production:
-  <<: *default
-  database: Ruckus_production
-  username: Ruckus
-  password: <%= ENV['RUCKUS_DATABASE_PASSWORD'] %>

@@ -1,5 +1,6 @@
 var React = require('react');
 var ClientActions = require('../../actions/client_actions.js');
+var SessionStore = require('../../stores/session.js');
 var Dropzone = require('react-dropzone');
 
 var Signup = React.createClass({

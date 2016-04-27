@@ -1,8 +1,7 @@
 var Store = require('flux/utils').Store;
 var Dispatcher = require('../dispatcher/dispatcher.js');
 var TrackConstants = require('../constants/trackConstants.js');
-
-var TrackStore = new Store();
+var TrackStore = new Store(Dispatcher);
 
 _tracks = {};
 
@@ -35,5 +34,7 @@ TrackStore.__onDispatch = function(payload) {
       resetTracks(payload.tracks);
       break;
   }
-  TrackStore.emitChange();
+  TrackStore.__emitChange();
 };
+
+module.exports = TrackStore;

@@ -7,5 +7,5 @@ module.exports = {
       actionType: TrackConstants.GET_TRACKS,
       tracks: tracks
     });
-  },
+  }
 };

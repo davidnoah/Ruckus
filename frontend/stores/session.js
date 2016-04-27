@@ -13,9 +13,11 @@ SessionStore.currentUser = function() {
 };
 
 var loginUser = function(user) {
-  _currentUser = user;
-  _loggedIn = true;
-  SessionStore.__emitChange();
+    if (user.message !== "No Current User") {
+      _currentUser = user;
+      _loggedIn = true;
+      SessionStore.__emitChange();
+    }
 };
 
 var logoutUser = function() {
@@ -56,6 +58,9 @@ SessionStore.__onDispatch = function (payload) {
       break;
     case UserConstants.ERROR_RECEIVED:
       recieveError(payload.error);
+      break;
+    case UserConstants.LOGGEDIN_RESPONSE:
+      loginUser(payload.user);
       break;
   }
 

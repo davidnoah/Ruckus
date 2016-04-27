@@ -1,4 +1,5 @@
 class Api::SessionsController < ApplicationController
+
   def new
     @user = User.new
   end
@@ -18,7 +19,12 @@ class Api::SessionsController < ApplicationController
   end
 
   def show
-    @user = User.find(params[:id])
+    @user = current_user
+    if @user
+      render :show
+    else
+      render :errors
+    end
   end
 
   def destroy

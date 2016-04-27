@@ -4,7 +4,6 @@ var UserConstants = require('../constants/userConstants.js');
 module.exports = {
 
   loginUser: function (user) {
-    console.log("user logged in!");
     Dispatcher.dispatch({
       actionType: UserConstants.LOGIN_USER,
       user: user
@@ -28,6 +27,13 @@ module.exports = {
     Dispatcher.dispatch({
       actionType: UserConstants.RECEIVE_ERROR,
       error: error
+    });
+  },
+
+  loggedInResponse: function(user) {
+    Dispatcher.dispatch({
+      actionType: UserConstants.LOGGEDIN_RESPONSE,
+      user: user
     });
   }
 };

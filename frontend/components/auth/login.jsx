@@ -12,7 +12,6 @@ var Login = React.createClass({
       username: this.state.username,
       password: this.state.password
     }};
-    console.log("submitted");
     ClientActions.loginUser(user);
     this.props.parent.closeModal();
   },
@@ -25,31 +24,33 @@ var Login = React.createClass({
 
   render: function() {
     return (
-      <form className='login' onSubmit={this.handleSubmit}>
+      <div className="loginForm" >
+        <form className='login' onSubmit={this.handleSubmit}>
 
-        <label className="formLabel">
-          Username:
+          <label className="formLabel">
+            Username:
+            <br/>
+            <input type="text"
+              value={this.state.username}
+              onChange={this.onChange}
+              id="username" />
+          </label>
           <br/>
-          <input type="text"
-            value={this.state.username}
-            onChange={this.onChange}
-            id="username" />
-        </label>
-        <br/>
 
-        <label className="formLabel">
-          Password:
+          <label className="formLabel">
+            Password:
+            <br/>
+            <input type="password"
+              value={this.state.password}
+              onChange={this.onChange}
+              id="password"/>
+          </label>
           <br/>
-          <input type="password"
-            value={this.state.password}
-            onChange={this.onChange}
-            id="password"/>
-        </label>
-        <br/>
 
-        <input type="submit" value="Login"/>
+          <input type="submit" value="Login"/>
 
-      </form>
+        </form>
+      </div>
     );
   }
 });

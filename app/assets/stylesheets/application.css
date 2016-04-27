@@ -19,3 +19,15 @@
 
 @import url('./navbar.css');
 @import url('./modal.css');
+
+.tracklist {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.track {
+  display: inline-flex;
+  justify-content: center;
+  flex-direction: row;
+}

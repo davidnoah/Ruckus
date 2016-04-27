@@ -19,6 +19,7 @@ var NavBar = React.createClass({
 
   componentDidMount: function() {
     SessionStore.addListener(this.onChange);
+    ClientActions.checkLoggedIn();
   },
 
   onChange: function() {
