@@ -27599,7 +27599,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var TrackActions = __webpack_require__(250);
-	var TrackUpload = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../components/tracks/trackupload.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var TrackUpload = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../components/tracks/trackUpload.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	module.exports = {
 	  fetchAllTracks: function () {
@@ -35491,7 +35491,7 @@
 /* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
