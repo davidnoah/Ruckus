@@ -1,5 +1,5 @@
 var TrackActions = require('../actions/track_actions.js');
-var TrackUpload = require('../components/tracks/trackUpload.js');
+var TrackUpload = require('../components/tracks/trackUpload');
 
 module.exports = {
   fetchAllTracks: function() {
