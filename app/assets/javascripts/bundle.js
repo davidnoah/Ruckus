@@ -27520,8 +27520,15 @@
 	  },
 
 	  fetchPresignedUrl: function (prefix, filename) {
-	    console.log(filename);
 	    TrackUtil.getPresignedUrl({ prefix: prefix, filename: filename });
+	  },
+
+	  uploadToS3: function (presignedUrl, file) {
+	    TrackUtil.uploadToS3(presignedUrl, file);
+	  },
+
+	  clearUploadStore: function () {
+	    TrackActions.clearUploadStore();
 	  }
 	};
 
@@ -27554,7 +27561,6 @@
 	        UserActions.loginUser(user);
 	      },
 	      error: function (response) {
-	        console.log(response);
 	        UserActions.receiveError(response.responseText);
 	      }
 	    });
@@ -27582,7 +27588,6 @@
 	        UserActions.loginUser(user);
 	      },
 	      error: function (response) {
-	        console.log(response);
 	        UserActions.receiveError(response.responseText);
 	      }
 	    });
@@ -27594,6 +27599,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var TrackActions = __webpack_require__(250);
+	var TrackUpload = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../components/tracks/trackupload.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	module.exports = {
 	  fetchAllTracks: function () {
@@ -27612,9 +27618,23 @@
 	      method: 'GET',
 	      data: { prefix: data.prefix, filename: data.filename },
 	      success: function (url) {
-	        console.log(url);
+	        TrackActions.receivePresignedURL(url.presigned_url);
 	      }
 	    });
+	  },
+
+	  uploadToS3: function (presignedUrl, file) {
+	    console.log("uploadtoS3", presignedUrl, file);
+	    var xhr = new XMLHttpRequest();
+
+	    xhr.open('PUT', presignedUrl, true);
+
+	    xhr.onreadystatechange = function () {
+	      if (xhr.readyState === XMLHttpRequest.DONE) {
+	        TrackActions.receivePublicUrl(xhr);
+	      }
+	    };
+	    xhr.send(file);
 	  },
 
 	  createTrack: function (data) {
@@ -27643,7 +27663,28 @@
 	      actionType: TrackConstants.GET_TRACKS,
 	      tracks: tracks
 	    });
+	  },
+
+	  receivePresignedURL: function (presignedUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PRESIGNED_URL_RECEIEVED,
+	      presignedUrl: presignedUrl
+	    });
+	  },
+
+	  receivePublicUrl: function (publicUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PUBLIC_URL_RECEIVED,
+	      publicUrl: publicUrl
+	    });
+	  },
+
+	  clearUploadStore: function () {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.CLEAR_UPLOAD_STORE
+	    });
 	  }
+
 	};
 
 /***/ },
@@ -27966,7 +28007,10 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  GET_TRACKS: "GET_TRACKS"
+	  GET_TRACKS: "GET_TRACKS",
+	  PUBLIC_URL_RECEIVED: "PUBLIC_URL_RECEIVED",
+	  PRESIGNED_URL_RECEIEVED: "PRESIGNED_URL_RECEIEVED",
+	  CLEAR_UPLOAD_STORE: "CLEAR_UPLOAD_STORE"
 	};
 
 /***/ },
@@ -35028,7 +35072,6 @@
 
 	  render: function () {
 	    var allTracks = this.state.tracks.map(function (track) {
-	      console.log(track.image_url);
 	      return React.createElement(TrackIndexItem, { track: track, key: track.id });
 	    });
 
@@ -35178,16 +35221,42 @@
 
 	var React = __webpack_require__(1),
 	    FileInput = __webpack_require__(285),
+	    UploadStore = __webpack_require__(302),
 	    ClientActions = __webpack_require__(247);
 
 	var TrackUpload = React.createClass({
 	  displayName: 'TrackUpload',
 
+	  getInitialState: function () {
+	    return {
+	      audioUrl: "",
+	      presignedAudioUrl: ""
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    ClientActions.clearUploadStore();
+	    UploadStore.addListener(this.onChange);
+	  },
+
+	  onChange: function () {
+	    if (typeof this.state.presigned_url === "string") {}
+	    this.setState({
+	      audioUrl: UploadStore.getPublicAudioUrl(),
+	      presignedAudioUrl: UploadStore.getPresignedAudioUrl()
+	    });
+	  },
 
 	  handleUpload: function (event) {
 	    event.preventDefault();
 	    var file = event.target.files[0];
-	    ClientActions.fetchPresignedUrl('audio/tracks/', file.name);
+	    ClientActions.fetchPresignedUrl('audio/tracks/', file.name, this.handleDirectUpload);
+	    debugger;
+	    this.handleDirectUpload(this.state.presignedUrl, file);
+	  },
+
+	  handleDirectUpload: function (presigned_url, file) {
+	    ClientActions.uploadToS3(presigned_url, file);
 	  },
 
 	  render: function () {
@@ -35422,7 +35491,7 @@
 /* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -37996,6 +38065,57 @@
 	FilePlayer.displayName = 'FilePlayer';
 	exports.default = FilePlayer;
 	module.exports = exports['default'];
+
+/***/ },
+/* 302 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(258).Store;
+	var Dispatcher = __webpack_require__(251);
+	var TrackConstants = __webpack_require__(255);
+
+	var _publicAudioUrl = null;
+	var _presignedAudioUrl = null;
+
+	var UploadStore = new Store(Dispatcher);
+
+	UploadStore.getPublicAudioUrl = function () {
+	  return _publicAudioUrl;
+	};
+
+	UploadStore.getPresignedAudioUrl = function () {
+	  return _presignedAudioUrl;
+	};
+
+	var clearStore = function () {
+	  _presignedAudioUrl = null;
+	  _publicAudioUrl = null;
+	};
+
+	var setPublicAudioUrl = function (url) {
+	  _publicAudioUrl = url;
+	  UploadStore.__emitChange();
+	};
+
+	var setPresignedAudioUrl = function (url) {
+	  _presignedAudioUrl = url;
+	};
+
+	UploadStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case TrackConstants.PUBLIC_URL_RECEIVED:
+	      setPublicAudioUrl(payload.publicUrl);
+	      break;
+	    case TrackConstants.PRESIGNED_URL_RECEIEVED:
+	      setPresignedAudioUrl(payload.presignedUrl);
+	      break;
+	    case TrackConstants.CLEAR_UPLOAD_STORE:
+	      clearStore();
+	      break;
+	  }
+	};
+
+	module.exports = UploadStore;
 
 /***/ }
 /******/ ]);

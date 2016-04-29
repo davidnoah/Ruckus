@@ -23,7 +23,6 @@ module.exports = {
         UserActions.loginUser(user);
       },
       error: function(response) {
-        console.log(response);
         UserActions.receiveError(response.responseText);
       }
     });
@@ -51,7 +50,6 @@ module.exports = {
         UserActions.loginUser(user);
       },
       error: function(response) {
-        console.log(response);
         UserActions.receiveError(response.responseText);
       }
     });

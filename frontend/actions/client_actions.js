@@ -23,7 +23,14 @@ module.exports = {
   },
 
   fetchPresignedUrl: function(prefix, filename) {
-    console.log(filename);
     TrackUtil.getPresignedUrl({prefix: prefix, filename: filename});
+  },
+
+  uploadToS3: function(presignedUrl, file) {
+    TrackUtil.uploadToS3(presignedUrl, file);
+  },
+
+  clearUploadStore: function() {
+    TrackActions.clearUploadStore();
   }
 };

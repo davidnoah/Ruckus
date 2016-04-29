@@ -21,7 +21,6 @@ var TrackIndex = React.createClass({
 
   render: function() {
     var allTracks = this.state.tracks.map(function(track) {
-      console.log(track.image_url);
       return <TrackIndexItem track={track} key={track.id}/>;
     });
 

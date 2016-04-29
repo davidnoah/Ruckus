@@ -1,4 +1,5 @@
 var TrackActions = require('../actions/track_actions.js');
+var TrackUpload = require('../components/tracks/trackupload.js');
 
 module.exports = {
   fetchAllTracks: function() {
@@ -17,9 +18,24 @@ module.exports = {
       method: 'GET',
       data: {prefix: data.prefix, filename: data.filename},
       success: function(url) {
-        console.log(url);
+        TrackActions.receivePresignedURL(url.presigned_url);
+
       }
     });
+  },
+
+  uploadToS3: function(presignedUrl, file) {
+    console.log("uploadtoS3", presignedUrl, file);
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PUT', presignedUrl, true);
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        TrackActions.receivePublicUrl(xhr);
+      }
+    };
+    xhr.send(file);
   },
 
   createTrack: function(data) {
