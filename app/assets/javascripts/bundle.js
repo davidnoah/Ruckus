@@ -35241,10 +35241,7 @@
 
 	  onChange: function () {
 	    if (typeof this.state.presigned_url === "string") {}
-	    this.setState({
-	      audioUrl: UploadStore.getPublicAudioUrl(),
-	      presignedAudioUrl: UploadStore.getPresignedAudioUrl()
-	    });
+	    this.setState({ presignedAudioUrl: UploadStore.getPresignedAudioUrl() });
 	  },
 
 	  handleUpload: function (event) {

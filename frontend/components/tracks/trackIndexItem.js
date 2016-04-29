@@ -1,6 +1,6 @@
 var React = require('react');
-var ClientActions = require('../../actions/client_actions.js');
-var TrackStore = require('../../stores/track.js');
+var ClientActions = require('../../actions/client_actions');
+var TrackStore = require('../../stores/track');
 var ReactPlayer = require('react-player');
 
 var TrackIndexItem = React.createClass({

@@ -1,7 +1,7 @@
 var React = require('react'),
     FileInput = require('react-file-input'),
-    UploadStore = require('../../stores/upload.js'),
-    ClientActions = require('../../actions/client_actions.js');
+    UploadStore = require('../../stores/upload'),
+    ClientActions = require('../../actions/client_actions');
 
 var TrackUpload = React.createClass({
   getInitialState: function() {
@@ -18,10 +18,7 @@ var TrackUpload = React.createClass({
 
   onChange: function() {
     if (typeof this.state.presigned_url === "string") {}
-    this.setState({
-      audioUrl: UploadStore.getPublicAudioUrl(),
-      presignedAudioUrl: UploadStore.getPresignedAudioUrl()
-    });
+      this.setState({presignedAudioUrl: UploadStore.getPresignedAudioUrl()});
   },
 
   handleUpload: function(event) {
