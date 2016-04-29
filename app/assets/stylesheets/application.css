@@ -50,3 +50,6 @@
   color: white;
   background-color: #323232;
 }
+.track-player {
+  display: none;
+}

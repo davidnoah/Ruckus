@@ -7,7 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 Track.create!(title: "Thievery Corperation - Exile",
-              audio_url: "http://res.cloudinary.com/davidnoah/video/upload/v1461730751/Exilio_-_Thievery_Corporation_im2cic.mp3",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Exilio+-+Thievery+Corporation.mp3",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_150/v1461730612/the-richest-man-in-babylon-5296d2c4b3c51_pyj7je.jpg",
               uploader_id: 1,
               num_played: 0,
@@ -15,7 +15,7 @@ Track.create!(title: "Thievery Corperation - Exile",
 
 Track.create!(
               title: "BoomBox - Midnight on the Run",
-              audio_url: "http://res.cloudinary.com/davidnoah/video/upload/v1461731216/Midnight_On_The_Run_ernebk.mp3",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Midnight+On+The+Run.mp3",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_150/v1461731209/boombox_s348mv.jpg",
               uploader_id: 2,
               num_played: 0,

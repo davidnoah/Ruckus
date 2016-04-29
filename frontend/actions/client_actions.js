@@ -1,5 +1,5 @@
-UserUtil = require('../util/userApiUtil.js');
-TrackUtil = require('../util/trackApiUtil.js');
+var UserUtil = require('../util/userApiUtil.js');
+var TrackUtil = require('../util/trackApiUtil.js');
 
 module.exports = {
   loginUser: function(user) {
@@ -20,5 +20,10 @@ module.exports = {
 
   fetchTracks: function() {
     TrackUtil.fetchAllTracks();
+  },
+
+  fetchPresignedUrl: function(prefix, filename) {
+    console.log(filename);
+    TrackUtil.getPresignedUrl({prefix: prefix, filename: filename});
   }
 };

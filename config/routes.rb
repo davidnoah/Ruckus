@@ -6,4 +6,5 @@ Rails.application.routes.draw do
     resource :session, only: [:new, :show, :create, :destroy]
     resources :tracks
   end
+  get 'api/upload', :to => 'api/uploads#upload'
 end

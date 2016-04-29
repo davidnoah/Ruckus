@@ -13,7 +13,7 @@ var React = require('react'),
     Signup = require('./components/auth/signup.jsx'),
     Login = require('./components/auth/login.jsx'),
     TrackIndex = require('./components/tracks/trackIndex.js');
-
+    
 var routes = (
   <Route path="/" component={App}>
     <Route path="tracks/" component={TrackIndex}>
