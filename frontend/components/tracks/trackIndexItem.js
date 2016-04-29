@@ -9,11 +9,9 @@ var TrackIndexItem = React.createClass({
 
     return (
       <ul className="track">
-        <li className='trackTitle'>
+        <img className='album-cover' src={track.image_url}/>
+        <li className='track-title'>
           {track.title}
-        </li>
-        <li className='trackImage'>
-          <img src={track.image_url}/>
         </li>
       </ul>
     );

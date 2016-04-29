@@ -35030,15 +35030,11 @@
 	    return React.createElement(
 	      'ul',
 	      { className: 'track' },
+	      React.createElement('img', { className: 'album-cover', src: track.image_url }),
 	      React.createElement(
 	        'li',
-	        { className: 'trackTitle' },
+	        { className: 'track-title' },
 	        track.title
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'trackImage' },
-	        React.createElement('img', { src: track.image_url })
 	      )
 	    );
 	  }

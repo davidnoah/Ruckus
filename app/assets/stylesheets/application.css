@@ -15,19 +15,38 @@
  */
  body {
    margin: 0;
+   background-color: black;
  }
 
 @import url('./navbar.css');
 @import url('./modal.css');
 
-.tracklist {
+.trackList {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  padding-left: 0px;
+  padding-right: 40px;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .track {
-  display: inline-flex;
-  justify-content: center;
-  flex-direction: row;
+  list-style-type: none;
+  width: 150px;
+  height: 190px;
+}
+
+.album-cover:hover {
+  opacity: 1;
+  cursor: pointer;
+  visibility: visible;
+}
+
+.track-title:hover {
+  cursor: pointer;
+}
+
+.track-title {
+  height: 40px;
+  color: white;
+  background-color: #323232;
 }
