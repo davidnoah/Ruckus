@@ -1,7 +1,7 @@
 var UserUtil = require('../util/userApiUtil.js');
 var TrackUtil = require('../util/trackApiUtil.js');
 
-module.exports = {
+var ClientActions = window.CA = {
   loginUser: function(user) {
     UserUtil.loginUser(user);
   },
@@ -22,8 +22,13 @@ module.exports = {
     TrackUtil.fetchAllTracks();
   },
 
-  fetchPresignedUrl: function(prefix, filename) {
-    TrackUtil.getPresignedUrl({prefix: prefix, filename: filename});
+  createTrack: function(track) {
+    console.log(track);
+    TrackUtil.createTrack(track);
+  },
+
+  fetchPresignedUrl: function(prefix, filename, file) {
+    TrackUtil.getPresignedUrl({prefix: prefix, filename: filename}, this.uploadToS3.bind(null, file));
   },
 
   uploadToS3: function(presignedUrl, file) {
@@ -34,3 +39,5 @@ module.exports = {
     TrackActions.clearUploadStore();
   }
 };
+
+module.exports = ClientActions;

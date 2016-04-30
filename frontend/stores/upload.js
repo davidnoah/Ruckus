@@ -7,17 +7,12 @@ var _presignedAudioUrl = null;
 
 var UploadStore = new Store(Dispatcher);
 
-UploadStore.getPublicAudioUrl = function() {
+UploadStore.getAudioUrl = function() {
   return _publicAudioUrl;
 };
 
 UploadStore.getPresignedAudioUrl = function() {
     return _presignedAudioUrl;
-};
-
-var clearStore = function() {
-  _presignedAudioUrl = null;
-  _publicAudioUrl = null;
 };
 
 var setPublicAudioUrl = function(url) {

@@ -1,5 +1,4 @@
 var TrackActions = require('../actions/track_actions.js');
-var TrackUpload = require('../components/tracks/trackUpload');
 
 module.exports = {
   fetchAllTracks: function() {
@@ -12,39 +11,43 @@ module.exports = {
     });
   },
 
-  getPresignedUrl: function(data) {
+  getPresignedUrl: function(data, callback) {
     $.ajax({
       url: 'api/upload',
       method: 'GET',
       data: {prefix: data.prefix, filename: data.filename},
       success: function(url) {
-        TrackActions.receivePresignedURL(url.presigned_url);
-
+        callback(url);
       }
     });
   },
 
-  uploadToS3: function(presignedUrl, file) {
-    console.log("uploadtoS3", presignedUrl, file);
+  uploadToS3: function(file, url) {
+    var presignedUrl = url.presigned_url;
+    var publicUrl = url.public_url;
+    var filetype = file.type;
+    console.log(publicUrl);
+
     var xhr = new XMLHttpRequest();
 
     xhr.open('PUT', presignedUrl, true);
+    xhr.setRequestHeader("Content-Type", filetype);
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState === XMLHttpRequest.DONE) {
-        TrackActions.receivePublicUrl(xhr);
+        TrackActions.receivePublicUrl(publicUrl);
       }
     };
     xhr.send(file);
   },
 
-  createTrack: function(data) {
+  createTrack: function(track) {
     $.ajax({
       url: 'api/tracks',
       method: 'POST',
-      data: data,
-      success: function(response) {
-        console.log('ajax success', response);
+      data: track,
+      success: function(track) {
+        TrackActions.getTrack(track);
       }
     });
   }

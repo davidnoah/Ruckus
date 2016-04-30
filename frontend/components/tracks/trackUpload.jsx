@@ -1,47 +1,90 @@
 var React = require('react'),
     FileInput = require('react-file-input'),
     UploadStore = require('../../stores/upload'),
-    ClientActions = require('../../actions/client_actions');
+    SessionStore = require('../../stores/session'),
+    ClientActions = require('../../actions/client_actions.js');
 
 var TrackUpload = React.createClass({
   getInitialState: function() {
     return {
+      title: "",
+      description: "",
       audioUrl: "",
-      presignedAudioUrl: ""
+      uploaderId: SessionStore.currentUser().id
     };
   },
 
   componentDidMount: function() {
-    ClientActions.clearUploadStore();
-    UploadStore.addListener(this.onChange);
+    UploadStore.addListener(this.onAudioUpload);
   },
 
-  onChange: function() {
-    if (typeof this.state.presigned_url === "string") {}
-      this.setState({presignedAudioUrl: UploadStore.getPresignedAudioUrl()});
+  onAudioUpload: function() {
+      this.state.audioUrl = UploadStore.getAudioUrl();
+      document.getElementById('submitTrack').disabled = false;
   },
 
-  handleUpload: function(event) {
+  onChange: function(event) {
+    var state = {};
+    state[event.target.id] = event.target.value;
+    this.setState(state);
+  },
+
+  handleUpload: function(e) {
+    e.preventDefault();
+    var file = e.target.files[0];
+    ClientActions.fetchPresignedUrl("audio/tracks", file.name, file);
+  },
+
+  handleSubmit: function(event) {
     event.preventDefault();
-    var file = event.target.files[0];
-    ClientActions.fetchPresignedUrl('audio/tracks/', file.name, this.handleDirectUpload);
-    debugger;
-    this.handleDirectUpload(this.state.presignedUrl, file);
-  },
-
-  handleDirectUpload: function(presigned_url, file) {
-    ClientActions.uploadToS3(presigned_url, file);
+    var track = {track: {
+      title: this.state.title,
+      description: this.state.description,
+      audio_url: this.state.audioUrl,
+      uploader_id: this.state.uploaderId
+    }};
+    ClientActions.createTrack(track);
+    this.props.parent.closeModal();
   },
 
   render: function() {
     return (
-      <div className='track-upload'>
-        <form>
-          <FileInput name="audioUpload"
-                     accept="audio/*"
-                     id="audioUpload"
-                     className="inputClass"
-                     onChange={this.handleUpload} />
+      <div className='uploadForm'>
+        <h1>Track Upload</h1>
+        <form className='upload' onSubmit={this.handleSubmit}>
+
+          <label className="formLabel">
+            Title:
+            <br/>
+            <input type="text"
+              className="textbox"
+              value={this.state.title}
+              onChange={this.onChange}
+              id="title" />
+          </label>
+          <br/>
+
+          <label className="formLabel">
+            Description:
+            <br/>
+            <input type="text"
+              className="textbox"
+              value={this.state.description}
+              onChange={this.onChange}
+              id="description" />
+          </label>
+          <br/>
+
+          <label className="formLabel">
+            Audio File:
+            <FileInput name="fileInput"
+                       accept="audio/*"
+                       id="fileInput"
+                       className="fileInput"
+                       onChange={this.handleUpload}/>
+          </label>
+
+          <input type="submit" id="submitTrack" value="Upload Track" disabled="true"/>
         </form>
       </div>
     );

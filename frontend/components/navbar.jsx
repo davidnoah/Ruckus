@@ -2,6 +2,7 @@ var React = require('react'),
     ReactDOM = require('react-dom'),
     Login = require('./auth/login.jsx'),
     Signup = require('./auth/signup.jsx'),
+    Upload = require('./tracks/trackUpload.jsx'),
     SessionStore = require('../stores/session.js'),
     ModalStyle = require('../constants/modalConstant.js'),
     ClientActions = require('../actions/client_actions.js'),
@@ -13,6 +14,7 @@ var NavBar = React.createClass({
       modalIsOpen: false,
       signUpClicked: false,
       logInClicked: false,
+      uploadClicked: false,
       current_user: SessionStore.currentUser()
     };
   },
@@ -36,6 +38,8 @@ var NavBar = React.createClass({
       this.setState({modalIsOpen: true, signUpClicked: true});
     } else if (event.target.id === "logInClicked") {
       this.setState({modalIsOpen: true, logInClicked: true});
+    } else if (event.target.id === "uploadClicked") {
+      this.setState({modalIsOpen: true, uploadClicked: true});
     }
   },
 
@@ -49,6 +53,8 @@ var NavBar = React.createClass({
       modalContents = <Signup parent={this} />;
     } else if (this.state.logInClicked === true) {
       modalContents = <Login parent={this} />;
+    } else if (this.state.uploadClicked === true) {
+      modalContents = <Upload parent={this} />;
     }
 
     var navbarContents = <ul>
@@ -64,6 +70,9 @@ var NavBar = React.createClass({
       navbarContents = <ul>
                           <li className="navbar_buttons">
                             <button onClick={this.logoutUser} id='logoutClicked'>Logout</button>
+                          </li>
+                          <li className="navbar_buttons">
+                          <button onClick={this.openModal} id='uploadClicked'>Upload</button>
                           </li>
                         </ul>;
     }

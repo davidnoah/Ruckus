@@ -11,20 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160429163527) do
+ActiveRecord::Schema.define(version: 20160430210029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "tracks", force: :cascade do |t|
-    t.string   "title",                                                                                                            null: false
-    t.string   "image_url",   default: "http://res.cloudinary.com/davidnoah/image/upload/v1461518868/cassette_default_qem6y3.png", null: false
-    t.string   "audio_url",                                                                                                        null: false
-    t.integer  "uploader_id",                                                                                                      null: false
-    t.integer  "num_played",  default: 0,                                                                                          null: false
-    t.boolean  "playing",     default: false,                                                                                      null: false
-    t.datetime "created_at",                                                                                                       null: false
-    t.datetime "updated_at",                                                                                                       null: false
+    t.string   "title",                                                                                                                          null: false
+    t.string   "audio_url",                                                                                                                      null: false
+    t.integer  "uploader_id",                                                                                                                    null: false
+    t.integer  "num_played",  default: 0,                                                                                                        null: false
+    t.boolean  "playing",     default: false,                                                                                                    null: false
+    t.datetime "created_at",                                                                                                                     null: false
+    t.datetime "updated_at",                                                                                                                     null: false
+    t.string   "description"
+    t.string   "image_url",   default: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_150/v1461518868/cassette_default_qem6y3.png"
   end
 
   add_index "tracks", ["audio_url"], name: "index_tracks_on_audio_url", using: :btree

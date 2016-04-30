@@ -33,6 +33,9 @@ TrackStore.__onDispatch = function(payload) {
     case TrackConstants.GET_TRACKS:
       resetTracks(payload.tracks);
       break;
+    case TrackConstants.GET_TRACK:
+      resetTrack(payload.track);
+      break;
   }
   TrackStore.__emitChange();
 };

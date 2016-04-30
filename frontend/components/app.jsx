@@ -16,7 +16,6 @@ var App = React.createClass({
         <div className="splash">
           <TrackIndex />
           {this.props.children}
-          <TrackUpload />
         </div>
       </div>
     );
