@@ -29,6 +29,7 @@ var NavBar = React.createClass({
   },
 
   logoutUser: function() {
+    debugger;
     ClientActions.logoutUser();
   },
 
@@ -65,7 +66,7 @@ var NavBar = React.createClass({
 
     if (this.state.current_user !== null) {
       navbarContents = <li className="navbar_item">
-                          <button className="navbar_button" Click={this.logoutUser} id='logoutClicked'>Logout</button>
+                          <button className="navbar_button" onClick={this.logoutUser} id='logoutClicked'>Logout</button>
                           <button className="navbar_button" onClick={this.openModal} id='uploadClicked'>Upload</button>
                         </li>;
 

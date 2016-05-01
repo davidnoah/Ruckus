@@ -44,7 +44,6 @@ var TrackUpload = React.createClass({
   },
 
   handleSubmit: function(event) {
-    debugger;
     event.preventDefault();
     var track = {track: {
       title: this.state.title,
