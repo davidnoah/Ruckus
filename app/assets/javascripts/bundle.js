@@ -35000,7 +35000,8 @@
 	module.exports = {
 	  GET_TRACKS: "GET_TRACKS",
 	  GET_TRACK: "GET_TRACK",
-	  PUBLIC_URL_RECEIVED: "PUBLIC_URL_RECEIVED",
+	  PUBLIC_AUDIO_URL_RECEIVED: "PUBLIC_AUDIO_URL_RECEIVED",
+	  PUBLIC_IMAGE_URL_RECEIVED: "PUBLIC_IMAGE_URL_RECEIVED",
 	  PRESIGNED_URL_RECEIEVED: "PRESIGNED_URL_RECEIEVED",
 	  CLEAR_UPLOAD_STORE: "CLEAR_UPLOAD_STORE"
 	};
@@ -35147,7 +35148,7 @@
 /* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -37730,6 +37731,7 @@
 	    FileInput = __webpack_require__(296),
 	    UploadStore = __webpack_require__(297),
 	    SessionStore = __webpack_require__(248),
+	    Dropzone = __webpack_require__(271),
 	    ClientActions = __webpack_require__(298);
 	
 	var TrackUpload = React.createClass({
@@ -37750,6 +37752,7 @@
 	
 	  onAudioUpload: function () {
 	    this.state.audioUrl = UploadStore.getAudioUrl();
+	    this.state.imageUrl = UploadStore.getImageUrl();
 	    document.getElementById('submitTrack').disabled = false;
 	  },
 	
@@ -37759,18 +37762,26 @@
 	    this.setState(state);
 	  },
 	
-	  handleUpload: function (e) {
-	    e.preventDefault();
-	    var file = e.target.files[0];
+	  handleAudioUpload: function (event) {
+	    document.getElementById('submitTrack').disabled = true;
+	    event.preventDefault();
+	    var file = event.target.files[0];
 	    ClientActions.fetchPresignedUrl("audio/tracks", file.name, file);
 	  },
 	
+	  handleImageUpload: function (file) {
+	    document.getElementById('submitTrack').disabled = true;
+	    ClientActions.fetchPresignedUrl("images/tracks", file[0].name, file[0]);
+	  },
+	
 	  handleSubmit: function (event) {
+	    debugger;
 	    event.preventDefault();
 	    var track = { track: {
 	        title: this.state.title,
 	        description: this.state.description,
 	        audio_url: this.state.audioUrl,
+	        image_url: this.state.imageUrl,
 	        uploader_id: this.state.uploaderId
 	      } };
 	    ClientActions.createTrack(track);
@@ -37821,7 +37832,16 @@
 	            accept: 'audio/*',
 	            id: 'fileInput',
 	            className: 'fileInput',
-	            onChange: this.handleUpload })
+	            onChange: this.handleAudioUpload })
+	        ),
+	        React.createElement(
+	          Dropzone,
+	          { onDrop: this.handleImageUpload, multiple: false },
+	          React.createElement(
+	            'p',
+	            null,
+	            'Drag and drop the album artwork here. (optional)'
+	          )
 	        ),
 	        React.createElement('input', { type: 'submit', id: 'submitTrack', value: 'Upload Track', disabled: 'true' })
 	      )
@@ -37911,12 +37931,17 @@
 	var TrackConstants = __webpack_require__(278);
 	
 	var _publicAudioUrl = null;
+	var _publicImageUrl = null;
 	var _presignedAudioUrl = null;
 	
 	var UploadStore = new Store(Dispatcher);
 	
 	UploadStore.getAudioUrl = function () {
 	  return _publicAudioUrl;
+	};
+	
+	UploadStore.getImageUrl = function () {
+	  return _publicImageUrl;
 	};
 	
 	UploadStore.getPresignedAudioUrl = function () {
@@ -37928,14 +37953,22 @@
 	  UploadStore.__emitChange();
 	};
 	
+	var setPublicImageUrl = function (url) {
+	  _publicImageUrl = url;
+	  UploadStore.__emitChange();
+	};
+	
 	var setPresignedAudioUrl = function (url) {
 	  _presignedAudioUrl = url;
 	};
 	
 	UploadStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case TrackConstants.PUBLIC_URL_RECEIVED:
+	    case TrackConstants.PUBLIC_AUDIO_URL_RECEIVED:
 	      setPublicAudioUrl(payload.publicUrl);
+	      break;
+	    case TrackConstants.PUBLIC_IMAGE_URL_RECEIVED:
+	      setPublicImageUrl(payload.publicUrl);
 	      break;
 	    case TrackConstants.PRESIGNED_URL_RECEIEVED:
 	      setPresignedAudioUrl(payload.presignedUrl);
@@ -38134,7 +38167,7 @@
 	    var presignedUrl = url.presigned_url;
 	    var publicUrl = url.public_url;
 	    var filetype = file.type;
-	    console.log(publicUrl);
+	    console.log(url);
 	
 	    var xhr = new XMLHttpRequest();
 	
@@ -38143,7 +38176,11 @@
 	
 	    xhr.onreadystatechange = function () {
 	      if (xhr.readyState === XMLHttpRequest.DONE) {
-	        TrackActions.receivePublicUrl(publicUrl);
+	        if (file.type.match(/^audio.*$/) !== null) {
+	          TrackActions.receivePublicAudioUrl(publicUrl);
+	        } else {
+	          TrackActions.receivePublicImageUrl(publicUrl);
+	        }
 	      }
 	    };
 	    xhr.send(file);
@@ -38190,9 +38227,16 @@
 	    });
 	  },
 	
-	  receivePublicUrl: function (publicUrl) {
+	  receivePublicAudioUrl: function (publicUrl) {
 	    Dispatcher.dispatch({
-	      actionType: TrackConstants.PUBLIC_URL_RECEIVED,
+	      actionType: TrackConstants.PUBLIC_AUDIO_URL_RECEIVED,
+	      publicUrl: publicUrl
+	    });
+	  },
+	
+	  receivePublicImageUrl: function (publicUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PUBLIC_IMAGE_URL_RECEIVED,
 	      publicUrl: publicUrl
 	    });
 	  },
@@ -38216,7 +38260,6 @@
 	    NavBar = __webpack_require__(273),
 	    TrackIndex = __webpack_require__(275),
 	    TrackUpload = __webpack_require__(295),
-	    Masonry = __webpack_require__(311),
 	    Modal = __webpack_require__(166);
 	
 	var masonryOptions = {

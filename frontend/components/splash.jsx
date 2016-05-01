@@ -5,7 +5,6 @@ var React = require('react'),
     NavBar = require('./navbar.jsx'),
     TrackIndex = require('./tracks/trackIndex.js'),
     TrackUpload = require('./tracks/trackUpload'),
-    Masonry = require('react-masonry-component'),
     Modal = require('react-modal');
 
 var masonryOptions = {

@@ -26,7 +26,7 @@ module.exports = {
     var presignedUrl = url.presigned_url;
     var publicUrl = url.public_url;
     var filetype = file.type;
-    console.log(publicUrl);
+    console.log(url);
 
     var xhr = new XMLHttpRequest();
 
@@ -35,7 +35,11 @@ module.exports = {
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState === XMLHttpRequest.DONE) {
-        TrackActions.receivePublicUrl(publicUrl);
+        if (file.type.match(/^audio.*$/) !== null) {
+          TrackActions.receivePublicAudioUrl(publicUrl);
+        } else {
+          TrackActions.receivePublicImageUrl(publicUrl);
+        }
       }
     };
     xhr.send(file);

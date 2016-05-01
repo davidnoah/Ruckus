@@ -23,9 +23,16 @@ module.exports = {
     });
   },
 
-  receivePublicUrl: function(publicUrl) {
+  receivePublicAudioUrl: function(publicUrl) {
     Dispatcher.dispatch({
-      actionType: TrackConstants.PUBLIC_URL_RECEIVED,
+      actionType: TrackConstants.PUBLIC_AUDIO_URL_RECEIVED,
+      publicUrl: publicUrl
+    });
+  },
+
+  receivePublicImageUrl: function(publicUrl) {
+    Dispatcher.dispatch({
+      actionType: TrackConstants.PUBLIC_IMAGE_URL_RECEIVED,
       publicUrl: publicUrl
     });
   },
