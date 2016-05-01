@@ -13,43 +13,45 @@
  *= require_tree .
  *= require_self
  */
+ @import url(https://fonts.googleapis.com/css?family=Audiowide);
+
  body {
    margin: 0;
    background-color: black;
  }
 
+ html {
+   display: flex;
+   justify-content: center;
+ }
+
+ .app {
+   display: block;;
+   width: 100%;
+ }
+
+ .splash-image {
+   display: flex;
+   justify-content: center;
+   border: 1px solid #595959;
+   height: 450px;
+   width: 920px;
+   border-radius: 10px;
+   margin-top: 60px;
+   background-size: 920px;
+   opacity: 0.8;
+   background-image: url("http://res.cloudinary.com/davidnoah/image/upload/v1462066739/record_splash_ljnk4a.jpg");
+ }
+
+ .splash-sample-text {
+   align-self: center;
+   margin-top: 40px;
+   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+   font-size: 24px;
+   color: white;
+   width: 200px;
+ }
+
 @import url('./navbar.css');
 @import url('./modal.css');
-
-.trackList {
-  display: flex;
-  padding-left: 0px;
-  padding-right: 40px;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
-.track {
-  list-style-type: none;
-  width: 150px;
-  height: 190px;
-}
-
-.album-cover:hover {
-  opacity: 1;
-  cursor: pointer;
-  visibility: visible;
-}
-
-.track-title:hover {
-  cursor: pointer;
-}
-
-.track-title {
-  height: 40px;
-  color: white;
-  background-color: #323232;
-}
-.track-player {
-  display: none;
-}
+@import url('./track.css');

@@ -15,11 +15,8 @@ var TrackIndexItem = React.createClass({
   render: function() {
     var track = this.props.track;
     return (
-      <ul className="track" key={track.id}>
+      <ul className="track" key={track.id} id={track.id}>
         <img className='album-cover' src={track.image_url} onClick={this.handleClick} />
-        <li className='track-title' onClick={this.handleClick}>
-          {track.title}
-        </li>
         <ReactPlayer
           className='track-player'
           url={track.audio_url}

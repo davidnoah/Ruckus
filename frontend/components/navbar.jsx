@@ -57,28 +57,25 @@ var NavBar = React.createClass({
       modalContents = <Upload parent={this} />;
     }
 
-    var navbarContents = <ul>
-                           <li className="navbar_buttons">
-                              <button onClick={this.openModal} id='signUpClicked'>Sign Up</button>
-                           </li>
-                           <li className="navbar_buttons">
-                              <button onClick={this.openModal} id='logInClicked'>Login</button>
-                           </li>
-                        </ul>;
+    var navbarContents = <li className="navbar_item">
+                          <button className="navbar_button" onClick={this.openModal} id='signUpClicked'>Sign Up</button>
+                          <button className="navbar_button" onClick={this.openModal} id='logInClicked'>Login</button>
+                         </li>;
+
 
     if (this.state.current_user !== null) {
-      navbarContents = <ul>
-                          <li className="navbar_buttons">
-                            <button onClick={this.logoutUser} id='logoutClicked'>Logout</button>
-                          </li>
-                          <li className="navbar_buttons">
-                          <button onClick={this.openModal} id='uploadClicked'>Upload</button>
-                          </li>
-                        </ul>;
+      navbarContents = <li className="navbar_item">
+                          <button className="navbar_button" Click={this.logoutUser} id='logoutClicked'>Logout</button>
+                          <button className="navbar_button" onClick={this.openModal} id='uploadClicked'>Upload</button>
+                        </li>;
+
     }
 
     return (
       <ul className="navbar">
+        <li className="navbar_item">
+          <h2 className="navbar_title">Ruckus</h2>
+        </li>
         {navbarContents}
         <Modal
           isOpen={this.state.modalIsOpen}

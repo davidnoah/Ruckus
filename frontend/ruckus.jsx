@@ -12,12 +12,13 @@ var React = require('react'),
     TrackStore = require('./stores/track.js'),
     Signup = require('./components/auth/signup.jsx'),
     Login = require('./components/auth/login.jsx'),
+    Splash = require('./components/splash.jsx'),
     TrackIndex = require('./components/tracks/trackIndex.js');
-    
+
 var routes = (
   <Route path="/" component={App}>
-    <Route path="tracks/" component={TrackIndex}>
-    </Route>
+    <IndexRoute component={Splash} />
+    <Route path="tracks/" component={TrackIndex} />
   </Route>
 );
 

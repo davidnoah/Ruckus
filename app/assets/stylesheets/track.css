@@ -1,0 +1,35 @@
+.trackList {
+  display: flex;
+  padding: 0px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 19px;
+  height: auto;
+  width: auto;
+}
+
+.track {
+  list-style-type: none;
+  padding: 0px;
+  border-radius: 5px;
+}
+
+.album-cover {
+}
+
+.album-cover:hover {
+  opacity: 1;
+  cursor: pointer;
+  visibility: visible;
+}
+
+.track-title {
+  height: 40px;
+  color: white;
+  background-color: #323232;
+}
+.track-player {
+  display: none;
+}
