@@ -30,7 +30,7 @@
   border: 1px solid white;
   background: black;
   border-radius: 2px;
-  opacity: 0.6;
+  opacity: 0;
   box-shadow: 1px, 1px;
   cursor: pointer;
 }
@@ -44,8 +44,9 @@
   opacity: 0.6;
 }
 
-.track:hover ~ .play-button-container {
-  display: block;
+.track:hover .play-button-container {
+  opacity: 0.6;
+  transition: opacity 0.5s ease;
 }
 
 .play-button {
