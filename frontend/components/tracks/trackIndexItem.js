@@ -1,26 +1,45 @@
 var React = require('react');
 var ClientActions = require('../../actions/client_actions');
 var TrackStore = require('../../stores/track');
-var ReactPlayer = require('react-player');
+var PlayButton = require('../play.jsx');
+var PauseButton = require('../pause.jsx');
 
 var TrackIndexItem = React.createClass({
+
   getInitialState: function() {
-    return {playing: false};
+    return {isPlaying: false};
   },
 
   handleClick: function() {
-    this.setState({playing: !this.state.playing});
+    console.log("track clicked:", this.props.track);
+    if (this.state.isPlaying) {
+      ClientActions.pauseTrack();
+      this.setState({isPlaying: false});
+    } else {
+      ClientActions.playTrack(this.props.track);
+      this.setState({isPlaying: true});
+    }
   },
 
   render: function() {
     var track = this.props.track;
+    var playPauseButton;
+    if (this.state.isPlaying) {
+      playPauseButton = <div className="play-button-container">
+                           <PauseButton className="play-button"/>
+                         </div>;
+    } else {
+      playPauseButton = <div className="play-button-container">
+                          <PlayButton className="play-button"/>
+                        </div>;
+    }
     return (
-      <ul className="track" key={track.id} id={track.id}>
-        <img className='album-cover' src={track.image_url} onClick={this.handleClick} />
-        <ReactPlayer
-          className='track-player'
-          url={track.audio_url}
-          playing={this.state.playing} />
+      <ul className="track hvr-shrink" key={track.id} id={track.id}>
+        <img className='album-cover' src={track.image_url} />
+          {playPauseButton}
+        <div className="track-title-container">
+          <p className="track-title">{track.title}</p>
+        </div>
       </ul>
     );
   }

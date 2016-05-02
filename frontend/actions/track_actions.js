@@ -41,6 +41,19 @@ module.exports = {
     Dispatcher.dispatch({
       actionType: TrackConstants.CLEAR_UPLOAD_STORE
     });
+  },
+
+  playTrack: function(track) {
+    Dispatcher.dispatch({
+      actionType: TrackConstants.PLAY_TRACK,
+      track: track
+    });
+  },
+
+  pauseTrack: function() {
+    Dispatcher.dispatch({
+      actionType: TrackConstants.PAUSE_TRACK,
+    });
   }
 
 };

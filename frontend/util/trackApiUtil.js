@@ -54,5 +54,13 @@ module.exports = {
         TrackActions.getTrack(track);
       }
     });
+  },
+
+  playTrack: function(track) {
+    TrackActions.playTrack(track);
+  },
+
+  pauseTrack: function() {
+    TrackActions.pauseTrack();
   }
 };

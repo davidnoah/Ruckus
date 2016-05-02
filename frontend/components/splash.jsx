@@ -16,6 +16,8 @@ var Splash = React.createClass({
     return (
       <div className="splash">
         <div className="splash-image">
+          <h3 className="splash-slogan">discover new sounds</h3>
+          <h3 className="splash-slogan">funkify your life</h3>
         </div>
         <div className="splash-sample-text">
           Sample Vibrations:

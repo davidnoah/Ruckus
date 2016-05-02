@@ -32,7 +32,7 @@
 
  .splash-image {
    display: flex;
-   justify-content: center;
+   justify-content: space-between;
    border: 1px solid #595959;
    height: 450px;
    width: 920px;
@@ -46,10 +46,16 @@
  .splash-sample-text {
    align-self: center;
    margin-top: 40px;
-   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+   font-family: 'Audiowide', cursive;
    font-size: 24px;
    color: white;
-   width: 200px;
+   width: 250px;
+ }
+
+ .splash-slogan {
+   font-family: 'Audiowide', cursive;
+   padding-right: 5px;
+   padding-left: 5px;
  }
 
 @import url('./navbar.css');

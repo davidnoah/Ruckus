@@ -35,8 +35,12 @@ var ClientActions = window.CA = {
     TrackUtil.uploadToS3(presignedUrl, file);
   },
 
-  clearUploadStore: function() {
-    TrackActions.clearUploadStore();
+  playTrack: function(track) {
+    TrackUtil.playTrack(track);
+  },
+
+  pauseTrack: function() {
+    TrackUtil.pauseTrack();
   }
 };
 

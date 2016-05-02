@@ -22,10 +22,12 @@ var resetTracks = function(tracks) {
   tracks.forEach(function(track) {
     _tracks[track.id] = track;
   });
+  TrackStore.__emitChange();
 };
 
 var resetTrack = function(track) {
   _tracks[track.id] = track;
+  TrackStore.__emitChange();
 };
 
 TrackStore.__onDispatch = function(payload) {
@@ -37,7 +39,6 @@ TrackStore.__onDispatch = function(payload) {
       resetTrack(payload.track);
       break;
   }
-  TrackStore.__emitChange();
 };
 
 module.exports = TrackStore;

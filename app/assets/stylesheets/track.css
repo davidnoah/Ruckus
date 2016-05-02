@@ -11,25 +11,106 @@
 }
 
 .track {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
   list-style-type: none;
   padding: 0px;
   border-radius: 5px;
+  float: left;
+  position: relative;
+}
+
+.play-button-container {
+  position: absolute;
+  z-index: 10;
+  top: 40%;
+  left: 40%;
+  border: 1px solid white;
+  background: black;
+  border-radius: 2px;
+  opacity: 0.6;
+  box-shadow: 1px, 1px;
+  cursor: pointer;
+}
+
+.play-button-container:hover {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.play-button-container:hover ~ .track-title-container {
+  opacity: 0.6;
+}
+
+.track:hover ~ .play-button-container {
+  display: block;
+}
+
+.play-button {
+  color: white;
+  padding: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 14px;
+  font-family: Varela Round, Consolas, sans-serif;
 }
 
 .album-cover {
+  position: relative;
+}
+
+.track-title-container {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  background-color:black;
+  font-family: 'tahoma';
+  font-size:15px;
+  color:white;
+  opacity:0;
+}
+
+.hvr-shrink {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+}
+.hvr-shrink:hover, .hvr-shrink:focus, .hvr-shrink:active {
+  -webkit-transform: scale(0.9);
+  transform: scale(0.9);
+}
+
+.track-title {
+  padding:10px;
+  margin:0px;
+}
+
+.track-title-container:hover {
+  opacity: 0.6;
+}
+
+.album-cover:hover ~ .track-title-container {
+  opacity: 0.6;
+  transition: opacity 0.5s ease;
 }
 
 .album-cover:hover {
   opacity: 1;
-  cursor: pointer;
   visibility: visible;
 }
 
-.track-title {
-  height: 40px;
-  color: white;
-  background-color: #323232;
-}
 .track-player {
   display: none;
 }

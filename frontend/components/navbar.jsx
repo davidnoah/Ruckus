@@ -29,7 +29,6 @@ var NavBar = React.createClass({
   },
 
   logoutUser: function() {
-    debugger;
     ClientActions.logoutUser();
   },
 

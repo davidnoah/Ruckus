@@ -52,12 +52,12 @@
 	    IndexRoute = __webpack_require__(186).IndexRoute,
 	    HashHistory = __webpack_require__(186).hashHistory,
 	    App = __webpack_require__(245),
-	    SessionStore = __webpack_require__(248),
-	    TrackStore = __webpack_require__(277),
-	    Signup = __webpack_require__(247),
+	    SessionStore = __webpack_require__(259),
+	    TrackStore = __webpack_require__(305),
+	    Signup = __webpack_require__(258),
 	    Login = __webpack_require__(246),
-	    Splash = __webpack_require__(303),
-	    TrackIndex = __webpack_require__(275);
+	    Splash = __webpack_require__(302),
+	    TrackIndex = __webpack_require__(303);
 	
 	var routes = React.createElement(
 	  Route,
@@ -27398,11 +27398,12 @@
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(32),
 	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(247),
-	    NavBar = __webpack_require__(273),
-	    Splash = __webpack_require__(303),
-	    TrackIndex = __webpack_require__(275),
-	    TrackUpload = __webpack_require__(295),
+	    Signup = __webpack_require__(258),
+	    NavBar = __webpack_require__(279),
+	    StreamBar = __webpack_require__(284),
+	    Splash = __webpack_require__(302),
+	    TrackIndex = __webpack_require__(303),
+	    TrackUpload = __webpack_require__(280),
 	    Modal = __webpack_require__(166);
 	
 	var App = React.createClass({
@@ -27413,7 +27414,8 @@
 	      'div',
 	      { className: 'app' },
 	      React.createElement(NavBar, null),
-	      this.props.children
+	      this.props.children,
+	      React.createElement(StreamBar, null)
 	    );
 	  }
 	
@@ -27426,7 +27428,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ClientActions = __webpack_require__(298);
+	var ClientActions = __webpack_require__(247);
 	
 	var Login = React.createClass({
 	  displayName: 'Login',
@@ -27492,10 +27494,646 @@
 /* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var UserUtil = __webpack_require__(248);
+	var TrackUtil = __webpack_require__(255);
+	
+	var ClientActions = window.CA = {
+	  loginUser: function (user) {
+	    UserUtil.loginUser(user);
+	  },
+	
+	  logoutUser: function () {
+	    UserUtil.logoutUser();
+	  },
+	
+	  createUser: function (user) {
+	    UserUtil.createUser(user);
+	  },
+	
+	  checkLoggedIn: function (user) {
+	    UserUtil.checkLoggedIn();
+	  },
+	
+	  fetchTracks: function () {
+	    TrackUtil.fetchAllTracks();
+	  },
+	
+	  createTrack: function (track) {
+	    console.log(track);
+	    TrackUtil.createTrack(track);
+	  },
+	
+	  fetchPresignedUrl: function (prefix, filename, file) {
+	    TrackUtil.getPresignedUrl({ prefix: prefix, filename: filename }, this.uploadToS3.bind(null, file));
+	  },
+	
+	  uploadToS3: function (presignedUrl, file) {
+	    TrackUtil.uploadToS3(presignedUrl, file);
+	  },
+	
+	  playTrack: function (track) {
+	    TrackUtil.playTrack(track);
+	  },
+	
+	  pauseTrack: function () {
+	    TrackUtil.pauseTrack();
+	  }
+	};
+	
+	module.exports = ClientActions;
+
+/***/ },
+/* 248 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserActions = __webpack_require__(249);
+	
+	module.exports = {
+	  checkLoggedIn: function () {
+	    $.ajax({
+	      url: 'api/session',
+	      method: 'GET',
+	      success: function (response) {
+	        UserActions.loggedInResponse(response);
+	      },
+	      errors: function (response) {
+	        UserActions.receiveError(response.responseText);
+	      }
+	    });
+	  },
+	
+	  loginUser: function (formData) {
+	    $.ajax({
+	      url: 'api/session',
+	      method: 'POST',
+	      data: formData,
+	      success: function (user) {
+	        UserActions.loginUser(user);
+	      },
+	      error: function (response) {
+	        UserActions.receiveError(response.responseText);
+	      }
+	    });
+	  },
+	
+	  logoutUser: function () {
+	    $.ajax({
+	      url: 'api/session',
+	      method: 'DELETE',
+	      success: function () {
+	        UserActions.logoutUser();
+	      },
+	      error: function (response) {
+	        UserActions.receiveError(response.responseText);
+	      }
+	    });
+	  },
+	
+	  createUser: function (formData) {
+	    $.ajax({
+	      url: 'api/users',
+	      method: 'POST',
+	      data: formData,
+	      success: function (user) {
+	        UserActions.loginUser(user);
+	      },
+	      error: function (response) {
+	        UserActions.receiveError(response.responseText);
+	      }
+	    });
+	  }
+	};
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(250);
+	var UserConstants = __webpack_require__(254);
+	
+	module.exports = {
+	
+	  loginUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGIN_USER,
+	      user: user
+	    });
+	  },
+	
+	  logoutUser: function () {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGOUT_USER
+	    });
+	  },
+	
+	  destroyUser: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.DESTROY_USER,
+	      user: user
+	    });
+	  },
+	
+	  receiveError: function (error) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.RECEIVE_ERROR,
+	      error: error
+	    });
+	  },
+	
+	  loggedInResponse: function (user) {
+	    Dispatcher.dispatch({
+	      actionType: UserConstants.LOGGEDIN_RESPONSE,
+	      user: user
+	    });
+	  }
+	};
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(251).Dispatcher;
+	module.exports = new Dispatcher();
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright (c) 2014-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 */
+	
+	module.exports.Dispatcher = __webpack_require__(252);
+
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright (c) 2014-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule Dispatcher
+	 * 
+	 * @preventMunge
+	 */
+	
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	var invariant = __webpack_require__(253);
+	
+	var _prefix = 'ID_';
+	
+	/**
+	 * Dispatcher is used to broadcast payloads to registered callbacks. This is
+	 * different from generic pub-sub systems in two ways:
+	 *
+	 *   1) Callbacks are not subscribed to particular events. Every payload is
+	 *      dispatched to every registered callback.
+	 *   2) Callbacks can be deferred in whole or part until other callbacks have
+	 *      been executed.
+	 *
+	 * For example, consider this hypothetical flight destination form, which
+	 * selects a default city when a country is selected:
+	 *
+	 *   var flightDispatcher = new Dispatcher();
+	 *
+	 *   // Keeps track of which country is selected
+	 *   var CountryStore = {country: null};
+	 *
+	 *   // Keeps track of which city is selected
+	 *   var CityStore = {city: null};
+	 *
+	 *   // Keeps track of the base flight price of the selected city
+	 *   var FlightPriceStore = {price: null}
+	 *
+	 * When a user changes the selected city, we dispatch the payload:
+	 *
+	 *   flightDispatcher.dispatch({
+	 *     actionType: 'city-update',
+	 *     selectedCity: 'paris'
+	 *   });
+	 *
+	 * This payload is digested by `CityStore`:
+	 *
+	 *   flightDispatcher.register(function(payload) {
+	 *     if (payload.actionType === 'city-update') {
+	 *       CityStore.city = payload.selectedCity;
+	 *     }
+	 *   });
+	 *
+	 * When the user selects a country, we dispatch the payload:
+	 *
+	 *   flightDispatcher.dispatch({
+	 *     actionType: 'country-update',
+	 *     selectedCountry: 'australia'
+	 *   });
+	 *
+	 * This payload is digested by both stores:
+	 *
+	 *   CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+	 *     if (payload.actionType === 'country-update') {
+	 *       CountryStore.country = payload.selectedCountry;
+	 *     }
+	 *   });
+	 *
+	 * When the callback to update `CountryStore` is registered, we save a reference
+	 * to the returned token. Using this token with `waitFor()`, we can guarantee
+	 * that `CountryStore` is updated before the callback that updates `CityStore`
+	 * needs to query its data.
+	 *
+	 *   CityStore.dispatchToken = flightDispatcher.register(function(payload) {
+	 *     if (payload.actionType === 'country-update') {
+	 *       // `CountryStore.country` may not be updated.
+	 *       flightDispatcher.waitFor([CountryStore.dispatchToken]);
+	 *       // `CountryStore.country` is now guaranteed to be updated.
+	 *
+	 *       // Select the default city for the new country
+	 *       CityStore.city = getDefaultCityForCountry(CountryStore.country);
+	 *     }
+	 *   });
+	 *
+	 * The usage of `waitFor()` can be chained, for example:
+	 *
+	 *   FlightPriceStore.dispatchToken =
+	 *     flightDispatcher.register(function(payload) {
+	 *       switch (payload.actionType) {
+	 *         case 'country-update':
+	 *         case 'city-update':
+	 *           flightDispatcher.waitFor([CityStore.dispatchToken]);
+	 *           FlightPriceStore.price =
+	 *             getFlightPriceStore(CountryStore.country, CityStore.city);
+	 *           break;
+	 *     }
+	 *   });
+	 *
+	 * The `country-update` payload will be guaranteed to invoke the stores'
+	 * registered callbacks in order: `CountryStore`, `CityStore`, then
+	 * `FlightPriceStore`.
+	 */
+	
+	var Dispatcher = (function () {
+	  function Dispatcher() {
+	    _classCallCheck(this, Dispatcher);
+	
+	    this._callbacks = {};
+	    this._isDispatching = false;
+	    this._isHandled = {};
+	    this._isPending = {};
+	    this._lastID = 1;
+	  }
+	
+	  /**
+	   * Registers a callback to be invoked with every dispatched payload. Returns
+	   * a token that can be used with `waitFor()`.
+	   */
+	
+	  Dispatcher.prototype.register = function register(callback) {
+	    var id = _prefix + this._lastID++;
+	    this._callbacks[id] = callback;
+	    return id;
+	  };
+	
+	  /**
+	   * Removes a callback based on its token.
+	   */
+	
+	  Dispatcher.prototype.unregister = function unregister(id) {
+	    !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.unregister(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	    delete this._callbacks[id];
+	  };
+	
+	  /**
+	   * Waits for the callbacks specified to be invoked before continuing execution
+	   * of the current callback. This method should only be used by a callback in
+	   * response to a dispatched payload.
+	   */
+	
+	  Dispatcher.prototype.waitFor = function waitFor(ids) {
+	    !this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Must be invoked while dispatching.') : invariant(false) : undefined;
+	    for (var ii = 0; ii < ids.length; ii++) {
+	      var id = ids[ii];
+	      if (this._isPending[id]) {
+	        !this._isHandled[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Circular dependency detected while ' + 'waiting for `%s`.', id) : invariant(false) : undefined;
+	        continue;
+	      }
+	      !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	      this._invokeCallback(id);
+	    }
+	  };
+	
+	  /**
+	   * Dispatches a payload to all registered callbacks.
+	   */
+	
+	  Dispatcher.prototype.dispatch = function dispatch(payload) {
+	    !!this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.') : invariant(false) : undefined;
+	    this._startDispatching(payload);
+	    try {
+	      for (var id in this._callbacks) {
+	        if (this._isPending[id]) {
+	          continue;
+	        }
+	        this._invokeCallback(id);
+	      }
+	    } finally {
+	      this._stopDispatching();
+	    }
+	  };
+	
+	  /**
+	   * Is this Dispatcher currently dispatching.
+	   */
+	
+	  Dispatcher.prototype.isDispatching = function isDispatching() {
+	    return this._isDispatching;
+	  };
+	
+	  /**
+	   * Call the callback stored with the given id. Also do some internal
+	   * bookkeeping.
+	   *
+	   * @internal
+	   */
+	
+	  Dispatcher.prototype._invokeCallback = function _invokeCallback(id) {
+	    this._isPending[id] = true;
+	    this._callbacks[id](this._pendingPayload);
+	    this._isHandled[id] = true;
+	  };
+	
+	  /**
+	   * Set up bookkeeping needed when dispatching.
+	   *
+	   * @internal
+	   */
+	
+	  Dispatcher.prototype._startDispatching = function _startDispatching(payload) {
+	    for (var id in this._callbacks) {
+	      this._isPending[id] = false;
+	      this._isHandled[id] = false;
+	    }
+	    this._pendingPayload = payload;
+	    this._isDispatching = true;
+	  };
+	
+	  /**
+	   * Clear bookkeeping used for dispatching.
+	   *
+	   * @internal
+	   */
+	
+	  Dispatcher.prototype._stopDispatching = function _stopDispatching() {
+	    delete this._pendingPayload;
+	    this._isDispatching = false;
+	  };
+	
+	  return Dispatcher;
+	})();
+	
+	module.exports = Dispatcher;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule invariant
+	 */
+	
+	"use strict";
+	
+	/**
+	 * Use invariant() to assert state which your program assumes to be true.
+	 *
+	 * Provide sprintf-style format (only %s is supported) and arguments
+	 * to provide information about what broke and what you were
+	 * expecting.
+	 *
+	 * The invariant message will be stripped in production, but the invariant
+	 * will remain to ensure logic does not differ in production.
+	 */
+	
+	var invariant = function (condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
+	    if (format === undefined) {
+	      throw new Error('invariant requires an error message argument');
+	    }
+	  }
+	
+	  if (!condition) {
+	    var error;
+	    if (format === undefined) {
+	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+	    } else {
+	      var args = [a, b, c, d, e, f];
+	      var argIndex = 0;
+	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+	        return args[argIndex++];
+	      }));
+	    }
+	
+	    error.framesToPop = 1; // we don't care about invariant's own frame
+	    throw error;
+	  }
+	};
+	
+	module.exports = invariant;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 254 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  LOGIN_USER: "LOGIN_USER",
+	  ERROR_RECEIVED: "RECEIVE_ERROR",
+	  LOGOUT_USER: "LOGOUT_USER",
+	  DESTROY_USER: "DESTROY_USER",
+	  CREATE_USER: "CREATE_USER",
+	  LOGGEDIN_RESPONSE: "LOGGEDIN_RESPONSE"
+	};
+
+/***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TrackActions = __webpack_require__(256);
+	
+	module.exports = {
+	  fetchAllTracks: function () {
+	    $.ajax({
+	      url: 'api/tracks',
+	      method: 'GET',
+	      success: function (tracks) {
+	        TrackActions.getTracks(tracks);
+	      }
+	    });
+	  },
+	
+	  getPresignedUrl: function (data, callback) {
+	    $.ajax({
+	      url: 'api/upload',
+	      method: 'GET',
+	      data: { prefix: data.prefix, filename: data.filename },
+	      success: function (url) {
+	        callback(url);
+	      }
+	    });
+	  },
+	
+	  uploadToS3: function (file, url) {
+	    var presignedUrl = url.presigned_url;
+	    var publicUrl = url.public_url;
+	    var filetype = file.type;
+	    console.log(url);
+	
+	    var xhr = new XMLHttpRequest();
+	
+	    xhr.open('PUT', presignedUrl, true);
+	    xhr.setRequestHeader("Content-Type", filetype);
+	
+	    xhr.onreadystatechange = function () {
+	      if (xhr.readyState === XMLHttpRequest.DONE) {
+	        if (file.type.match(/^audio.*$/) !== null) {
+	          TrackActions.receivePublicAudioUrl(publicUrl);
+	        } else {
+	          TrackActions.receivePublicImageUrl(publicUrl);
+	        }
+	      }
+	    };
+	    xhr.send(file);
+	  },
+	
+	  createTrack: function (track) {
+	    $.ajax({
+	      url: 'api/tracks',
+	      method: 'POST',
+	      data: track,
+	      success: function (track) {
+	        TrackActions.getTrack(track);
+	      }
+	    });
+	  },
+	
+	  playTrack: function (track) {
+	    TrackActions.playTrack(track);
+	  },
+	
+	  pauseTrack: function () {
+	    TrackActions.pauseTrack();
+	  }
+	};
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(250);
+	var TrackConstants = __webpack_require__(257);
+	
+	module.exports = {
+	  getTracks: function (tracks) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.GET_TRACKS,
+	      tracks: tracks
+	    });
+	  },
+	
+	  getTrack: function (track) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.GET_TRACK,
+	      track: track
+	    });
+	  },
+	
+	  receivePresignedURL: function (presignedUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PRESIGNED_URL_RECEIEVED,
+	      presignedUrl: presignedUrl
+	    });
+	  },
+	
+	  receivePublicAudioUrl: function (publicUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PUBLIC_AUDIO_URL_RECEIVED,
+	      publicUrl: publicUrl
+	    });
+	  },
+	
+	  receivePublicImageUrl: function (publicUrl) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PUBLIC_IMAGE_URL_RECEIVED,
+	      publicUrl: publicUrl
+	    });
+	  },
+	
+	  clearUploadStore: function () {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.CLEAR_UPLOAD_STORE
+	    });
+	  },
+	
+	  playTrack: function (track) {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PLAY_TRACK,
+	      track: track
+	    });
+	  },
+	
+	  pauseTrack: function () {
+	    Dispatcher.dispatch({
+	      actionType: TrackConstants.PAUSE_TRACK
+	    });
+	  }
+	
+	};
+
+/***/ },
+/* 257 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  GET_TRACKS: "GET_TRACKS",
+	  GET_TRACK: "GET_TRACK",
+	  PUBLIC_AUDIO_URL_RECEIVED: "PUBLIC_AUDIO_URL_RECEIVED",
+	  PUBLIC_IMAGE_URL_RECEIVED: "PUBLIC_IMAGE_URL_RECEIVED",
+	  PRESIGNED_URL_RECEIEVED: "PRESIGNED_URL_RECEIEVED",
+	  CLEAR_UPLOAD_STORE: "CLEAR_UPLOAD_STORE",
+	  PLAY_TRACK: "PLAY_TRACK",
+	  PAUSE_TRACK: "PAUSE_TRACK"
+	};
+
+/***/ },
+/* 258 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var React = __webpack_require__(1);
-	var ClientActions = __webpack_require__(298);
-	var SessionStore = __webpack_require__(248);
-	var Dropzone = __webpack_require__(271);
+	var ClientActions = __webpack_require__(247);
+	var SessionStore = __webpack_require__(259);
+	var Dropzone = __webpack_require__(277);
 	
 	var Signup = React.createClass({
 	  displayName: 'Signup',
@@ -27610,12 +28248,12 @@
 	module.exports = Signup;
 
 /***/ },
-/* 248 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Store = __webpack_require__(249).Store;
-	var Dispatcher = __webpack_require__(267);
-	var UserConstants = __webpack_require__(270);
+	var Store = __webpack_require__(260).Store;
+	var Dispatcher = __webpack_require__(250);
+	var UserConstants = __webpack_require__(254);
 	
 	var SessionStore = new Store(Dispatcher);
 	
@@ -27682,7 +28320,7 @@
 	module.exports = SessionStore;
 
 /***/ },
-/* 249 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -27694,15 +28332,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Container = __webpack_require__(250);
-	module.exports.MapStore = __webpack_require__(254);
-	module.exports.Mixin = __webpack_require__(266);
-	module.exports.ReduceStore = __webpack_require__(255);
-	module.exports.Store = __webpack_require__(256);
+	module.exports.Container = __webpack_require__(261);
+	module.exports.MapStore = __webpack_require__(264);
+	module.exports.Mixin = __webpack_require__(276);
+	module.exports.ReduceStore = __webpack_require__(265);
+	module.exports.Store = __webpack_require__(266);
 
 
 /***/ },
-/* 250 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27724,10 +28362,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxStoreGroup = __webpack_require__(251);
+	var FluxStoreGroup = __webpack_require__(262);
 	
-	var invariant = __webpack_require__(252);
-	var shallowEqual = __webpack_require__(253);
+	var invariant = __webpack_require__(253);
+	var shallowEqual = __webpack_require__(263);
 	
 	var DEFAULT_OPTIONS = {
 	  pure: true,
@@ -27885,7 +28523,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 251 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27904,7 +28542,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(252);
+	var invariant = __webpack_require__(253);
 	
 	/**
 	 * FluxStoreGroup allows you to execute a callback on every dispatch after
@@ -27966,62 +28604,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule invariant
-	 */
-	
-	"use strict";
-	
-	/**
-	 * Use invariant() to assert state which your program assumes to be true.
-	 *
-	 * Provide sprintf-style format (only %s is supported) and arguments
-	 * to provide information about what broke and what you were
-	 * expecting.
-	 *
-	 * The invariant message will be stripped in production, but the invariant
-	 * will remain to ensure logic does not differ in production.
-	 */
-	
-	var invariant = function (condition, format, a, b, c, d, e, f) {
-	  if (process.env.NODE_ENV !== 'production') {
-	    if (format === undefined) {
-	      throw new Error('invariant requires an error message argument');
-	    }
-	  }
-	
-	  if (!condition) {
-	    var error;
-	    if (format === undefined) {
-	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-	    } else {
-	      var args = [a, b, c, d, e, f];
-	      var argIndex = 0;
-	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
-	        return args[argIndex++];
-	      }));
-	    }
-	
-	    error.framesToPop = 1; // we don't care about invariant's own frame
-	    throw error;
-	  }
-	};
-	
-	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 253 */
+/* 263 */
 /***/ function(module, exports) {
 
 	/**
@@ -28076,7 +28659,7 @@
 	module.exports = shallowEqual;
 
 /***/ },
-/* 254 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28097,10 +28680,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxReduceStore = __webpack_require__(255);
-	var Immutable = __webpack_require__(265);
+	var FluxReduceStore = __webpack_require__(265);
+	var Immutable = __webpack_require__(275);
 	
-	var invariant = __webpack_require__(252);
+	var invariant = __webpack_require__(253);
 	
 	/**
 	 * This is a simple store. It allows caching key value pairs. An implementation
@@ -28226,7 +28809,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 255 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28247,10 +28830,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxStore = __webpack_require__(256);
+	var FluxStore = __webpack_require__(266);
 	
-	var abstractMethod = __webpack_require__(264);
-	var invariant = __webpack_require__(252);
+	var abstractMethod = __webpack_require__(274);
+	var invariant = __webpack_require__(253);
 	
 	var FluxReduceStore = (function (_FluxStore) {
 	  _inherits(FluxReduceStore, _FluxStore);
@@ -28333,7 +28916,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 256 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28352,11 +28935,11 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var _require = __webpack_require__(257);
+	var _require = __webpack_require__(267);
 	
 	var EventEmitter = _require.EventEmitter;
 	
-	var invariant = __webpack_require__(252);
+	var invariant = __webpack_require__(253);
 	
 	/**
 	 * This class should be extended by the stores in your application, like so:
@@ -28516,7 +29099,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 257 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -28529,14 +29112,14 @@
 	 */
 	
 	var fbemitter = {
-	  EventEmitter: __webpack_require__(258)
+	  EventEmitter: __webpack_require__(268)
 	};
 	
 	module.exports = fbemitter;
 
 
 /***/ },
-/* 258 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28555,11 +29138,11 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var EmitterSubscription = __webpack_require__(259);
-	var EventSubscriptionVendor = __webpack_require__(261);
+	var EmitterSubscription = __webpack_require__(269);
+	var EventSubscriptionVendor = __webpack_require__(271);
 	
-	var emptyFunction = __webpack_require__(263);
-	var invariant = __webpack_require__(262);
+	var emptyFunction = __webpack_require__(273);
+	var invariant = __webpack_require__(272);
 	
 	/**
 	 * @class BaseEventEmitter
@@ -28733,7 +29316,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 259 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -28754,7 +29337,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var EventSubscription = __webpack_require__(260);
+	var EventSubscription = __webpack_require__(270);
 	
 	/**
 	 * EmitterSubscription represents a subscription with listener and context data.
@@ -28786,7 +29369,7 @@
 	module.exports = EmitterSubscription;
 
 /***/ },
-/* 260 */
+/* 270 */
 /***/ function(module, exports) {
 
 	/**
@@ -28840,7 +29423,7 @@
 	module.exports = EventSubscription;
 
 /***/ },
-/* 261 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28859,7 +29442,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(262);
+	var invariant = __webpack_require__(272);
 	
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -28949,7 +29532,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 262 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29004,7 +29587,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 263 */
+/* 273 */
 /***/ function(module, exports) {
 
 	/**
@@ -29046,7 +29629,7 @@
 	module.exports = emptyFunction;
 
 /***/ },
-/* 264 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -29063,7 +29646,7 @@
 	
 	'use strict';
 	
-	var invariant = __webpack_require__(252);
+	var invariant = __webpack_require__(253);
 	
 	function abstractMethod(className, methodName) {
 	   true ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Subclasses of %s must override %s() with their own implementation.', className, methodName) : invariant(false) : undefined;
@@ -29073,7 +29656,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 265 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34057,7 +34640,7 @@
 	}));
 
 /***/ },
-/* 266 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -34074,9 +34657,9 @@
 	
 	'use strict';
 	
-	var FluxStoreGroup = __webpack_require__(251);
+	var FluxStoreGroup = __webpack_require__(262);
 	
-	var invariant = __webpack_require__(252);
+	var invariant = __webpack_require__(253);
 	
 	/**
 	 * `FluxContainer` should be preferred over this mixin, but it requires using
@@ -34180,280 +34763,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 267 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Dispatcher = __webpack_require__(268).Dispatcher;
-	module.exports = new Dispatcher();
-
-/***/ },
-/* 268 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright (c) 2014-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 */
-	
-	module.exports.Dispatcher = __webpack_require__(269);
-
-
-/***/ },
-/* 269 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright (c) 2014-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule Dispatcher
-	 * 
-	 * @preventMunge
-	 */
-	
-	'use strict';
-	
-	exports.__esModule = true;
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-	
-	var invariant = __webpack_require__(252);
-	
-	var _prefix = 'ID_';
-	
-	/**
-	 * Dispatcher is used to broadcast payloads to registered callbacks. This is
-	 * different from generic pub-sub systems in two ways:
-	 *
-	 *   1) Callbacks are not subscribed to particular events. Every payload is
-	 *      dispatched to every registered callback.
-	 *   2) Callbacks can be deferred in whole or part until other callbacks have
-	 *      been executed.
-	 *
-	 * For example, consider this hypothetical flight destination form, which
-	 * selects a default city when a country is selected:
-	 *
-	 *   var flightDispatcher = new Dispatcher();
-	 *
-	 *   // Keeps track of which country is selected
-	 *   var CountryStore = {country: null};
-	 *
-	 *   // Keeps track of which city is selected
-	 *   var CityStore = {city: null};
-	 *
-	 *   // Keeps track of the base flight price of the selected city
-	 *   var FlightPriceStore = {price: null}
-	 *
-	 * When a user changes the selected city, we dispatch the payload:
-	 *
-	 *   flightDispatcher.dispatch({
-	 *     actionType: 'city-update',
-	 *     selectedCity: 'paris'
-	 *   });
-	 *
-	 * This payload is digested by `CityStore`:
-	 *
-	 *   flightDispatcher.register(function(payload) {
-	 *     if (payload.actionType === 'city-update') {
-	 *       CityStore.city = payload.selectedCity;
-	 *     }
-	 *   });
-	 *
-	 * When the user selects a country, we dispatch the payload:
-	 *
-	 *   flightDispatcher.dispatch({
-	 *     actionType: 'country-update',
-	 *     selectedCountry: 'australia'
-	 *   });
-	 *
-	 * This payload is digested by both stores:
-	 *
-	 *   CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
-	 *     if (payload.actionType === 'country-update') {
-	 *       CountryStore.country = payload.selectedCountry;
-	 *     }
-	 *   });
-	 *
-	 * When the callback to update `CountryStore` is registered, we save a reference
-	 * to the returned token. Using this token with `waitFor()`, we can guarantee
-	 * that `CountryStore` is updated before the callback that updates `CityStore`
-	 * needs to query its data.
-	 *
-	 *   CityStore.dispatchToken = flightDispatcher.register(function(payload) {
-	 *     if (payload.actionType === 'country-update') {
-	 *       // `CountryStore.country` may not be updated.
-	 *       flightDispatcher.waitFor([CountryStore.dispatchToken]);
-	 *       // `CountryStore.country` is now guaranteed to be updated.
-	 *
-	 *       // Select the default city for the new country
-	 *       CityStore.city = getDefaultCityForCountry(CountryStore.country);
-	 *     }
-	 *   });
-	 *
-	 * The usage of `waitFor()` can be chained, for example:
-	 *
-	 *   FlightPriceStore.dispatchToken =
-	 *     flightDispatcher.register(function(payload) {
-	 *       switch (payload.actionType) {
-	 *         case 'country-update':
-	 *         case 'city-update':
-	 *           flightDispatcher.waitFor([CityStore.dispatchToken]);
-	 *           FlightPriceStore.price =
-	 *             getFlightPriceStore(CountryStore.country, CityStore.city);
-	 *           break;
-	 *     }
-	 *   });
-	 *
-	 * The `country-update` payload will be guaranteed to invoke the stores'
-	 * registered callbacks in order: `CountryStore`, `CityStore`, then
-	 * `FlightPriceStore`.
-	 */
-	
-	var Dispatcher = (function () {
-	  function Dispatcher() {
-	    _classCallCheck(this, Dispatcher);
-	
-	    this._callbacks = {};
-	    this._isDispatching = false;
-	    this._isHandled = {};
-	    this._isPending = {};
-	    this._lastID = 1;
-	  }
-	
-	  /**
-	   * Registers a callback to be invoked with every dispatched payload. Returns
-	   * a token that can be used with `waitFor()`.
-	   */
-	
-	  Dispatcher.prototype.register = function register(callback) {
-	    var id = _prefix + this._lastID++;
-	    this._callbacks[id] = callback;
-	    return id;
-	  };
-	
-	  /**
-	   * Removes a callback based on its token.
-	   */
-	
-	  Dispatcher.prototype.unregister = function unregister(id) {
-	    !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.unregister(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
-	    delete this._callbacks[id];
-	  };
-	
-	  /**
-	   * Waits for the callbacks specified to be invoked before continuing execution
-	   * of the current callback. This method should only be used by a callback in
-	   * response to a dispatched payload.
-	   */
-	
-	  Dispatcher.prototype.waitFor = function waitFor(ids) {
-	    !this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Must be invoked while dispatching.') : invariant(false) : undefined;
-	    for (var ii = 0; ii < ids.length; ii++) {
-	      var id = ids[ii];
-	      if (this._isPending[id]) {
-	        !this._isHandled[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Circular dependency detected while ' + 'waiting for `%s`.', id) : invariant(false) : undefined;
-	        continue;
-	      }
-	      !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
-	      this._invokeCallback(id);
-	    }
-	  };
-	
-	  /**
-	   * Dispatches a payload to all registered callbacks.
-	   */
-	
-	  Dispatcher.prototype.dispatch = function dispatch(payload) {
-	    !!this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.') : invariant(false) : undefined;
-	    this._startDispatching(payload);
-	    try {
-	      for (var id in this._callbacks) {
-	        if (this._isPending[id]) {
-	          continue;
-	        }
-	        this._invokeCallback(id);
-	      }
-	    } finally {
-	      this._stopDispatching();
-	    }
-	  };
-	
-	  /**
-	   * Is this Dispatcher currently dispatching.
-	   */
-	
-	  Dispatcher.prototype.isDispatching = function isDispatching() {
-	    return this._isDispatching;
-	  };
-	
-	  /**
-	   * Call the callback stored with the given id. Also do some internal
-	   * bookkeeping.
-	   *
-	   * @internal
-	   */
-	
-	  Dispatcher.prototype._invokeCallback = function _invokeCallback(id) {
-	    this._isPending[id] = true;
-	    this._callbacks[id](this._pendingPayload);
-	    this._isHandled[id] = true;
-	  };
-	
-	  /**
-	   * Set up bookkeeping needed when dispatching.
-	   *
-	   * @internal
-	   */
-	
-	  Dispatcher.prototype._startDispatching = function _startDispatching(payload) {
-	    for (var id in this._callbacks) {
-	      this._isPending[id] = false;
-	      this._isHandled[id] = false;
-	    }
-	    this._pendingPayload = payload;
-	    this._isDispatching = true;
-	  };
-	
-	  /**
-	   * Clear bookkeeping used for dispatching.
-	   *
-	   * @internal
-	   */
-	
-	  Dispatcher.prototype._stopDispatching = function _stopDispatching() {
-	    delete this._pendingPayload;
-	    this._isDispatching = false;
-	  };
-	
-	  return Dispatcher;
-	})();
-	
-	module.exports = Dispatcher;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 270 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  LOGIN_USER: "LOGIN_USER",
-	  ERROR_RECEIVED: "RECEIVE_ERROR",
-	  LOGOUT_USER: "LOGOUT_USER",
-	  DESTROY_USER: "DESTROY_USER",
-	  CREATE_USER: "CREATE_USER",
-	  LOGGEDIN_RESPONSE: "LOGGEDIN_RESPONSE"
-	};
-
-/***/ },
-/* 271 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34461,7 +34771,7 @@
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var React = __webpack_require__(1);
-	var accept = __webpack_require__(272);
+	var accept = __webpack_require__(278);
 	
 	var Dropzone = React.createClass({
 	  displayName: 'Dropzone',
@@ -34675,23 +34985,23 @@
 
 
 /***/ },
-/* 272 */
+/* 278 */
 /***/ function(module, exports) {
 
 	module.exports=function(t){function n(e){if(r[e])return r[e].exports;var o=r[e]={exports:{},id:e,loaded:!1};return t[e].call(o.exports,o,o.exports,n),o.loaded=!0,o.exports}var r={};return n.m=t,n.c=r,n.p="",n(0)}([function(t,n,r){"use strict";n.__esModule=!0,r(8),r(9),n["default"]=function(t,n){if(t&&n){var r=function(){var r=n.split(","),e=t.name||"",o=t.type||"",i=o.replace(/\/.*$/,"");return{v:r.some(function(t){var n=t.trim();return"."===n.charAt(0)?e.toLowerCase().endsWith(n.toLowerCase()):/\/\*$/.test(n)?i===n.replace(/\/.*$/,""):o===n})}}();if("object"==typeof r)return r.v}return!0},t.exports=n["default"]},function(t,n){var r=t.exports={version:"1.2.2"};"number"==typeof __e&&(__e=r)},function(t,n){var r=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=r)},function(t,n,r){var e=r(2),o=r(1),i=r(4),u=r(19),c="prototype",f=function(t,n){return function(){return t.apply(n,arguments)}},s=function(t,n,r){var a,p,l,d,y=t&s.G,h=t&s.P,v=y?e:t&s.S?e[n]||(e[n]={}):(e[n]||{})[c],x=y?o:o[n]||(o[n]={});y&&(r=n);for(a in r)p=!(t&s.F)&&v&&a in v,l=(p?v:r)[a],d=t&s.B&&p?f(l,e):h&&"function"==typeof l?f(Function.call,l):l,v&&!p&&u(v,a,l),x[a]!=l&&i(x,a,d),h&&((x[c]||(x[c]={}))[a]=l)};e.core=o,s.F=1,s.G=2,s.S=4,s.P=8,s.B=16,s.W=32,t.exports=s},function(t,n,r){var e=r(5),o=r(18);t.exports=r(22)?function(t,n,r){return e.setDesc(t,n,o(1,r))}:function(t,n,r){return t[n]=r,t}},function(t,n){var r=Object;t.exports={create:r.create,getProto:r.getPrototypeOf,isEnum:{}.propertyIsEnumerable,getDesc:r.getOwnPropertyDescriptor,setDesc:r.defineProperty,setDescs:r.defineProperties,getKeys:r.keys,getNames:r.getOwnPropertyNames,getSymbols:r.getOwnPropertySymbols,each:[].forEach}},function(t,n){var r=0,e=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++r+e).toString(36))}},function(t,n,r){var e=r(20)("wks"),o=r(2).Symbol;t.exports=function(t){return e[t]||(e[t]=o&&o[t]||(o||r(6))("Symbol."+t))}},function(t,n,r){r(26),t.exports=r(1).Array.some},function(t,n,r){r(25),t.exports=r(1).String.endsWith},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n){var r={}.toString;t.exports=function(t){return r.call(t).slice(8,-1)}},function(t,n,r){var e=r(10);t.exports=function(t,n,r){if(e(t),void 0===n)return t;switch(r){case 1:return function(r){return t.call(n,r)};case 2:return function(r,e){return t.call(n,r,e)};case 3:return function(r,e,o){return t.call(n,r,e,o)}}return function(){return t.apply(n,arguments)}}},function(t,n){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n,r){t.exports=function(t){var n=/./;try{"/./"[t](n)}catch(e){try{return n[r(7)("match")]=!1,!"/./"[t](n)}catch(o){}}return!0}},function(t,n){t.exports=function(t){try{return!!t()}catch(n){return!0}}},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n,r){var e=r(16),o=r(11),i=r(7)("match");t.exports=function(t){var n;return e(t)&&(void 0!==(n=t[i])?!!n:"RegExp"==o(t))}},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n,r){var e=r(2),o=r(4),i=r(6)("src"),u="toString",c=Function[u],f=(""+c).split(u);r(1).inspectSource=function(t){return c.call(t)},(t.exports=function(t,n,r,u){"function"==typeof r&&(o(r,i,t[n]?""+t[n]:f.join(String(n))),"name"in r||(r.name=n)),t===e?t[n]=r:(u||delete t[n],o(t,n,r))})(Function.prototype,u,function(){return"function"==typeof this&&this[i]||c.call(this)})},function(t,n,r){var e=r(2),o="__core-js_shared__",i=e[o]||(e[o]={});t.exports=function(t){return i[t]||(i[t]={})}},function(t,n,r){var e=r(17),o=r(13);t.exports=function(t,n,r){if(e(n))throw TypeError("String#"+r+" doesn't accept regex!");return String(o(t))}},function(t,n,r){t.exports=!r(15)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n){var r=Math.ceil,e=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?e:r)(t)}},function(t,n,r){var e=r(23),o=Math.min;t.exports=function(t){return t>0?o(e(t),9007199254740991):0}},function(t,n,r){"use strict";var e=r(3),o=r(24),i=r(21),u="endsWith",c=""[u];e(e.P+e.F*r(14)(u),"String",{endsWith:function(t){var n=i(this,t,u),r=arguments,e=r.length>1?r[1]:void 0,f=o(n.length),s=void 0===e?f:Math.min(o(e),f),a=String(t);return c?c.call(n,a,s):n.slice(s-a.length,s)===a}})},function(t,n,r){var e=r(5),o=r(3),i=r(1).Array||Array,u={},c=function(t,n){e.each.call(t.split(","),function(t){void 0==n&&t in i?u[t]=i[t]:t in[]&&(u[t]=r(12)(Function.call,[][t],n))})};c("pop,reverse,shift,keys,values,entries",1),c("indexOf,every,some,forEach,map,filter,find,findIndex,includes",3),c("join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill"),o(o.S,"Array",u)}]);
 
 /***/ },
-/* 273 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(32),
 	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(247),
-	    Upload = __webpack_require__(295),
-	    SessionStore = __webpack_require__(248),
-	    ModalStyle = __webpack_require__(274),
-	    ClientActions = __webpack_require__(298),
+	    Signup = __webpack_require__(258),
+	    Upload = __webpack_require__(280),
+	    SessionStore = __webpack_require__(259),
+	    ModalStyle = __webpack_require__(283),
+	    ClientActions = __webpack_require__(247),
 	    Modal = __webpack_require__(166);
 	
 	var NavBar = React.createClass({
@@ -34717,7 +35027,6 @@
 	  },
 	
 	  logoutUser: function () {
-	    debugger;
 	    ClientActions.logoutUser();
 	  },
 	
@@ -34811,7 +35120,264 @@
 	module.exports = NavBar;
 
 /***/ },
-/* 274 */
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    FileInput = __webpack_require__(281),
+	    UploadStore = __webpack_require__(282),
+	    SessionStore = __webpack_require__(259),
+	    Dropzone = __webpack_require__(277),
+	    ClientActions = __webpack_require__(247);
+	
+	var TrackUpload = React.createClass({
+	  displayName: 'TrackUpload',
+	
+	  getInitialState: function () {
+	    return {
+	      title: "",
+	      description: "",
+	      audioUrl: "",
+	      uploaderId: SessionStore.currentUser().id
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    UploadStore.addListener(this.onAudioUpload);
+	  },
+	
+	  onAudioUpload: function () {
+	    this.state.audioUrl = UploadStore.getAudioUrl();
+	    this.state.imageUrl = UploadStore.getImageUrl();
+	    document.getElementById('submitTrack').disabled = false;
+	  },
+	
+	  onChange: function (event) {
+	    var state = {};
+	    state[event.target.id] = event.target.value;
+	    this.setState(state);
+	  },
+	
+	  handleAudioUpload: function (event) {
+	    document.getElementById('submitTrack').disabled = true;
+	    event.preventDefault();
+	    var file = event.target.files[0];
+	    ClientActions.fetchPresignedUrl("audio/tracks", file.name, file);
+	  },
+	
+	  handleImageUpload: function (file) {
+	    document.getElementById('submitTrack').disabled = true;
+	    ClientActions.fetchPresignedUrl("images/tracks", file[0].name, file[0]);
+	  },
+	
+	  handleSubmit: function (event) {
+	    event.preventDefault();
+	    var track = { track: {
+	        title: this.state.title,
+	        description: this.state.description,
+	        audio_url: this.state.audioUrl,
+	        image_url: this.state.imageUrl,
+	        uploader_id: this.state.uploaderId
+	      } };
+	    ClientActions.createTrack(track);
+	    this.props.parent.closeModal();
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'uploadForm' },
+	      React.createElement(
+	        'h1',
+	        null,
+	        'Track Upload'
+	      ),
+	      React.createElement(
+	        'form',
+	        { className: 'upload', onSubmit: this.handleSubmit },
+	        React.createElement(
+	          'label',
+	          { className: 'formLabel' },
+	          'Title:',
+	          React.createElement('br', null),
+	          React.createElement('input', { type: 'text',
+	            className: 'textbox',
+	            value: this.state.title,
+	            onChange: this.onChange,
+	            id: 'title' })
+	        ),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'label',
+	          { className: 'formLabel' },
+	          'Description:',
+	          React.createElement('br', null),
+	          React.createElement('input', { type: 'text',
+	            className: 'textbox',
+	            value: this.state.description,
+	            onChange: this.onChange,
+	            id: 'description' })
+	        ),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'label',
+	          { className: 'formLabel' },
+	          'Audio File:',
+	          React.createElement(FileInput, { name: 'fileInput',
+	            accept: 'audio/*',
+	            id: 'fileInput',
+	            className: 'fileInput',
+	            onChange: this.handleAudioUpload })
+	        ),
+	        React.createElement(
+	          Dropzone,
+	          { onDrop: this.handleImageUpload, multiple: false },
+	          React.createElement(
+	            'p',
+	            null,
+	            'Drag and drop the album artwork here. (optional)'
+	          )
+	        ),
+	        React.createElement('input', { type: 'submit', id: 'submitTrack', value: 'Upload Track', disabled: 'true' })
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = TrackUpload;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var FileInput = React.createClass({
+	  getInitialState: function() {
+	    return {
+	      value: '',
+	      styles: {
+	        parent: {
+	          position: 'relative'
+	        },
+	        file: {
+	          position: 'absolute',
+	          top: 0,
+	          left: 0,
+	          opacity: 0,
+	          width: '100%',
+	          zIndex: 1
+	        },
+	        text: {
+	          position: 'relative',
+	          zIndex: -1
+	        }
+	      }
+	    };
+	  },
+	
+	  handleChange: function(e) {
+	    this.setState({
+	      value: e.target.value.split(/(\\|\/)/g).pop()
+	    });
+	    if (this.props.onChange) this.props.onChange(e);
+	  },
+	
+	  render: function() {
+	    return React.DOM.div({
+	        style: this.state.styles.parent
+	      },
+	
+	      // Actual file input
+	      React.DOM.input({
+	        type: 'file',
+	        name: this.props.name,
+	        className: this.props.className,
+	        onChange: this.handleChange,
+	        disabled: this.props.disabled,
+	        accept: this.props.accept,
+	        style: this.state.styles.file
+	      }),
+	
+	      // Emulated file input
+	      React.DOM.input({
+	        type: 'text',
+	        tabIndex: -1,
+	        name: this.props.name + '_filename',
+	        value: this.state.value,
+	        className: this.props.className,
+	        onChange: function() {},
+	        placeholder: this.props.placeholder,
+	        disabled: this.props.disabled,
+	        style: this.state.styles.text
+	      }));
+	  }
+	});
+	
+	module.exports = FileInput;
+
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(260).Store;
+	var Dispatcher = __webpack_require__(250);
+	var TrackConstants = __webpack_require__(257);
+	
+	var _publicAudioUrl = null;
+	var _publicImageUrl = null;
+	var _presignedAudioUrl = null;
+	
+	var UploadStore = new Store(Dispatcher);
+	
+	UploadStore.getAudioUrl = function () {
+	  return _publicAudioUrl;
+	};
+	
+	UploadStore.getImageUrl = function () {
+	  return _publicImageUrl;
+	};
+	
+	UploadStore.getPresignedAudioUrl = function () {
+	  return _presignedAudioUrl;
+	};
+	
+	var setPublicAudioUrl = function (url) {
+	  _publicAudioUrl = url;
+	  UploadStore.__emitChange();
+	};
+	
+	var setPublicImageUrl = function (url) {
+	  _publicImageUrl = url;
+	  UploadStore.__emitChange();
+	};
+	
+	var setPresignedAudioUrl = function (url) {
+	  _presignedAudioUrl = url;
+	};
+	
+	UploadStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case TrackConstants.PUBLIC_AUDIO_URL_RECEIVED:
+	      setPublicAudioUrl(payload.publicUrl);
+	      break;
+	    case TrackConstants.PUBLIC_IMAGE_URL_RECEIVED:
+	      setPublicImageUrl(payload.publicUrl);
+	      break;
+	    case TrackConstants.PRESIGNED_URL_RECEIEVED:
+	      setPresignedAudioUrl(payload.presignedUrl);
+	      break;
+	    case TrackConstants.CLEAR_UPLOAD_STORE:
+	      clearStore();
+	      break;
+	  }
+	};
+	
+	module.exports = UploadStore;
+
+/***/ },
+/* 283 */
 /***/ function(module, exports) {
 
 	CONTENT_STYLE = {
@@ -34843,172 +35409,63 @@
 	module.exports = CONTENT_STYLE;
 
 /***/ },
-/* 275 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
 	var React = __webpack_require__(1);
-	var ClientActions = __webpack_require__(298);
-	var TrackIndexItem = __webpack_require__(276);
-	var TrackStore = __webpack_require__(277);
-	var Masonry = __webpack_require__(311);
+	var ReactDOM = __webpack_require__(32);
+	var ReactPlayer = __webpack_require__(285);
+	var PlayStore = __webpack_require__(301);
 	
-	var shuffle = function (array) {
-	  var newArray = array;
-	  var currentIndex = newArray.length,
-	      temporaryValue,
-	      randomIndex;
-	
-	  while (0 !== currentIndex) {
-	
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	
-	    temporaryValue = newArray[currentIndex];
-	    newArray[currentIndex] = newArray[randomIndex];
-	    newArray[randomIndex] = temporaryValue;
-	  }
-	
-	  return newArray;
-	};
-	
-	var TrackIndex = React.createClass({
-	  displayName: 'TrackIndex',
+	var StreamBar = React.createClass({
+	  displayName: 'StreamBar',
 	
 	  getInitialState: function () {
+	    debugger;
 	    return {
-	      tracks: TrackStore.all()
+	      currentTrack: PlayStore.currentTrack(),
+	      isPlaying: PlayStore.isPlaying()
 	    };
 	  },
 	
 	  componentDidMount: function () {
-	    TrackStore.addListener(this.onChange);
-	    ClientActions.fetchTracks();
+	    debugger;
+	    PlayStore.addListener(this.onChange);
 	  },
 	
 	  onChange: function () {
-	    this.setState({ tracks: TrackStore.all() });
-	  },
-	
-	  render: function () {
-	    var shuffledTracks = shuffle(this.state.tracks);
-	    var allTracks = shuffledTracks.map(function (track) {
-	      return React.createElement(TrackIndexItem, { track: track, key: track.id });
+	    this.setState({
+	      currentTrack: PlayStore.currentTrack(),
+	      isPlaying: PlayStore.isPlaying()
 	    });
-	
-	    return React.createElement(
-	      Masonry,
-	      {
-	        className: 'trackList',
-	        elementType: 'ul',
-	        disableImagesLoaded: false
-	      },
-	      allTracks
-	    );
-	  }
-	});
-	
-	module.exports = TrackIndex;
-
-/***/ },
-/* 276 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var ClientActions = __webpack_require__(298);
-	var TrackStore = __webpack_require__(277);
-	var ReactPlayer = __webpack_require__(279);
-	
-	var TrackIndexItem = React.createClass({
-	  displayName: 'TrackIndexItem',
-	
-	  getInitialState: function () {
-	    return { playing: false };
-	  },
-	
-	  handleClick: function () {
-	    this.setState({ playing: !this.state.playing });
 	  },
 	
 	  render: function () {
-	    var track = this.props.track;
+	    debugger;
+	    var currentTrack = this.state.currentTrack;
+	    var audio_url;
+	
+	    if (currentTrack === null) {
+	      audio_url = "none";
+	    } else {
+	      audio_url = currentTrack.audio_url;
+	    }
+	
 	    return React.createElement(
-	      'ul',
-	      { className: 'track', key: track.id, id: track.id },
-	      React.createElement('img', { className: 'album-cover', src: track.image_url, onClick: this.handleClick }),
+	      'div',
+	      { className: 'stream-bar' },
 	      React.createElement(ReactPlayer, {
 	        className: 'track-player',
-	        url: track.audio_url,
-	        playing: this.state.playing })
+	        url: audio_url,
+	        playing: this.state.isPlaying })
 	    );
 	  }
 	});
 	
-	module.exports = TrackIndexItem;
+	module.exports = StreamBar;
 
 /***/ },
-/* 277 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(249).Store;
-	var Dispatcher = __webpack_require__(267);
-	var TrackConstants = __webpack_require__(278);
-	var TrackStore = new Store(Dispatcher);
-	
-	_tracks = {};
-	
-	TrackStore.all = function () {
-	  var tracks = [];
-	  for (var id in _tracks) {
-	    tracks.push(_tracks[id]);
-	  }
-	  return tracks;
-	};
-	
-	TrackStore.find = function (id) {
-	  return _tracks[id];
-	};
-	
-	var resetTracks = function (tracks) {
-	  _tracks = {};
-	  tracks.forEach(function (track) {
-	    _tracks[track.id] = track;
-	  });
-	};
-	
-	var resetTrack = function (track) {
-	  _tracks[track.id] = track;
-	};
-	
-	TrackStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case TrackConstants.GET_TRACKS:
-	      resetTracks(payload.tracks);
-	      break;
-	    case TrackConstants.GET_TRACK:
-	      resetTrack(payload.track);
-	      break;
-	  }
-	  TrackStore.__emitChange();
-	};
-	
-	module.exports = TrackStore;
-
-/***/ },
-/* 278 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  GET_TRACKS: "GET_TRACKS",
-	  GET_TRACK: "GET_TRACK",
-	  PUBLIC_AUDIO_URL_RECEIVED: "PUBLIC_AUDIO_URL_RECEIVED",
-	  PUBLIC_IMAGE_URL_RECEIVED: "PUBLIC_IMAGE_URL_RECEIVED",
-	  PRESIGNED_URL_RECEIEVED: "PRESIGNED_URL_RECEIEVED",
-	  CLEAR_UPLOAD_STORE: "CLEAR_UPLOAD_STORE"
-	};
-
-/***/ },
-/* 279 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35021,17 +35478,17 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	__webpack_require__(280);
+	__webpack_require__(286);
 	
-	__webpack_require__(284);
+	__webpack_require__(290);
 	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _props = __webpack_require__(285);
+	var _props = __webpack_require__(291);
 	
-	var _players = __webpack_require__(286);
+	var _players = __webpack_require__(292);
 	
 	var _players2 = _interopRequireDefault(_players);
 	
@@ -35146,10 +35603,10 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 280 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -35279,7 +35736,7 @@
 	    function lib$es6$promise$asap$$attemptVertx() {
 	      try {
 	        var r = require;
-	        var vertx = __webpack_require__(282);
+	        var vertx = __webpack_require__(288);
 	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	        return lib$es6$promise$asap$$useVertxTimer();
 	      } catch(e) {
@@ -36092,7 +36549,7 @@
 	    };
 	
 	    /* global define:true module:true window: true */
-	    if ("function" === 'function' && __webpack_require__(283)['amd']) {
+	    if ("function" === 'function' && __webpack_require__(289)['amd']) {
 	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return lib$es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module !== 'undefined' && module['exports']) {
 	      module['exports'] = lib$es6$promise$umd$$ES6Promise;
@@ -36104,10 +36561,10 @@
 	}).call(this);
 	
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(281)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(287)(module)))
 
 /***/ },
-/* 281 */
+/* 287 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -36123,20 +36580,20 @@
 
 
 /***/ },
-/* 282 */
+/* 288 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 283 */
+/* 289 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
 
 
 /***/ },
-/* 284 */
+/* 290 */
 /***/ function(module, exports) {
 
 	(function(self) {
@@ -36531,7 +36988,7 @@
 
 
 /***/ },
-/* 285 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36598,7 +37055,7 @@
 	};
 
 /***/ },
-/* 286 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36607,19 +37064,19 @@
 	  value: true
 	});
 	
-	var _YouTube = __webpack_require__(287);
+	var _YouTube = __webpack_require__(293);
 	
 	var _YouTube2 = _interopRequireDefault(_YouTube);
 	
-	var _SoundCloud = __webpack_require__(291);
+	var _SoundCloud = __webpack_require__(297);
 	
 	var _SoundCloud2 = _interopRequireDefault(_SoundCloud);
 	
-	var _Vimeo = __webpack_require__(292);
+	var _Vimeo = __webpack_require__(298);
 	
 	var _Vimeo2 = _interopRequireDefault(_Vimeo);
 	
-	var _FilePlayer = __webpack_require__(294);
+	var _FilePlayer = __webpack_require__(300);
 	
 	var _FilePlayer2 = _interopRequireDefault(_FilePlayer);
 	
@@ -36629,7 +37086,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 287 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36648,15 +37105,15 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _loadScript = __webpack_require__(288);
+	var _loadScript = __webpack_require__(294);
 	
 	var _loadScript2 = _interopRequireDefault(_loadScript);
 	
-	var _Base2 = __webpack_require__(289);
+	var _Base2 = __webpack_require__(295);
 	
 	var _Base3 = _interopRequireDefault(_Base2);
 	
-	var _utils = __webpack_require__(290);
+	var _utils = __webpack_require__(296);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -36857,7 +37314,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 288 */
+/* 294 */
 /***/ function(module, exports) {
 
 	
@@ -36928,7 +37385,7 @@
 
 
 /***/ },
-/* 289 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36941,7 +37398,7 @@
 	
 	var _react = __webpack_require__(1);
 	
-	var _props = __webpack_require__(285);
+	var _props = __webpack_require__(291);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -37046,7 +37503,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 290 */
+/* 296 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -37098,7 +37555,7 @@
 	}
 
 /***/ },
-/* 291 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37115,11 +37572,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _loadScript = __webpack_require__(288);
+	var _loadScript = __webpack_require__(294);
 	
 	var _loadScript2 = _interopRequireDefault(_loadScript);
 	
-	var _Base2 = __webpack_require__(289);
+	var _Base2 = __webpack_require__(295);
 	
 	var _Base3 = _interopRequireDefault(_Base2);
 	
@@ -37308,7 +37765,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 292 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37327,9 +37784,9 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _queryString = __webpack_require__(293);
+	var _queryString = __webpack_require__(299);
 	
-	var _Base2 = __webpack_require__(289);
+	var _Base2 = __webpack_require__(295);
 	
 	var _Base3 = _interopRequireDefault(_Base2);
 	
@@ -37491,7 +37948,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 293 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37587,7 +38044,7 @@
 
 
 /***/ },
-/* 294 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37604,7 +38061,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Base2 = __webpack_require__(289);
+	var _Base2 = __webpack_require__(295);
 	
 	var _Base3 = _interopRequireDefault(_Base2);
 	
@@ -37725,541 +38182,67 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 295 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1),
-	    FileInput = __webpack_require__(296),
-	    UploadStore = __webpack_require__(297),
-	    SessionStore = __webpack_require__(248),
-	    Dropzone = __webpack_require__(271),
-	    ClientActions = __webpack_require__(298);
-	
-	var TrackUpload = React.createClass({
-	  displayName: 'TrackUpload',
-	
-	  getInitialState: function () {
-	    return {
-	      title: "",
-	      description: "",
-	      audioUrl: "",
-	      uploaderId: SessionStore.currentUser().id
-	    };
-	  },
-	
-	  componentDidMount: function () {
-	    UploadStore.addListener(this.onAudioUpload);
-	  },
-	
-	  onAudioUpload: function () {
-	    this.state.audioUrl = UploadStore.getAudioUrl();
-	    this.state.imageUrl = UploadStore.getImageUrl();
-	    document.getElementById('submitTrack').disabled = false;
-	  },
-	
-	  onChange: function (event) {
-	    var state = {};
-	    state[event.target.id] = event.target.value;
-	    this.setState(state);
-	  },
-	
-	  handleAudioUpload: function (event) {
-	    document.getElementById('submitTrack').disabled = true;
-	    event.preventDefault();
-	    var file = event.target.files[0];
-	    ClientActions.fetchPresignedUrl("audio/tracks", file.name, file);
-	  },
-	
-	  handleImageUpload: function (file) {
-	    document.getElementById('submitTrack').disabled = true;
-	    ClientActions.fetchPresignedUrl("images/tracks", file[0].name, file[0]);
-	  },
-	
-	  handleSubmit: function (event) {
-	    event.preventDefault();
-	    var track = { track: {
-	        title: this.state.title,
-	        description: this.state.description,
-	        audio_url: this.state.audioUrl,
-	        image_url: this.state.imageUrl,
-	        uploader_id: this.state.uploaderId
-	      } };
-	    ClientActions.createTrack(track);
-	    this.props.parent.closeModal();
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'uploadForm' },
-	      React.createElement(
-	        'h1',
-	        null,
-	        'Track Upload'
-	      ),
-	      React.createElement(
-	        'form',
-	        { className: 'upload', onSubmit: this.handleSubmit },
-	        React.createElement(
-	          'label',
-	          { className: 'formLabel' },
-	          'Title:',
-	          React.createElement('br', null),
-	          React.createElement('input', { type: 'text',
-	            className: 'textbox',
-	            value: this.state.title,
-	            onChange: this.onChange,
-	            id: 'title' })
-	        ),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'label',
-	          { className: 'formLabel' },
-	          'Description:',
-	          React.createElement('br', null),
-	          React.createElement('input', { type: 'text',
-	            className: 'textbox',
-	            value: this.state.description,
-	            onChange: this.onChange,
-	            id: 'description' })
-	        ),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'label',
-	          { className: 'formLabel' },
-	          'Audio File:',
-	          React.createElement(FileInput, { name: 'fileInput',
-	            accept: 'audio/*',
-	            id: 'fileInput',
-	            className: 'fileInput',
-	            onChange: this.handleAudioUpload })
-	        ),
-	        React.createElement(
-	          Dropzone,
-	          { onDrop: this.handleImageUpload, multiple: false },
-	          React.createElement(
-	            'p',
-	            null,
-	            'Drag and drop the album artwork here. (optional)'
-	          )
-	        ),
-	        React.createElement('input', { type: 'submit', id: 'submitTrack', value: 'Upload Track', disabled: 'true' })
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = TrackUpload;
-
-/***/ },
-/* 296 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var FileInput = React.createClass({
-	  getInitialState: function() {
-	    return {
-	      value: '',
-	      styles: {
-	        parent: {
-	          position: 'relative'
-	        },
-	        file: {
-	          position: 'absolute',
-	          top: 0,
-	          left: 0,
-	          opacity: 0,
-	          width: '100%',
-	          zIndex: 1
-	        },
-	        text: {
-	          position: 'relative',
-	          zIndex: -1
-	        }
-	      }
-	    };
-	  },
-	
-	  handleChange: function(e) {
-	    this.setState({
-	      value: e.target.value.split(/(\\|\/)/g).pop()
-	    });
-	    if (this.props.onChange) this.props.onChange(e);
-	  },
-	
-	  render: function() {
-	    return React.DOM.div({
-	        style: this.state.styles.parent
-	      },
-	
-	      // Actual file input
-	      React.DOM.input({
-	        type: 'file',
-	        name: this.props.name,
-	        className: this.props.className,
-	        onChange: this.handleChange,
-	        disabled: this.props.disabled,
-	        accept: this.props.accept,
-	        style: this.state.styles.file
-	      }),
-	
-	      // Emulated file input
-	      React.DOM.input({
-	        type: 'text',
-	        tabIndex: -1,
-	        name: this.props.name + '_filename',
-	        value: this.state.value,
-	        className: this.props.className,
-	        onChange: function() {},
-	        placeholder: this.props.placeholder,
-	        disabled: this.props.disabled,
-	        style: this.state.styles.text
-	      }));
-	  }
-	});
-	
-	module.exports = FileInput;
-
-
-/***/ },
-/* 297 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(249).Store;
-	var Dispatcher = __webpack_require__(267);
-	var TrackConstants = __webpack_require__(278);
-	
-	var _publicAudioUrl = null;
-	var _publicImageUrl = null;
-	var _presignedAudioUrl = null;
-	
-	var UploadStore = new Store(Dispatcher);
-	
-	UploadStore.getAudioUrl = function () {
-	  return _publicAudioUrl;
-	};
-	
-	UploadStore.getImageUrl = function () {
-	  return _publicImageUrl;
-	};
-	
-	UploadStore.getPresignedAudioUrl = function () {
-	  return _presignedAudioUrl;
-	};
-	
-	var setPublicAudioUrl = function (url) {
-	  _publicAudioUrl = url;
-	  UploadStore.__emitChange();
-	};
-	
-	var setPublicImageUrl = function (url) {
-	  _publicImageUrl = url;
-	  UploadStore.__emitChange();
-	};
-	
-	var setPresignedAudioUrl = function (url) {
-	  _presignedAudioUrl = url;
-	};
-	
-	UploadStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case TrackConstants.PUBLIC_AUDIO_URL_RECEIVED:
-	      setPublicAudioUrl(payload.publicUrl);
-	      break;
-	    case TrackConstants.PUBLIC_IMAGE_URL_RECEIVED:
-	      setPublicImageUrl(payload.publicUrl);
-	      break;
-	    case TrackConstants.PRESIGNED_URL_RECEIEVED:
-	      setPresignedAudioUrl(payload.presignedUrl);
-	      break;
-	    case TrackConstants.CLEAR_UPLOAD_STORE:
-	      clearStore();
-	      break;
-	  }
-	};
-	
-	module.exports = UploadStore;
-
-/***/ },
-/* 298 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var UserUtil = __webpack_require__(299);
-	var TrackUtil = __webpack_require__(301);
-	
-	var ClientActions = window.CA = {
-	  loginUser: function (user) {
-	    UserUtil.loginUser(user);
-	  },
-	
-	  logoutUser: function () {
-	    UserUtil.logoutUser();
-	  },
-	
-	  createUser: function (user) {
-	    UserUtil.createUser(user);
-	  },
-	
-	  checkLoggedIn: function (user) {
-	    UserUtil.checkLoggedIn();
-	  },
-	
-	  fetchTracks: function () {
-	    TrackUtil.fetchAllTracks();
-	  },
-	
-	  createTrack: function (track) {
-	    console.log(track);
-	    TrackUtil.createTrack(track);
-	  },
-	
-	  fetchPresignedUrl: function (prefix, filename, file) {
-	    TrackUtil.getPresignedUrl({ prefix: prefix, filename: filename }, this.uploadToS3.bind(null, file));
-	  },
-	
-	  uploadToS3: function (presignedUrl, file) {
-	    TrackUtil.uploadToS3(presignedUrl, file);
-	  },
-	
-	  clearUploadStore: function () {
-	    TrackActions.clearUploadStore();
-	  }
-	};
-	
-	module.exports = ClientActions;
-
-/***/ },
-/* 299 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var UserActions = __webpack_require__(300);
-	
-	module.exports = {
-	  checkLoggedIn: function () {
-	    $.ajax({
-	      url: 'api/session',
-	      method: 'GET',
-	      success: function (response) {
-	        UserActions.loggedInResponse(response);
-	      },
-	      errors: function (response) {
-	        UserActions.receiveError(response.responseText);
-	      }
-	    });
-	  },
-	
-	  loginUser: function (formData) {
-	    $.ajax({
-	      url: 'api/session',
-	      method: 'POST',
-	      data: formData,
-	      success: function (user) {
-	        UserActions.loginUser(user);
-	      },
-	      error: function (response) {
-	        UserActions.receiveError(response.responseText);
-	      }
-	    });
-	  },
-	
-	  logoutUser: function () {
-	    $.ajax({
-	      url: 'api/session',
-	      method: 'DELETE',
-	      success: function () {
-	        UserActions.logoutUser();
-	      },
-	      error: function (response) {
-	        UserActions.receiveError(response.responseText);
-	      }
-	    });
-	  },
-	
-	  createUser: function (formData) {
-	    $.ajax({
-	      url: 'api/users',
-	      method: 'POST',
-	      data: formData,
-	      success: function (user) {
-	        UserActions.loginUser(user);
-	      },
-	      error: function (response) {
-	        UserActions.receiveError(response.responseText);
-	      }
-	    });
-	  }
-	};
-
-/***/ },
-/* 300 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Dispatcher = __webpack_require__(267);
-	var UserConstants = __webpack_require__(270);
-	
-	module.exports = {
-	
-	  loginUser: function (user) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.LOGIN_USER,
-	      user: user
-	    });
-	  },
-	
-	  logoutUser: function () {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.LOGOUT_USER
-	    });
-	  },
-	
-	  destroyUser: function (user) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.DESTROY_USER,
-	      user: user
-	    });
-	  },
-	
-	  receiveError: function (error) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.RECEIVE_ERROR,
-	      error: error
-	    });
-	  },
-	
-	  loggedInResponse: function (user) {
-	    Dispatcher.dispatch({
-	      actionType: UserConstants.LOGGEDIN_RESPONSE,
-	      user: user
-	    });
-	  }
-	};
-
-/***/ },
 /* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var TrackActions = __webpack_require__(302);
+	var Store = __webpack_require__(260).Store;
+	var Dispatcher = __webpack_require__(250);
+	var TrackConstants = __webpack_require__(257);
 	
-	module.exports = {
-	  fetchAllTracks: function () {
-	    $.ajax({
-	      url: 'api/tracks',
-	      method: 'GET',
-	      success: function (tracks) {
-	        TrackActions.getTracks(tracks);
-	      }
-	    });
-	  },
+	var PlayStore = new Store(Dispatcher);
 	
-	  getPresignedUrl: function (data, callback) {
-	    $.ajax({
-	      url: 'api/upload',
-	      method: 'GET',
-	      data: { prefix: data.prefix, filename: data.filename },
-	      success: function (url) {
-	        callback(url);
-	      }
-	    });
-	  },
+	var _nowPlaying = null;
+	var _isPlaying = false;
+	var _queue = [];
 	
-	  uploadToS3: function (file, url) {
-	    var presignedUrl = url.presigned_url;
-	    var publicUrl = url.public_url;
-	    var filetype = file.type;
-	    console.log(url);
-	
-	    var xhr = new XMLHttpRequest();
-	
-	    xhr.open('PUT', presignedUrl, true);
-	    xhr.setRequestHeader("Content-Type", filetype);
-	
-	    xhr.onreadystatechange = function () {
-	      if (xhr.readyState === XMLHttpRequest.DONE) {
-	        if (file.type.match(/^audio.*$/) !== null) {
-	          TrackActions.receivePublicAudioUrl(publicUrl);
-	        } else {
-	          TrackActions.receivePublicImageUrl(publicUrl);
-	        }
-	      }
-	    };
-	    xhr.send(file);
-	  },
-	
-	  createTrack: function (track) {
-	    $.ajax({
-	      url: 'api/tracks',
-	      method: 'POST',
-	      data: track,
-	      success: function (track) {
-	        TrackActions.getTrack(track);
-	      }
-	    });
-	  }
+	PlayStore.currentTrack = function () {
+	  return _nowPlaying;
 	};
+	
+	PlayStore.isPlaying = function () {
+	  return _isPlaying;
+	};
+	
+	PlayStore.queue = function () {
+	  return _queue;
+	};
+	
+	var playCurrentTrack = function (track) {
+	  if (_nowPlaying !== track) {
+	    _nowPlaying = track;
+	  }
+	  _isPlaying = true;
+	};
+	
+	var pauseCurrentTrack = function () {
+	  _isPlaying = false;
+	};
+	
+	PlayStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case TrackConstants.PLAY_TRACK:
+	      playCurrentTrack(payload.track);
+	      break;
+	    case TrackConstants.PAUSE_TRACK:
+	      pauseCurrentTrack();
+	      break;
+	  }
+	  PlayStore.__emitChange();
+	};
+	
+	module.exports = PlayStore;
 
 /***/ },
 /* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(267);
-	var TrackConstants = __webpack_require__(278);
-	
-	module.exports = {
-	  getTracks: function (tracks) {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.GET_TRACKS,
-	      tracks: tracks
-	    });
-	  },
-	
-	  getTrack: function (track) {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.GET_TRACK,
-	      track: track
-	    });
-	  },
-	
-	  receivePresignedURL: function (presignedUrl) {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.PRESIGNED_URL_RECEIEVED,
-	      presignedUrl: presignedUrl
-	    });
-	  },
-	
-	  receivePublicAudioUrl: function (publicUrl) {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.PUBLIC_AUDIO_URL_RECEIVED,
-	      publicUrl: publicUrl
-	    });
-	  },
-	
-	  receivePublicImageUrl: function (publicUrl) {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.PUBLIC_IMAGE_URL_RECEIVED,
-	      publicUrl: publicUrl
-	    });
-	  },
-	
-	  clearUploadStore: function () {
-	    Dispatcher.dispatch({
-	      actionType: TrackConstants.CLEAR_UPLOAD_STORE
-	    });
-	  }
-	
-	};
-
-/***/ },
-/* 303 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(32),
 	    Login = __webpack_require__(246),
-	    Signup = __webpack_require__(247),
-	    NavBar = __webpack_require__(273),
-	    TrackIndex = __webpack_require__(275),
-	    TrackUpload = __webpack_require__(295),
+	    Signup = __webpack_require__(258),
+	    NavBar = __webpack_require__(279),
+	    TrackIndex = __webpack_require__(303),
+	    TrackUpload = __webpack_require__(280),
 	    Modal = __webpack_require__(166);
 	
 	var masonryOptions = {
@@ -38273,7 +38256,20 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'splash' },
-	      React.createElement('div', { className: 'splash-image' }),
+	      React.createElement(
+	        'div',
+	        { className: 'splash-image' },
+	        React.createElement(
+	          'h3',
+	          { className: 'splash-slogan' },
+	          'discover new sounds'
+	        ),
+	        React.createElement(
+	          'h3',
+	          { className: 'splash-slogan' },
+	          'funkify your life'
+	        )
+	      ),
 	      React.createElement(
 	        'div',
 	        { className: 'splash-sample-text' },
@@ -38287,19 +38283,243 @@
 	module.exports = Splash;
 
 /***/ },
-/* 304 */,
-/* 305 */,
-/* 306 */,
-/* 307 */,
-/* 308 */,
-/* 309 */,
-/* 310 */,
-/* 311 */
+/* 303 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var TrackIndexItem = __webpack_require__(304);
+	var TrackStore = __webpack_require__(305);
+	var Masonry = __webpack_require__(308);
+	
+	var shuffle = function (array) {
+	  var newArray = array;
+	  var currentIndex = newArray.length,
+	      temporaryValue,
+	      randomIndex;
+	
+	  while (0 !== currentIndex) {
+	
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+	
+	    temporaryValue = newArray[currentIndex];
+	    newArray[currentIndex] = newArray[randomIndex];
+	    newArray[randomIndex] = temporaryValue;
+	  }
+	
+	  return newArray;
+	};
+	
+	var TrackIndex = React.createClass({
+	  displayName: 'TrackIndex',
+	
+	  getInitialState: function () {
+	    return {
+	      tracks: TrackStore.all()
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    TrackStore.addListener(this.onChange);
+	    ClientActions.fetchTracks();
+	  },
+	
+	  onChange: function () {
+	    this.setState({ tracks: TrackStore.all() });
+	  },
+	
+	  render: function () {
+	    var shuffledTracks = shuffle(this.state.tracks);
+	    var allTracks = shuffledTracks.map(function (track) {
+	      return React.createElement(TrackIndexItem, { track: track, key: track.id });
+	    });
+	
+	    return React.createElement(
+	      Masonry,
+	      {
+	        className: 'trackList',
+	        elementType: 'ul',
+	        disableImagesLoaded: false
+	      },
+	      allTracks
+	    );
+	  }
+	});
+	
+	module.exports = TrackIndex;
+
+/***/ },
+/* 304 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var TrackStore = __webpack_require__(305);
+	var PlayButton = __webpack_require__(306);
+	var PauseButton = __webpack_require__(307);
+	
+	var TrackIndexItem = React.createClass({
+	  displayName: 'TrackIndexItem',
+	
+	
+	  getInitialState: function () {
+	    return { isPlaying: false };
+	  },
+	
+	  handleClick: function () {
+	    console.log("track clicked:", this.props.track);
+	    if (this.state.isPlaying) {
+	      ClientActions.pauseTrack();
+	      this.setState({ isPlaying: false });
+	    } else {
+	      ClientActions.playTrack(this.props.track);
+	      this.setState({ isPlaying: true });
+	    }
+	  },
+	
+	  render: function () {
+	    var track = this.props.track;
+	    var playPauseButton;
+	    if (this.state.isPlaying) {
+	      playPauseButton = React.createElement(
+	        'div',
+	        { className: 'play-button-container' },
+	        React.createElement(PauseButton, { className: 'play-button' })
+	      );
+	    } else {
+	      playPauseButton = React.createElement(
+	        'div',
+	        { className: 'play-button-container' },
+	        React.createElement(PlayButton, { className: 'play-button' })
+	      );
+	    }
+	    return React.createElement(
+	      'ul',
+	      { className: 'track hvr-shrink', key: track.id, id: track.id },
+	      React.createElement('img', { className: 'album-cover', src: track.image_url }),
+	      playPauseButton,
+	      React.createElement(
+	        'div',
+	        { className: 'track-title-container' },
+	        React.createElement(
+	          'p',
+	          { className: 'track-title' },
+	          track.title
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = TrackIndexItem;
+
+/***/ },
+/* 305 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(260).Store;
+	var Dispatcher = __webpack_require__(250);
+	var TrackConstants = __webpack_require__(257);
+	var TrackStore = new Store(Dispatcher);
+	
+	_tracks = {};
+	
+	TrackStore.all = function () {
+	  var tracks = [];
+	  for (var id in _tracks) {
+	    tracks.push(_tracks[id]);
+	  }
+	  return tracks;
+	};
+	
+	TrackStore.find = function (id) {
+	  return _tracks[id];
+	};
+	
+	var resetTracks = function (tracks) {
+	  _tracks = {};
+	  tracks.forEach(function (track) {
+	    _tracks[track.id] = track;
+	  });
+	  TrackStore.__emitChange();
+	};
+	
+	var resetTrack = function (track) {
+	  _tracks[track.id] = track;
+	  TrackStore.__emitChange();
+	};
+	
+	TrackStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case TrackConstants.GET_TRACKS:
+	      resetTracks(payload.tracks);
+	      break;
+	    case TrackConstants.GET_TRACK:
+	      resetTrack(payload.track);
+	      break;
+	  }
+	};
+	
+	module.exports = TrackStore;
+
+/***/ },
+/* 306 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	
+	var PlayButton = React.createClass({
+	  displayName: 'PlayButton',
+	
+	  handleClick: function () {
+	    ClientActions.playTrack(this.props.track);
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'play-button', onClick: this.handleClick },
+	      '▶ Play'
+	    );
+	  }
+	});
+	
+	module.exports = PlayButton;
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	
+	var PauseButton = React.createClass({
+	  displayName: 'PauseButton',
+	
+	  handleClick: function () {
+	    ClientActions.pauseTrack();
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'pause-button' },
+	      '▶ Pause'
+	    );
+	  }
+	});
+	
+	module.exports = PauseButton;
+
+/***/ },
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isBrowser = typeof window !== 'undefined';
-	var Masonry = isBrowser ? window.Masonry || __webpack_require__(312) : null;
-	var imagesloaded = isBrowser ? __webpack_require__(319) : null;
+	var Masonry = isBrowser ? window.Masonry || __webpack_require__(309) : null;
+	var imagesloaded = isBrowser ? __webpack_require__(316) : null;
 	var React = __webpack_require__(1);
 	var refName = 'masonryContainer';
 	
@@ -38495,7 +38715,7 @@
 
 
 /***/ },
-/* 312 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -38512,8 +38732,8 @@
 	  if ( true ) {
 	    // AMD
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	        __webpack_require__(313),
-	        __webpack_require__(315)
+	        __webpack_require__(310),
+	        __webpack_require__(312)
 	      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if ( typeof module == 'object' && module.exports ) {
 	    // CommonJS
@@ -38705,7 +38925,7 @@
 
 
 /***/ },
-/* 313 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -38721,10 +38941,10 @@
 	  if ( true ) {
 	    // AMD - RequireJS
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	        __webpack_require__(314),
-	        __webpack_require__(315),
-	        __webpack_require__(316),
-	        __webpack_require__(318)
+	        __webpack_require__(311),
+	        __webpack_require__(312),
+	        __webpack_require__(313),
+	        __webpack_require__(315)
 	      ], __WEBPACK_AMD_DEFINE_RESULT__ = function( EvEmitter, getSize, utils, Item ) {
 	        return factory( window, EvEmitter, getSize, utils, Item);
 	      }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -39648,7 +39868,7 @@
 
 
 /***/ },
-/* 314 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -39763,7 +39983,7 @@
 
 
 /***/ },
-/* 315 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -39978,7 +40198,7 @@
 
 
 /***/ },
-/* 316 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -39995,7 +40215,7 @@
 	  if ( true ) {
 	    // AMD
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	      __webpack_require__(317)
+	      __webpack_require__(314)
 	    ], __WEBPACK_AMD_DEFINE_RESULT__ = function( matchesSelector ) {
 	      return factory( window, matchesSelector );
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -40219,7 +40439,7 @@
 
 
 /***/ },
-/* 317 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -40278,7 +40498,7 @@
 
 
 /***/ },
-/* 318 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -40291,8 +40511,8 @@
 	  if ( true ) {
 	    // AMD - RequireJS
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	        __webpack_require__(314),
-	        __webpack_require__(315)
+	        __webpack_require__(311),
+	        __webpack_require__(312)
 	      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if ( typeof module == 'object' && module.exports ) {
 	    // CommonJS - Browserify, Webpack
@@ -40835,7 +41055,7 @@
 
 
 /***/ },
-/* 319 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -40852,7 +41072,7 @@
 	  if ( true ) {
 	    // AMD
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	      __webpack_require__(314)
+	      __webpack_require__(311)
 	    ], __WEBPACK_AMD_DEFINE_RESULT__ = function( EvEmitter ) {
 	      return factory( window, EvEmitter );
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
