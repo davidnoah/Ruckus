@@ -16,6 +16,16 @@ var Login = React.createClass({
     this.props.parent.closeModal();
   },
 
+  guestLogin: function() {
+    var user = {user: {
+      username: "davidnoah",
+      password: "password"
+    }};
+
+    ClientActions.loginUser(user);
+    this.props.parent.closeModal();
+  },
+
   onChange: function(event) {
     var state = {};
     state[event.target.id] = event.target.value;
@@ -50,6 +60,8 @@ var Login = React.createClass({
           <input type="submit" value="Login"/>
 
         </form>
+
+        <button className="guest-button" onClick={this.guestLogin}>Demo Login!</button>
       </div>
     );
   }

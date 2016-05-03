@@ -1,21 +1,21 @@
 .navbar {
   display: flex;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 9999;
   position: fixed;
   background-color: #262626;
   align-items: center;
   flex-direction: row;
-  justify-content: space-between;;
+  justify-content: space-between;
   height: 40px;
-  width: 922px;
+  width: 100%;
   margin: 0;
   border-bottom: 1px solid #595959;
   padding-left: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
  }
 
  .navbar_title {

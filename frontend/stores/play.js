@@ -17,8 +17,22 @@ PlayStore.isPlaying = function() {
   return _isPlaying;
 };
 
+PlayStore.isTrackPlaying = function(track) {
+  if (_nowPlaying === track && _isPlaying) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 PlayStore.queue = function() {
   return _queue;
+};
+
+var resetPlayStore = function() {
+  _nowPlaying = null;
+  _isPlaying = false;
+  _queue = [];
 };
 
 var playCurrentTrack = function(track) {
@@ -39,6 +53,9 @@ PlayStore.__onDispatch = function(payload) {
       break;
     case TrackConstants.PAUSE_TRACK:
       pauseCurrentTrack();
+      break;
+    case TrackConstants.RESET_PLAY_STORE:
+      resetPlayStore();
       break;
   }
   PlayStore.__emitChange();

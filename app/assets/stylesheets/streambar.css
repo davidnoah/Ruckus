@@ -1,0 +1,56 @@
+.stream-bar {
+  display: flex;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  position: fixed;
+  background-color: #262626;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 50px;
+  width: 100%;
+  margin: 0;
+  border-top: 1px solid #595959;
+  padding-left: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+ }
+
+ .stream-play-button {
+   align-self: flex-start;
+   color: white;
+   font-size: 20px;
+ }
+
+ .stream-play-button:hover {
+   cursor: pointer;
+ }
+
+ .stream-album-image {
+   height: 50px;
+   width: 50px;
+ }
+
+ .stream-track-title {
+   color: white;
+   font-family: Varela Round, Consolas, sans-serif;
+ }
+
+ .stream-track-time {
+   color: white;
+   font-family: Varela Round, Consolas, sans-serif;
+ }
+
+ .progressbar-container {
+   width: 300px;
+   height: 10px;
+   background-color: black;
+ }
+
+ .progressbar-progress {
+   background-color: white;
+ }

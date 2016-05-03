@@ -39,3 +39,8 @@ Track.create!(
                 num_played: 0,
                 playing: false
                 )
+  User.create!(
+                username: "davidnoah",
+                password: "password",
+                email: "david.t.noah@gmail.com"
+  )

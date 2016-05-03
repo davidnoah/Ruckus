@@ -41,6 +41,10 @@ var ClientActions = window.CA = {
 
   pauseTrack: function() {
     TrackUtil.pauseTrack();
+  },
+
+  resetPlayStore: function() {
+    TrackUtil.resetPlayStore();
   }
 };
 

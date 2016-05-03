@@ -2,23 +2,21 @@ var React = require('react');
 var ClientActions = require('../../actions/client_actions');
 var TrackStore = require('../../stores/track');
 var PlayButton = require('../play.jsx');
+var PlayStore = require('../../stores/play');
 var PauseButton = require('../pause.jsx');
 
 var TrackIndexItem = React.createClass({
 
   getInitialState: function() {
-    return {isPlaying: false};
+    return {isPlaying: PlayStore.isTrackPlaying(this.props.track)};
   },
 
-  handleClick: function() {
-    console.log("track clicked:", this.props.track);
-    if (this.state.isPlaying) {
-      ClientActions.pauseTrack();
-      this.setState({isPlaying: false});
-    } else {
-      ClientActions.playTrack(this.props.track);
-      this.setState({isPlaying: true});
-    }
+  componentDidMount: function() {
+    PlayStore.addListener(this.onChange);
+  },
+
+  onChange: function() {
+    this.setState({isPlaying: PlayStore.isTrackPlaying(this.props.track)});
   },
 
   render: function() {
@@ -26,11 +24,11 @@ var TrackIndexItem = React.createClass({
     var playPauseButton;
     if (this.state.isPlaying) {
       playPauseButton = <div className="play-button-container">
-                           <PauseButton className="play-button"/>
+                           <PauseButton className="play-button" track={track} onClick={this.handleClick}/>
                          </div>;
     } else {
       playPauseButton = <div className="play-button-container">
-                          <PlayButton className="play-button"/>
+                          <PlayButton className="play-button" track={track} onClick={this.handleClick}/>
                         </div>;
     }
     return (

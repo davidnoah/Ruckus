@@ -62,5 +62,9 @@ module.exports = {
 
   pauseTrack: function() {
     TrackActions.pauseTrack();
+  },
+
+  resetPlayStore: function() {
+    TrackActions.resetPlayStore();
   }
 };

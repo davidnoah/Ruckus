@@ -16,8 +16,17 @@
  @import url(https://fonts.googleapis.com/css?family=Audiowide);
 
  body {
+   display:flex;
    margin: 0;
    background-color: black;
+   width: 100%;
+   justify-content: center;
+ }
+
+ #root {
+   width: 100%;
+   display: flex;
+   justify-content: center;
  }
 
  html {
@@ -25,22 +34,29 @@
    justify-content: center;
  }
 
+ .splash {
+   width: 100%;
+   justify-content: center;
+   align-self: center;
+   align-items: center;
+ }
+
  .app {
-   display: block;;
+   display: flex;
+   justify-content: center;
    width: 100%;
  }
 
  .splash-image {
    display: flex;
-   justify-content: space-between;
-   border: 1px solid #595959;
-   height: 450px;
-   width: 920px;
-   border-radius: 10px;
-   margin-top: 60px;
-   background-size: 920px;
-   opacity: 0.8;
-   background-image: url("http://res.cloudinary.com/davidnoah/image/upload/v1462066739/record_splash_ljnk4a.jpg");
+   justify-content: flex-start;
+   align-self: center;
+   flex-direction: column;
+   height: 930px;
+   width: 100%;
+   margin-top: 40px;
+   background-size: 100%;
+   background-image: url("http://res.cloudinary.com/davidnoah/image/upload/b_rgb:000,o_28/v1462066739/record_splash_ljnk4a.jpg");
  }
 
  .splash-sample-text {
@@ -50,14 +66,69 @@
    font-size: 24px;
    color: white;
    width: 250px;
+   opacity: 1;
  }
 
  .splash-slogan {
    font-family: 'Audiowide', cursive;
    padding-right: 5px;
    padding-left: 5px;
+   align-self: center;
+   color: white;
+   font-size: 56px;
+ }
+
+ .splash-description {
+   font-family: Open Sans,sans-serif;
+   font-weight: 300;
+   padding-right: 5px;
+   padding-left: 5px;
+   font-size: 24px;
+   align-self: center;
+   color: #b3b3b3;
+ }
+
+ .fa {
+   align-self: center;
+   color: white;
+ }
+
+ .splash-icons {
+   align-self: center;
+   display: flex;
+   justify-content: space-between;
+   width: 950px;
+   height: auto;
+   margin-top: 50px;
+ }
+
+ .splash-icon-container {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .splash-icon-caption {
+   font-family: Open Sans,sans-serif;
+   font-weight: 300;
+   font-size: 28px;
+   color: white;
+   align-self: center;
+   margin-bottom: 15px;
+ }
+
+ .splash-icon-description {
+   font-family: Open Sans,sans-serif;
+   font-weight: 300;
+   font-size: 18px;
+   align-self: center;
+   color: #b3b3b3;
+   margin: 0px;
+   margin-top: 5px;
  }
 
 @import url('./navbar.css');
 @import url('./modal.css');
 @import url('./track.css');
+@import url('./streambar.css');

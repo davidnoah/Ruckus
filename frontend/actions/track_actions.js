@@ -54,6 +54,12 @@ module.exports = {
     Dispatcher.dispatch({
       actionType: TrackConstants.PAUSE_TRACK,
     });
+  },
+
+  resetPlayStore: function() {
+    Dispatcher.dispatch({
+      actionType: TrackConstants.RESET_PLAY_STORE
+    });
   }
 
 };

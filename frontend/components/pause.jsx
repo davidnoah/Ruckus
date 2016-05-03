@@ -8,8 +8,8 @@ var PauseButton = React.createClass({
 
   render: function() {
     return (
-      <div className="pause-button">
-        ▶ Pause
+      <div className="play-button" onClick={this.handleClick}>
+        ❚❚ Pause
       </div>
     );
   }
