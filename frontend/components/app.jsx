@@ -8,20 +8,40 @@ var React = require('react'),
     TrackIndex = require('./tracks/trackIndex.js'),
     TrackUpload = require('./tracks/trackUpload'),
     PlayStore = require('../stores/play'),
+    UserProfile = require('./user/userProfile'),
+    SessionStore = require('../stores/session'),
     Modal = require('react-modal');
 
 
 var App = React.createClass({
   getInitialState: function() {
-    return {trackNull: PlayStore.currentTrack()};
+    return {
+      trackNull: PlayStore.currentTrack(),
+      currentUser: SessionStore.currentUser()
+    };
   },
+
 
   componentDidMount: function() {
     PlayStore.addListener(this.onChange);
+    SessionStore.addListener(this.changeUser);
+  },
+
+  changeUser: function() {
+    this.setState({currentUser: SessionStore.currentUser()});
   },
 
   onChange: function() {
     this.setState({trackNull: PlayStore.currentTrack()});
+  },
+
+  userProfileCB: function() {
+    var userRoute = "user/" + this.state.currentUser.id.toString() + "/music";
+    this.props.history.push(userRoute);
+  },
+
+  homeCB: function() {
+    this.props.history.push("/");
   },
 
   render: function() {
@@ -34,7 +54,9 @@ var App = React.createClass({
 
     return (
       <div className="app">
-        <NavBar />
+        <NavBar
+          homeCB={this.homeCB}
+          userProfileCB={this.userProfileCB}/>
         {this.props.children}
         <br/>
         {streamBar}

@@ -19,20 +19,28 @@ var TrackIndexItem = React.createClass({
     this.setState({isPlaying: PlayStore.isTrackPlaying(this.props.track)});
   },
 
+  handleClick: function() {
+    if (this.state.isPlaying === true) {
+      ClientActions.pauseTrack();
+    } else {
+      ClientActions.playTrack(this.props.track);
+    }
+  },
+
   render: function() {
     var track = this.props.track;
     var playPauseButton;
     if (this.state.isPlaying) {
       playPauseButton = <div className="play-button-container">
-                           <PauseButton className="play-button" track={track} onClick={this.handleClick}/>
+                           <PauseButton className="play-button" track={track} />
                          </div>;
     } else {
       playPauseButton = <div className="play-button-container">
-                          <PlayButton className="play-button" track={track} onClick={this.handleClick}/>
+                          <PlayButton className="play-button" track={track} />
                         </div>;
     }
     return (
-      <ul className="track hvr-shrink" key={track.id} id={track.id}>
+      <ul className="track hvr-shrink" key={track.id} id={track.id} onClick={this.handleClick}>
         <img className='album-cover' src={track.image_url} />
           {playPauseButton}
         <div className="track-title-container">

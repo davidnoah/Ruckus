@@ -67,6 +67,7 @@
    color: white;
    width: 250px;
    opacity: 1;
+   padding-left: 5px;
  }
 
  .splash-slogan {
@@ -132,3 +133,4 @@
 @import url('./modal.css');
 @import url('./track.css');
 @import url('./streambar.css');
+@import url('./search.css');

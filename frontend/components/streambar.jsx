@@ -37,6 +37,9 @@ var StreamBar = React.createClass({
   },
 
   onChange: function() {
+    if (this.state.currentTrack !== PlayStore.currentTrack()) {
+      this.setState({progress: 0, trackElapsed: 0});
+    }
     this.setState({
       currentTrack: PlayStore.currentTrack(),
       isPlaying: PlayStore.isPlaying()
@@ -73,11 +76,11 @@ var StreamBar = React.createClass({
     var playPauseButton;
     if (this.state.isPlaying) {
       playPauseButton = <div className="stream-play-container">
-                           <PauseButton className="stream-play-button" track={currentTrack} onClick={this.handleClick}/>
+                           <PauseButton className="stream-play-button" track={currentTrack} parent={this} />
                          </div>;
     } else {
       playPauseButton = <div className="stream-play-container">
-                          <PlayButton className="stream-play-button" track={currentTrack} onClick={this.handleClick}/>
+                          <PlayButton className="stream-play-button" track={currentTrack} parent={this} />
                         </div>;
     }
 
@@ -92,12 +95,16 @@ var StreamBar = React.createClass({
     }
     return (
       <ul className="stream-bar" >
-        <img className="stream-album-image" src={imageUrl} />
-        <p className="stream-track-title">{trackTitle}</p>
-        {playPauseButton}
-        <p className="stream-track-time">{this.secondsToHms(this.state.trackElapsed)}</p>
-        <ProgressBar completed={this.state.progress} style={{backgroundColor: 'white'}} />
-        <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
+        <div className="stream-section" >
+          <img className="stream-album-image" src={imageUrl} />
+          {playPauseButton}
+          <p className="stream-track-title">{trackTitle}</p>
+        </div>
+        <div className="stream-section" >
+          <p className="stream-track-time">{this.secondsToHms(this.state.trackElapsed)}</p>
+          <ProgressBar completed={this.state.progress} style={{backgroundColor: 'white'}} />
+          <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
+        </div>
         <ReactPlayer
           className='track-player'
           onDuration={this.onDuration}

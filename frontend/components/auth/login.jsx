@@ -35,6 +35,11 @@ var Login = React.createClass({
   render: function() {
     return (
       <div className="loginForm" >
+        <div className="modal-title-container" >
+          <h3 className="modal-title">Login</h3>
+          <button className="close-modal-button" onClick={this.props.parent.closeModal}>X</button>
+        </div>
+
         <form className='login' onSubmit={this.handleSubmit}>
 
           <label className="formLabel">
@@ -57,11 +62,12 @@ var Login = React.createClass({
           </label>
           <br/>
 
-          <input type="submit" value="Login"/>
+          <input className="submit-button" type="submit" value="Login"/>
+          <br/>
 
+          <button className="submit-button" onClick={this.guestLogin}>Demo Login!</button>
         </form>
 
-        <button className="guest-button" onClick={this.guestLogin}>Demo Login!</button>
       </div>
     );
   }

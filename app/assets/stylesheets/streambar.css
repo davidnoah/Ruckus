@@ -23,7 +23,10 @@
  .stream-play-button {
    align-self: flex-start;
    color: white;
-   font-size: 20px;
+   font-size: 28px;
+   align-self: flex-start;
+   float: left;
+   margin-right: 20px;
  }
 
  .stream-play-button:hover {
@@ -33,24 +36,45 @@
  .stream-album-image {
    height: 50px;
    width: 50px;
+   align-self: flex-start;
+   float: left;
+   margin-right: 20px;
  }
 
  .stream-track-title {
    color: white;
    font-family: Varela Round, Consolas, sans-serif;
+   align-self: flex-end;
+   float: left;
+   margin-right: 20px;
  }
 
  .stream-track-time {
    color: white;
    font-family: Varela Round, Consolas, sans-serif;
+   margin-right: 20px;
+   margin-left: 20px;
+ }
+
+ .stream-section {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: space-between;
+   border-right: 1px solid #1a1a1a;
+   border-left: 1px solid #1a1a1a;
+
  }
 
  .progressbar-container {
-   width: 300px;
+   width: 800px;
    height: 10px;
    background-color: black;
+   margin-right: 20px;
+   border-radius: 5px;
  }
 
  .progressbar-progress {
-   background-color: white;
+   background-color: white !important;
+   border-radius: 5px;
  }

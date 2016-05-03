@@ -11,6 +11,7 @@ var TrackUpload = React.createClass({
       title: "",
       description: "",
       audioUrl: "",
+      imageUrl: "",
       uploaderId: SessionStore.currentUser().id
     };
   },
@@ -20,8 +21,8 @@ var TrackUpload = React.createClass({
   },
 
   onAudioUpload: function() {
-      this.state.audioUrl = UploadStore.getAudioUrl();
-      this.state.imageUrl = UploadStore.getImageUrl();
+      this.setState({audioUrl: UploadStore.getAudioUrl()});
+      this.setState({imageUrl: UploadStore.getImageUrl()});
       document.getElementById('submitTrack').disabled = false;
   },
 
@@ -57,9 +58,17 @@ var TrackUpload = React.createClass({
   },
 
   render: function() {
+    var picturePreview = {
+      backgroundImage: "url(" + this.state.imageUrl + ")"
+    };
+
     return (
       <div className='uploadForm'>
-        <h1>Track Upload</h1>
+        <div className="modal-title-container" >
+          <h3 className="modal-title">Upload Track</h3>
+          <button className="close-modal-button" onClick={this.props.parent.closeModal}>X</button>
+        </div>
+
         <form className='upload' onSubmit={this.handleSubmit}>
 
           <label className="formLabel">
@@ -84,22 +93,24 @@ var TrackUpload = React.createClass({
           </label>
           <br/>
 
-          <label className="formLabel">
-            Audio File:
+          <label className="formInputLabel">
             <FileInput name="fileInput"
                        accept="audio/*"
                        id="fileInput"
+                       placeholder="Choose File"
                        className="fileInput"
                        onChange={this.handleAudioUpload}/>
           </label>
+          <br/>
 
-          <Dropzone onDrop={this.handleImageUpload} multiple={false} >
-          <p>
-            Drag and drop the album artwork here. (optional)
-          </p>
+          <Dropzone className="drop-zone" style={picturePreview} onDrop={this.handleImageUpload} multiple={false} >
+            <p className="drop-text">
+              Drag and drop the album artwork here.
+            </p>
           </Dropzone>
+          <br/>
 
-          <input type="submit" id="submitTrack" value="Upload Track" disabled="true"/>
+          <input type="submit" className="submit-button" id="submitTrack" value="Upload Track" disabled="true"/>
         </form>
       </div>
     );

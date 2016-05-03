@@ -17,6 +17,16 @@ TrackStore.find = function(id) {
   return _tracks[id];
 };
 
+TrackStore.findTracksByUser = function(id) {
+  tracks = [];
+  for (var track in _tracks) {
+    if (track.uploader_id === id) {
+      tracks.push(_track[track]);
+    }
+  }
+  return tracks;
+},
+
 var resetTracks = function(tracks) {
   _tracks = {};
   tracks.forEach(function(track) {

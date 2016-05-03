@@ -53,17 +53,19 @@
 	    HashHistory = __webpack_require__(186).hashHistory,
 	    App = __webpack_require__(245),
 	    SessionStore = __webpack_require__(259),
-	    TrackStore = __webpack_require__(305),
+	    TrackStore = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./stores/track.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())),
 	    Signup = __webpack_require__(258),
 	    Login = __webpack_require__(246),
 	    Splash = __webpack_require__(302),
+	    UserProfile = __webpack_require__(479),
 	    TrackIndex = __webpack_require__(303);
 	
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
 	  React.createElement(IndexRoute, { component: Splash }),
-	  React.createElement(Route, { path: 'tracks/', component: TrackIndex })
+	  React.createElement(Route, { path: 'explore', component: TrackIndex }),
+	  React.createElement(Route, { path: 'user/:id/music', componet: UserProfile })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -27405,21 +27407,40 @@
 	    TrackIndex = __webpack_require__(303),
 	    TrackUpload = __webpack_require__(280),
 	    PlayStore = __webpack_require__(301),
+	    UserProfile = __webpack_require__(479),
+	    SessionStore = __webpack_require__(259),
 	    Modal = __webpack_require__(166);
 	
 	var App = React.createClass({
 	  displayName: 'App',
 	
 	  getInitialState: function () {
-	    return { trackNull: PlayStore.currentTrack() };
+	    return {
+	      trackNull: PlayStore.currentTrack(),
+	      currentUser: SessionStore.currentUser()
+	    };
 	  },
 	
 	  componentDidMount: function () {
 	    PlayStore.addListener(this.onChange);
+	    SessionStore.addListener(this.changeUser);
+	  },
+	
+	  changeUser: function () {
+	    this.setState({ currentUser: SessionStore.currentUser() });
 	  },
 	
 	  onChange: function () {
 	    this.setState({ trackNull: PlayStore.currentTrack() });
+	  },
+	
+	  userProfileCB: function () {
+	    var userRoute = "user/" + this.state.currentUser.id.toString() + "/music";
+	    this.props.history.push(userRoute);
+	  },
+	
+	  homeCB: function () {
+	    this.props.history.push("/");
 	  },
 	
 	  render: function () {
@@ -27433,7 +27454,9 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'app' },
-	      React.createElement(NavBar, null),
+	      React.createElement(NavBar, {
+	        homeCB: this.homeCB,
+	        userProfileCB: this.userProfileCB }),
 	      this.props.children,
 	      React.createElement('br', null),
 	      streamBar
@@ -27489,6 +27512,20 @@
 	      'div',
 	      { className: 'loginForm' },
 	      React.createElement(
+	        'div',
+	        { className: 'modal-title-container' },
+	        React.createElement(
+	          'h3',
+	          { className: 'modal-title' },
+	          'Login'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'close-modal-button', onClick: this.props.parent.closeModal },
+	          'X'
+	        )
+	      ),
+	      React.createElement(
 	        'form',
 	        { className: 'login', onSubmit: this.handleSubmit },
 	        React.createElement(
@@ -27513,12 +27550,13 @@
 	            id: 'password' })
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'submit', value: 'Login' })
-	      ),
-	      React.createElement(
-	        'button',
-	        { className: 'guest-button', onClick: this.guestLogin },
-	        'Demo Login!'
+	        React.createElement('input', { className: 'submit-button', type: 'submit', value: 'Login' }),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'button',
+	          { className: 'submit-button', onClick: this.guestLogin },
+	          'Demo Login!'
+	        )
 	      )
 	    );
 	  }
@@ -28184,6 +28222,7 @@
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
 	var SessionStore = __webpack_require__(259);
+	var UploadStore = __webpack_require__(282);
 	var Dropzone = __webpack_require__(277);
 	
 	var Signup = React.createClass({
@@ -28196,6 +28235,15 @@
 	      picture: "",
 	      description: ""
 	    };
+	  },
+	
+	  componentDidMount: function () {
+	    UploadStore.addListener(this.handleImageUrl);
+	  },
+	
+	  handleImageUrl: function () {
+	    document.getElementById('createProfile').disabled = false;
+	    this.setState({ picture: UploadStore.getImageUrl() });
 	  },
 	
 	  handleSubmit: function (event) {
@@ -28218,20 +28266,46 @@
 	  },
 	
 	  onDrop: function (file) {
-	    console.log('Received files: ', req);
-	    this.setState({ picture: file });
+	    document.getElementById('createProfile').disabled = true;
+	    ClientActions.fetchPresignedUrl("images/tracks", file[0].name, file[0]);
 	  },
 	
 	  render: function () {
 	
-	    var picture_preview = this.state.picture !== null ? React.createElement('img', { src: this.state.picture.preview }) : null;
+	    var picturePreview = {
+	      backgroundImage: "url(" + this.state.picture + ")"
+	    };
 	
 	    return React.createElement(
 	      'div',
 	      { className: 'signupForm' },
 	      React.createElement(
+	        'div',
+	        { className: 'modal-title-container' },
+	        React.createElement(
+	          'h3',
+	          { className: 'modal-title' },
+	          'Signup'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'close-modal-button', onClick: this.props.parent.closeModal },
+	          'X'
+	        )
+	      ),
+	      React.createElement(
 	        'form',
 	        { className: 'signup', onSubmit: this.handleSubmit },
+	        React.createElement(
+	          Dropzone,
+	          { className: 'drop-zone', style: picturePreview, onDrop: this.onDrop, multiple: false },
+	          React.createElement(
+	            'p',
+	            { className: 'drop-text' },
+	            'Drag and drop a profile picture here.'
+	          )
+	        ),
+	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          { className: 'formLabel' },
@@ -28259,7 +28333,7 @@
 	          { className: 'formLabel' },
 	          'Email:',
 	          React.createElement('br', null),
-	          React.createElement('input', { type: 'text',
+	          React.createElement('input', { type: 'email',
 	            value: this.state.email,
 	            onChange: this.onChange,
 	            id: 'email' })
@@ -28276,21 +28350,7 @@
 	            id: 'description' })
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'submit', value: 'Create Profile' })
-	      ),
-	      React.createElement(
-	        Dropzone,
-	        { onDrop: this.onDrop, multiple: false },
-	        React.createElement(
-	          'p',
-	          null,
-	          'Drag and drop a picture here.'
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        null,
-	        picture_preview
+	        React.createElement('input', { className: 'submit-button', id: 'createProfile', type: 'submit', value: 'Create Profile' })
 	      )
 	    );
 	  }
@@ -35081,6 +35141,14 @@
 	    ClientActions.logoutUser();
 	  },
 	
+	  handleProfileClick: function () {
+	    this.props.userProfileCB();
+	  },
+	
+	  handleHomeClick: function () {
+	    this.props.homeCB();
+	  },
+	
 	  openModal: function (event) {
 	    var state = {};
 	    if (event.target.id === "signUpClicked") {
@@ -35134,6 +35202,11 @@
 	          'button',
 	          { className: 'navbar_button', onClick: this.openModal, id: 'uploadClicked' },
 	          'Upload'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'navbar_button', onClick: this.handleProfileClick, id: 'profileClicked' },
+	          'Profile'
 	        )
 	      );
 	    }
@@ -35146,7 +35219,7 @@
 	        { className: 'navbar_item' },
 	        React.createElement(
 	          'h2',
-	          { className: 'navbar_title' },
+	          { className: 'navbar_title', onClick: this.handleHomeClick },
 	          'Ruckus'
 	        )
 	      ),
@@ -35157,11 +35230,6 @@
 	          isOpen: this.state.modalIsOpen,
 	          onRequestClose: this.closeModal,
 	          style: ModalStyle },
-	        React.createElement(
-	          'button',
-	          { onClick: this.closeModal },
-	          'close'
-	        ),
 	        modalContents
 	      )
 	    );
@@ -35189,6 +35257,7 @@
 	      title: "",
 	      description: "",
 	      audioUrl: "",
+	      imageUrl: "",
 	      uploaderId: SessionStore.currentUser().id
 	    };
 	  },
@@ -35198,8 +35267,8 @@
 	  },
 	
 	  onAudioUpload: function () {
-	    this.state.audioUrl = UploadStore.getAudioUrl();
-	    this.state.imageUrl = UploadStore.getImageUrl();
+	    this.setState({ audioUrl: UploadStore.getAudioUrl() });
+	    this.setState({ imageUrl: UploadStore.getImageUrl() });
 	    document.getElementById('submitTrack').disabled = false;
 	  },
 	
@@ -35235,13 +35304,26 @@
 	  },
 	
 	  render: function () {
+	    var picturePreview = {
+	      backgroundImage: "url(" + this.state.imageUrl + ")"
+	    };
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'uploadForm' },
 	      React.createElement(
-	        'h1',
-	        null,
-	        'Track Upload'
+	        'div',
+	        { className: 'modal-title-container' },
+	        React.createElement(
+	          'h3',
+	          { className: 'modal-title' },
+	          'Upload Track'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'close-modal-button', onClick: this.props.parent.closeModal },
+	          'X'
+	        )
 	      ),
 	      React.createElement(
 	        'form',
@@ -35272,24 +35354,26 @@
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
-	          { className: 'formLabel' },
-	          'Audio File:',
+	          { className: 'formInputLabel' },
 	          React.createElement(FileInput, { name: 'fileInput',
 	            accept: 'audio/*',
 	            id: 'fileInput',
+	            placeholder: 'Choose File',
 	            className: 'fileInput',
 	            onChange: this.handleAudioUpload })
 	        ),
+	        React.createElement('br', null),
 	        React.createElement(
 	          Dropzone,
-	          { onDrop: this.handleImageUpload, multiple: false },
+	          { className: 'drop-zone', style: picturePreview, onDrop: this.handleImageUpload, multiple: false },
 	          React.createElement(
 	            'p',
-	            null,
-	            'Drag and drop the album artwork here. (optional)'
+	            { className: 'drop-text' },
+	            'Drag and drop the album artwork here.'
 	          )
 	        ),
-	        React.createElement('input', { type: 'submit', id: 'submitTrack', value: 'Upload Track', disabled: 'true' })
+	        React.createElement('br', null),
+	        React.createElement('input', { type: 'submit', className: 'submit-button', id: 'submitTrack', value: 'Upload Track', disabled: 'true' })
 	      )
 	    );
 	  }
@@ -35441,18 +35525,15 @@
 	    backgroundColor: 'rgba(255, 255, 255, 0.75)'
 	  },
 	  content: {
-	    position: 'absolute',
-	    top: '100px',
-	    left: '150px',
-	    right: '150px',
-	    bottom: '100px',
-	    border: '1px solid black',
-	    background: '#fff',
+	    position: 'relative',
+	    border: '0.5px solid #999999',
+	    background: '#FFFFFF',
 	    overflow: 'auto',
 	    WebkitOverflowScrolling: 'touch',
-	    borderRadius: '4px',
+	    borderRadius: '10px',
 	    outline: 'none',
-	    padding: '20px'
+	    padding: '20px',
+	    width: "200px"
 	
 	  }
 	};
@@ -35503,6 +35584,9 @@
 	  },
 	
 	  onChange: function () {
+	    if (this.state.currentTrack !== PlayStore.currentTrack()) {
+	      this.setState({ progress: 0, trackElapsed: 0 });
+	    }
 	    this.setState({
 	      currentTrack: PlayStore.currentTrack(),
 	      isPlaying: PlayStore.isPlaying()
@@ -35541,13 +35625,13 @@
 	      playPauseButton = React.createElement(
 	        'div',
 	        { className: 'stream-play-container' },
-	        React.createElement(PauseButton, { className: 'stream-play-button', track: currentTrack, onClick: this.handleClick })
+	        React.createElement(PauseButton, { className: 'stream-play-button', track: currentTrack, parent: this })
 	      );
 	    } else {
 	      playPauseButton = React.createElement(
 	        'div',
 	        { className: 'stream-play-container' },
-	        React.createElement(PlayButton, { className: 'stream-play-button', track: currentTrack, onClick: this.handleClick })
+	        React.createElement(PlayButton, { className: 'stream-play-button', track: currentTrack, parent: this })
 	      );
 	    }
 	
@@ -35563,23 +35647,31 @@
 	    return React.createElement(
 	      'ul',
 	      { className: 'stream-bar' },
-	      React.createElement('img', { className: 'stream-album-image', src: imageUrl }),
 	      React.createElement(
-	        'p',
-	        { className: 'stream-track-title' },
-	        trackTitle
+	        'div',
+	        { className: 'stream-section' },
+	        React.createElement('img', { className: 'stream-album-image', src: imageUrl }),
+	        playPauseButton,
+	        React.createElement(
+	          'p',
+	          { className: 'stream-track-title' },
+	          trackTitle
+	        )
 	      ),
-	      playPauseButton,
 	      React.createElement(
-	        'p',
-	        { className: 'stream-track-time' },
-	        this.secondsToHms(this.state.trackElapsed)
-	      ),
-	      React.createElement(ProgressBar, { completed: this.state.progress, style: { backgroundColor: 'white' } }),
-	      React.createElement(
-	        'p',
-	        { className: 'stream-track-time' },
-	        this.secondsToHms(this.state.trackDuration)
+	        'div',
+	        { className: 'stream-section' },
+	        React.createElement(
+	          'p',
+	          { className: 'stream-track-time' },
+	          this.secondsToHms(this.state.trackElapsed)
+	        ),
+	        React.createElement(ProgressBar, { completed: this.state.progress, style: { backgroundColor: 'white' } }),
+	        React.createElement(
+	          'p',
+	          { className: 'stream-track-time' },
+	          this.secondsToHms(this.state.trackDuration)
+	        )
 	      ),
 	      React.createElement(ReactPlayer, {
 	        className: 'track-player',
@@ -35736,7 +35828,7 @@
 /* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -38436,7 +38528,7 @@
 	            React.createElement(
 	              'p',
 	              { className: 'splash-icon-description' },
-	              'listen to brand nw music'
+	              'listen to brand new music'
 	            )
 	          ),
 	          React.createElement(
@@ -38500,7 +38592,7 @@
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
 	var TrackIndexItem = __webpack_require__(304);
-	var TrackStore = __webpack_require__(305);
+	var TrackStore = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../../stores/track.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	var Masonry = __webpack_require__(308);
 	
 	var shuffle = function (array) {
@@ -38566,7 +38658,7 @@
 
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
-	var TrackStore = __webpack_require__(305);
+	var TrackStore = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../../stores/track\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	var PlayButton = __webpack_require__(306);
 	var PlayStore = __webpack_require__(301);
 	var PauseButton = __webpack_require__(307);
@@ -38587,6 +38679,14 @@
 	    this.setState({ isPlaying: PlayStore.isTrackPlaying(this.props.track) });
 	  },
 	
+	  handleClick: function () {
+	    if (this.state.isPlaying === true) {
+	      ClientActions.pauseTrack();
+	    } else {
+	      ClientActions.playTrack(this.props.track);
+	    }
+	  },
+	
 	  render: function () {
 	    var track = this.props.track;
 	    var playPauseButton;
@@ -38594,18 +38694,18 @@
 	      playPauseButton = React.createElement(
 	        'div',
 	        { className: 'play-button-container' },
-	        React.createElement(PauseButton, { className: 'play-button', track: track, onClick: this.handleClick })
+	        React.createElement(PauseButton, { className: 'play-button', track: track })
 	      );
 	    } else {
 	      playPauseButton = React.createElement(
 	        'div',
 	        { className: 'play-button-container' },
-	        React.createElement(PlayButton, { className: 'play-button', track: track, onClick: this.handleClick })
+	        React.createElement(PlayButton, { className: 'play-button', track: track })
 	      );
 	    }
 	    return React.createElement(
 	      'ul',
-	      { className: 'track hvr-shrink', key: track.id, id: track.id },
+	      { className: 'track hvr-shrink', key: track.id, id: track.id, onClick: this.handleClick },
 	      React.createElement('img', { className: 'album-cover', src: track.image_url }),
 	      playPauseButton,
 	      React.createElement(
@@ -38624,55 +38724,7 @@
 	module.exports = TrackIndexItem;
 
 /***/ },
-/* 305 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(260).Store;
-	var Dispatcher = __webpack_require__(250);
-	var TrackConstants = __webpack_require__(257);
-	var TrackStore = new Store(Dispatcher);
-	
-	_tracks = {};
-	
-	TrackStore.all = function () {
-	  var tracks = [];
-	  for (var id in _tracks) {
-	    tracks.push(_tracks[id]);
-	  }
-	  return tracks;
-	};
-	
-	TrackStore.find = function (id) {
-	  return _tracks[id];
-	};
-	
-	var resetTracks = function (tracks) {
-	  _tracks = {};
-	  tracks.forEach(function (track) {
-	    _tracks[track.id] = track;
-	  });
-	  TrackStore.__emitChange();
-	};
-	
-	var resetTrack = function (track) {
-	  _tracks[track.id] = track;
-	  TrackStore.__emitChange();
-	};
-	
-	TrackStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case TrackConstants.GET_TRACKS:
-	      resetTracks(payload.tracks);
-	      break;
-	    case TrackConstants.GET_TRACK:
-	      resetTrack(payload.track);
-	      break;
-	  }
-	};
-	
-	module.exports = TrackStore;
-
-/***/ },
+/* 305 */,
 /* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -38690,7 +38742,7 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'play-button', onClick: this.handleClick },
-	      '▶ Play'
+	      React.createElement('i', { className: 'fa fa-play-circle fa-4x', style: { ariaHidden: "true" } })
 	    );
 	  }
 	});
@@ -38715,7 +38767,7 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'play-button', onClick: this.handleClick },
-	      '❚❚ Pause'
+	      React.createElement('i', { className: 'fa fa-pause-circle fa-4x', style: { ariaHidden: "true" } })
 	    );
 	  }
 	});
@@ -61227,6 +61279,26 @@
 	
 	module.exports = deprecated;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserProfile = React.createClass({
+	  displayName: 'UserProfile',
+	
+	  render: function () {
+	    return React.createElement('div', null);
+	  }
+	
+	});
+	
+	module.exports = UserProfile;
 
 /***/ }
 /******/ ]);

@@ -13,12 +13,14 @@ var React = require('react'),
     Signup = require('./components/auth/signup.jsx'),
     Login = require('./components/auth/login.jsx'),
     Splash = require('./components/splash.jsx'),
+    UserProfile = require('./components/user/userProfile'),
     TrackIndex = require('./components/tracks/trackIndex.js');
 
 var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={Splash} />
-    <Route path="tracks/" component={TrackIndex} />
+    <Route path="explore" component={TrackIndex} />
+    <Route path="user/:id/music" componet={UserProfile} />
   </Route>
 );
 

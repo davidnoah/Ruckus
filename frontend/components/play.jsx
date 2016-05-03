@@ -9,7 +9,7 @@ var PlayButton = React.createClass({
   render: function() {
     return (
       <div className="play-button" onClick={this.handleClick}>
-        ▶ Play
+        <i className="fa fa-play-circle fa-4x" style={{ariaHidden: "true"}}></i>
       </div>
     );
   }

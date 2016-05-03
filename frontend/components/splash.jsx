@@ -23,7 +23,7 @@ var Splash = React.createClass({
               <i className="fa fa-music fa-5x" style={{ariaHidden: "true"}}></i>
               <p className="splash-icon-caption">Gain Music Cred</p>
               <p className="splash-icon-description">Gain points when you upload and</p>
-              <p className="splash-icon-description">listen to brand nw music</p>
+              <p className="splash-icon-description">listen to brand new music</p>
             </div>
             <div className="splash-icon-container">
               <i className="fa fa-users fa-5x" style={{ariaHidden: "true"}}></i>

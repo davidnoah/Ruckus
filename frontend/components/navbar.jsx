@@ -32,6 +32,14 @@ var NavBar = React.createClass({
     ClientActions.logoutUser();
   },
 
+  handleProfileClick: function() {
+    this.props.userProfileCB();
+  },
+
+  handleHomeClick: function() {
+    this.props.homeCB();
+  },
+
   openModal: function(event) {
     var state = {};
     if (event.target.id === "signUpClicked") {
@@ -67,6 +75,7 @@ var NavBar = React.createClass({
       navbarContents = <li className="navbar_item">
                           <button className="navbar_button" onClick={this.logoutUser} id='logoutClicked'>Logout</button>
                           <button className="navbar_button" onClick={this.openModal} id='uploadClicked'>Upload</button>
+                          <button className="navbar_button" onClick={this.handleProfileClick} id='profileClicked'>Profile</button>
                         </li>;
 
     }
@@ -74,7 +83,7 @@ var NavBar = React.createClass({
     return (
       <ul className="navbar">
         <li className="navbar_item">
-          <h2 className="navbar_title">Ruckus</h2>
+          <h2 className="navbar_title" onClick={this.handleHomeClick}>Ruckus</h2>
         </li>
         {navbarContents}
         <Modal
@@ -82,7 +91,6 @@ var NavBar = React.createClass({
           onRequestClose={this.closeModal}
           style={ModalStyle} >
 
-          <button onClick={this.closeModal}>close</button>
           {modalContents}
         </Modal>
       </ul>

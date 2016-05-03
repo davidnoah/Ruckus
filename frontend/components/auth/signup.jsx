@@ -1,6 +1,7 @@
 var React = require('react');
 var ClientActions = require('../../actions/client_actions.js');
 var SessionStore = require('../../stores/session.js');
+var UploadStore = require('../../stores/upload');
 var Dropzone = require('react-dropzone');
 
 var Signup = React.createClass({
@@ -11,6 +12,15 @@ var Signup = React.createClass({
             picture: "",
             description: ""
           };
+  },
+
+  componentDidMount: function() {
+    UploadStore.addListener(this.handleImageUrl);
+  },
+
+  handleImageUrl: function() {
+    document.getElementById('createProfile').disabled = false;
+    this.setState({picture: UploadStore.getImageUrl()});
   },
 
   handleSubmit: function(event) {
@@ -33,17 +43,31 @@ var Signup = React.createClass({
   },
 
   onDrop: function(file) {
-    console.log('Received files: ', req);
-    this.setState({picture: file});
+    document.getElementById('createProfile').disabled = true;
+    ClientActions.fetchPresignedUrl("images/tracks", file[0].name, file[0]);
   },
 
   render: function() {
 
-    var picture_preview = (this.state.picture !== null) ? <img src={this.state.picture.preview}/> : null;
+    var picturePreview = {
+      backgroundImage: "url(" + this.state.picture + ")"
+    };
 
     return (
       <div className='signupForm'>
+        <div className="modal-title-container" >
+          <h3 className="modal-title">Signup</h3>
+          <button className="close-modal-button" onClick={this.props.parent.closeModal}>X</button>
+        </div>
+
         <form className='signup' onSubmit={this.handleSubmit}>
+
+          <Dropzone className="drop-zone" style={picturePreview} onDrop={this.onDrop} multiple={false} >
+          <p className="drop-text">
+          Drag and drop a profile picture here.
+          </p>
+          </Dropzone>
+          <br/>
 
           <label className="formLabel">
             Username:
@@ -68,7 +92,7 @@ var Signup = React.createClass({
           <label className="formLabel">
             Email:
             <br/>
-            <input type="text"
+            <input type="email"
               value={this.state.email}
               onChange={this.onChange}
               id="email"/>
@@ -85,19 +109,10 @@ var Signup = React.createClass({
           </label>
           <br/>
 
-          <input type="submit" value="Create Profile"/>
+          <input className="submit-button" id="createProfile" type="submit" value="Create Profile"/>
 
         </form>
 
-        <Dropzone onDrop={this.onDrop} multiple={false} >
-        <p>
-          Drag and drop a picture here.
-        </p>
-        </Dropzone>
-
-        <div>
-        {picture_preview}
-        </div>
 
       </div>
     );

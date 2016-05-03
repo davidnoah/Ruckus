@@ -8,18 +8,15 @@ CONTENT_STYLE = {
     backgroundColor   : 'rgba(255, 255, 255, 0.75)'
   },
   content : {
-    position                   : 'absolute',
-    top                        : '100px',
-    left                       : '150px',
-    right                      : '150px',
-    bottom                     : '100px',
-    border                     : '1px solid black',
-    background                 : '#fff',
+    position                   : 'relative',
+    border                     : '0.5px solid #999999',
+    background                 : '#FFFFFF',
     overflow                   : 'auto',
     WebkitOverflowScrolling    : 'touch',
-    borderRadius               : '4px',
+    borderRadius               : '10px',
     outline                    : 'none',
-    padding                    : '20px'
+    padding                    : '20px',
+    width                      : "200px"
 
   }
 };
