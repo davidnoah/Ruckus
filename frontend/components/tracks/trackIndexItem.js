@@ -12,7 +12,11 @@ var TrackIndexItem = React.createClass({
   },
 
   componentDidMount: function() {
-    PlayStore.addListener(this.onChange);
+    this.playListener = PlayStore.addListener(this.onChange);
+  },
+
+  componentWillUnmount: function() {
+    this.playListener.remove();
   },
 
   onChange: function() {

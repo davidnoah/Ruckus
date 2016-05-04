@@ -35,7 +35,7 @@ Track.create!(
                 title: "Emancipator - First Snow",
                 image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_250/v1461732074/soon_it_will_be_cold_fwr3km.jpg",
                 audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Emancipator+-+First+Snow.mp3",
-                uploader_id: 4,
+                uploader_id: 1,
                 num_played: 0,
                 playing: false
                 )
@@ -67,7 +67,7 @@ Track.create!(
               title: "Shook - Hold Tight",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236523/Hold-Tight_Album_kpemzz.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Shook+-+Hold+Tight.mp3",
-              uploader_id: 4,
+              uploader_id: 1,
               num_played: 0,
               playing: false
               )
@@ -91,7 +91,7 @@ Track.create!(
               title: "Leon Bridges - Twistin' and Groovin'",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462238067/LEON_BRIDGES_dffzcf.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Leon+Bridges+-+Twistin%27+%26+Groovin%27+-+Coming+Home.mp3",
-              uploader_id: 4,
+              uploader_id: 1,
               num_played: 0,
               playing: false
               )
@@ -115,7 +115,7 @@ Track.create!(
               title: "One Self - Bluebird",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462241108/bluebird-main_eowqfe.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/One+Self+-+Bluebird.mp3",
-              uploader_id: 4,
+              uploader_id: 1,
               num_played: 0,
               playing: false
               )
@@ -137,8 +137,10 @@ Track.create!(
               )
 
 
-  User.create!(
-                username: "davidnoah",
-                password: "password",
-                email: "david.t.noah@gmail.com"
-  )
+User.create!(
+              username: "DavidNoah",
+              password: "password",
+              email: "david.t.noah@gmail.com",
+              picture: "http://res.cloudinary.com/davidnoah/image/upload/v1462317980/11112216_10155701957995483_491753383287939197_n_kwmx1u.jpg",
+              description: "feelin' funky"
+)

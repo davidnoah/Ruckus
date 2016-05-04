@@ -166,12 +166,14 @@ input.submit-button {
   background-color: #575757;
   opacity: 0.6;
   color: white;
+  margin-bottom: 5px;
 }
 
 button.submit-button {
   background-color: #575757;
   opacity: 0.6;
   color: white;
+  margin-bottom: 5px;
 }
 
 .submit-button:hover {

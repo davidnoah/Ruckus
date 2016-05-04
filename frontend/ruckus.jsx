@@ -13,6 +13,7 @@ var React = require('react'),
     Signup = require('./components/auth/signup.jsx'),
     Login = require('./components/auth/login.jsx'),
     Splash = require('./components/splash.jsx'),
+    ClientActions = require('./actions/client_actions'),
     UserProfile = require('./components/user/userProfile'),
     TrackIndex = require('./components/tracks/trackIndex.js');
 
@@ -20,9 +21,10 @@ var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={Splash} />
     <Route path="explore" component={TrackIndex} />
-    <Route path="user/:id/music" componet={UserProfile} />
+    <Route path="user/:id/music" component={UserProfile} />
   </Route>
 );
+ClientActions.checkLoggedIn();
 
 
 document.addEventListener("DOMContentLoaded", function() {

@@ -18,7 +18,7 @@ var Login = React.createClass({
 
   guestLogin: function() {
     var user = {user: {
-      username: "davidnoah",
+      username: "DavidNoah",
       password: "password"
     }};
 

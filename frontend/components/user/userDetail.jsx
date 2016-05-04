@@ -1,23 +1,13 @@
 var React = require('react');
 
 UserDetail = React.createClass({
-  getInitialState: function() {
-    return {
-      currentUser: SessionStore.currentUser(),
-    };
-  },
-
-  componentDidMount: function() {
-    SessionStore.addListener(this.onChange);
-  },
-
-  onChange: function() {
-    this.setState({currentUser: SessionStore.currentUser()});
-  },
 
   render: function() {
+
     return (
-      <div>
+      <div className="user-detail-container">
+        <img className="profile-picture" src={this.props.user.picture} />
+        <h2 className="username">{this.props.user.username}</h2>
       </div>
     );
   }

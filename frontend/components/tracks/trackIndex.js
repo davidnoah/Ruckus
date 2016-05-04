@@ -29,8 +29,12 @@ var TrackIndex = React.createClass({
   },
 
   componentDidMount: function() {
-    TrackStore.addListener(this.onChange);
+    this.trackStoreListener = TrackStore.addListener(this.onChange);
     ClientActions.fetchTracks();
+  },
+
+  componentWillUnmount: function() {
+    this.trackStoreListener.remove();
   },
 
   onChange: function() {
@@ -43,12 +47,16 @@ var TrackIndex = React.createClass({
       return <TrackIndexItem track={track} key={track.id}/>;
     });
 
+    var masonryOptions = {
+      isFitWidth: true
+    };
 
     return (
       <Masonry
                 className={'trackList'}
                 elementType={'ul'}
                 disableImagesLoaded={false}
+                options={masonryOptions}
             >
                 {allTracks}
             </Masonry>

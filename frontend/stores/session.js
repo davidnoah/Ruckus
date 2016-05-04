@@ -4,7 +4,7 @@ var UserConstants = require('../constants/userConstants.js');
 
 var SessionStore = new Store(Dispatcher);
 
-var _currentUser = null;
+var _currentUser = JSON.parse(localStorage.getItem("currentUser"));
 var _authErrors = [];
 var _loggedIn = false;
 
@@ -16,6 +16,7 @@ var loginUser = function(user) {
     if (user.message !== "No Current User") {
       _currentUser = user;
       _loggedIn = true;
+      localStorage.setItem("currentUser", JSON.stringify(user));
       SessionStore.__emitChange();
     }
 };
@@ -24,6 +25,7 @@ var logoutUser = function() {
   console.log('user logged out!');
   _loggedIn = false;
   _currentUser = null;
+  localStorage.removeItem("currentUser");
   SessionStore.__emitChange();
 };
 

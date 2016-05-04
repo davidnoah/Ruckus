@@ -20,12 +20,12 @@ TrackStore.find = function(id) {
 TrackStore.findTracksByUser = function(id) {
   tracks = [];
   for (var track in _tracks) {
-    if (track.uploader_id === id) {
-      tracks.push(_track[track]);
+    if (_tracks[track].uploader_id === id) {
+      tracks.push(_tracks[track]);
     }
   }
   return tracks;
-},
+};
 
 var resetTracks = function(tracks) {
   _tracks = {};

@@ -1,0 +1,137 @@
+.user-profile {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+
+.user-detail-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: #1a1a1a;
+  height: 250px;
+  padding-top: 40px;
+}
+
+.profile-picture {
+  height: 150px;
+  width: 150px;
+  border-radius: 100px;
+}
+
+.username {
+  font-family: Varela Round, Consolas, sans-serif;
+  color: white;
+}
+
+.user-tracklist {
+  display: flex;
+  padding: 0px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: center;
+  justify-content: space-between;
+  margin-top: 19px;
+  margin-bottom: 62px;
+  margin-right: 0px;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: 800px;
+}
+
+.user-tracks-title {
+  color: white;
+  align-self: center;
+  font-family: 'Audiowide', cursive;
+  font-size: 24px;
+}
+
+.user-tracks-title {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
+}
+
+.user-upload-form {
+  width: 200px;
+  margin: 0px;
+  display: flex;
+}
+
+.user-track-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  border-radius: 10px;
+  background-color: #323232;
+  box-shadow: 4px 4px 2px #191919;
+}
+
+.user-tracks-form {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 40px;
+  width: 100%;
+}
+
+.upload-form-title {
+  color: white;
+  font-family: Varela Round, Consolas, sans-serif;
+  font-weight: 300;
+}
+
+.user-drop-zone {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 190px;
+  height: 190px;
+  border: 1px dotted #999999;
+}
+
+.user-drop-text {
+  font-family: Varela Round, Consolas, sans-serif;
+  font-size: 10px;
+  color: white;
+  opacity: 0.6;
+}
+
+.userFormLabel {
+  font-family: Varela Round, Consolas, sans-serif;
+  font-weight: 300;
+  color: white;
+  opacity: 0.6;
+}
+
+.userFormLabel:hover {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.user-track-list {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.track-playlist-tabs {
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
+}
