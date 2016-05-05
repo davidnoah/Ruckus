@@ -10,7 +10,8 @@ var UserProfile = React.createClass({
     return {
       currentUser: SessionStore.currentUser(),
       displayTracks: true,
-      displayPlaylists: false
+      displayPlaylists: false,
+      activeTab: "Tracks"
     };
   },
 
@@ -30,12 +31,14 @@ var UserProfile = React.createClass({
     if (event.target.id === "playlist-tab") {
       this.setState({
         displayTracks: false,
-        displayPlaylists: true
+        displayPlaylists: true,
+        activeTab: "Playlists"
       });
     } else {
       this.setState({
         displayTracks: true,
-        displayPlaylists: false
+        displayPlaylists: false,
+        activeTab: "Tracks"
       });
     }
   },
@@ -48,6 +51,14 @@ var UserProfile = React.createClass({
       tabDisplay = <UserPlaylists user={this.state.currentUser}/>;
     }
 
+    if (this.state.activeTab === "Tracks") {
+      trackTab = <button className="tab" id="track-tab" onClick={this.handleTabClick}>Tracks</button>;
+      playlistTab = <button className="tab" style={{opacity: 0.6}} id="playlist-tab" onClick={this.handleTabClick}>Playlists</button>;
+    } else {
+      trackTab = <button className="tab" id="track-tab" style={{opacity: 0.6}} onClick={this.handleTabClick}>Tracks</button>;
+      playlistTab = <button className="tab" id="playlist-tab" onClick={this.handleTabClick}>Playlists</button>;
+    }
+
     return (
       <div className="user-profile">
         <UserDetail user={this.state.currentUser} />
@@ -56,8 +67,8 @@ var UserProfile = React.createClass({
           <UploadTrack />
           <div className="user-track-list">
             <div className="track-playlist-tabs">
-              <button className="tab" id="track-tab" onClick={this.handleTabClick}>Tracks</button>
-              <button className="tab" id="playlist-tab" onClick={this.handleTabClick}>Playlists</button>
+              {trackTab}
+              {playlistTab}
             </div>
             {tabDisplay}
           </div>

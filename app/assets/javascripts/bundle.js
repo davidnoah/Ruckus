@@ -27439,6 +27439,7 @@
 	  },
 	
 	  userProfileCB: function () {
+	    // TODO: change hashHistory
 	    var userRoute = "user/" + this.state.currentUser.id.toString() + "/music";
 	    this.props.history.push(userRoute);
 	  },
@@ -27598,7 +27599,6 @@
 	  },
 	
 	  createTrack: function (track) {
-	    console.log(track);
 	    TrackUtil.createTrack(track);
 	  },
 	
@@ -58318,7 +58318,7 @@
 	      Masonry,
 	      {
 	        className: 'trackList',
-	        elementType: 'ul',
+	        elementType: 'div',
 	        disableImagesLoaded: false,
 	        options: masonryOptions
 	      },
@@ -58339,13 +58339,17 @@
 	var PlayButton = __webpack_require__(468);
 	var PlayStore = __webpack_require__(306);
 	var PauseButton = __webpack_require__(469);
+	var OptionsButton = __webpack_require__(489);
 	
 	var TrackIndexItem = React.createClass({
 	  displayName: 'TrackIndexItem',
 	
 	
 	  getInitialState: function () {
-	    return { isPlaying: PlayStore.isTrackPlaying(this.props.track) };
+	    return {
+	      isPlaying: PlayStore.isTrackPlaying(this.props.track),
+	      optionsOpen: false
+	    };
 	  },
 	
 	  componentDidMount: function () {
@@ -58368,27 +58372,69 @@
 	    }
 	  },
 	
-	  render: function () {
-	    var track = this.props.track;
+	  openOptions: function () {
+	    this.setState({ optionsOpen: true });
+	  },
+	
+	  renderPlayPause: function () {
 	    var playPauseButton;
+	    var track = this.props.track;
 	    if (this.state.isPlaying) {
 	      playPauseButton = React.createElement(
 	        'div',
-	        { className: 'play-button-container' },
+	        { key: 'pause', className: 'play-button-container' },
 	        React.createElement(PauseButton, { className: 'play-button', track: track })
 	      );
 	    } else {
 	      playPauseButton = React.createElement(
 	        'div',
-	        { className: 'play-button-container' },
+	        { key: 'play', className: 'play-button-container' },
 	        React.createElement(PlayButton, { className: 'play-button', track: track })
 	      );
 	    }
+	    var options = React.createElement(
+	      'div',
+	      { key: 'options', className: 'playlist-button-container' },
+	      React.createElement(OptionsButton, { track: track, onClick: this.openOptions })
+	    );
+	
+	    return [playPauseButton, options];
+	  },
+	
+	  renderOptions: function () {
 	    return React.createElement(
-	      'ul',
-	      { className: 'track hvr-shrink', key: track.id, id: track.id, onClick: this.handleClick },
-	      React.createElement('img', { className: 'album-cover', src: track.image_url }),
-	      playPauseButton,
+	      'div',
+	      { className: 'options-container' },
+	      React.createElement(
+	        'div',
+	        { className: 'options-button-container' },
+	        React.createElement(
+	          'p',
+	          null,
+	          'Add to Playlist'
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'option-button-container' },
+	        React.createElement(
+	          'p',
+	          null,
+	          'Add to Queue'
+	        )
+	      )
+	    );
+	  },
+	
+	  render: function () {
+	    var track = this.props.track;
+	
+	    var content = this.state.optionsOpen ? this.renderOptions() : this.renderPlayPause();
+	    backgroundImage = { backgroundImage: "url(" + track.image_url + ")" };
+	    return React.createElement(
+	      'div',
+	      { className: 'track hvr-shrink', style: backgroundImage, key: track.id, id: track.id, onClick: this.handleClick },
+	      content,
 	      React.createElement(
 	        'div',
 	        { className: 'track-title-container' },
@@ -58481,7 +58527,7 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'play-button', onClick: this.handleClick },
-	      React.createElement('i', { className: 'fa fa-play-circle fa-4x', style: { ariaHidden: "true" } })
+	      React.createElement('i', { className: 'fa fa-play-circle fa-3x', style: { ariaHidden: "true" } })
 	    );
 	  }
 	});
@@ -58506,7 +58552,7 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'play-button', onClick: this.handleClick },
-	      React.createElement('i', { className: 'fa fa-pause-circle fa-4x', style: { ariaHidden: "true" } })
+	      React.createElement('i', { className: 'fa fa-pause-circle fa-3x', style: { ariaHidden: "true" } })
 	    );
 	  }
 	});
@@ -61448,7 +61494,8 @@
 	    return {
 	      currentUser: SessionStore.currentUser(),
 	      displayTracks: true,
-	      displayPlaylists: false
+	      displayPlaylists: false,
+	      activeTab: "Tracks"
 	    };
 	  },
 	
@@ -61468,12 +61515,14 @@
 	    if (event.target.id === "playlist-tab") {
 	      this.setState({
 	        displayTracks: false,
-	        displayPlaylists: true
+	        displayPlaylists: true,
+	        activeTab: "Playlists"
 	      });
 	    } else {
 	      this.setState({
 	        displayTracks: true,
-	        displayPlaylists: false
+	        displayPlaylists: false,
+	        activeTab: "Tracks"
 	      });
 	    }
 	  },
@@ -61484,6 +61533,30 @@
 	      tabDisplay = React.createElement(UserTracks, { user: this.state.currentUser });
 	    } else {
 	      tabDisplay = React.createElement(UserPlaylists, { user: this.state.currentUser });
+	    }
+	
+	    if (this.state.activeTab === "Tracks") {
+	      trackTab = React.createElement(
+	        'button',
+	        { className: 'tab', id: 'track-tab', onClick: this.handleTabClick },
+	        'Tracks'
+	      );
+	      playlistTab = React.createElement(
+	        'button',
+	        { className: 'tab', style: { opacity: 0.6 }, id: 'playlist-tab', onClick: this.handleTabClick },
+	        'Playlists'
+	      );
+	    } else {
+	      trackTab = React.createElement(
+	        'button',
+	        { className: 'tab', id: 'track-tab', style: { opacity: 0.6 }, onClick: this.handleTabClick },
+	        'Tracks'
+	      );
+	      playlistTab = React.createElement(
+	        'button',
+	        { className: 'tab', id: 'playlist-tab', onClick: this.handleTabClick },
+	        'Playlists'
+	      );
 	    }
 	
 	    return React.createElement(
@@ -61505,16 +61578,8 @@
 	          React.createElement(
 	            'div',
 	            { className: 'track-playlist-tabs' },
-	            React.createElement(
-	              'button',
-	              { className: 'tab', id: 'track-tab', onClick: this.handleTabClick },
-	              'Tracks'
-	            ),
-	            React.createElement(
-	              'button',
-	              { className: 'tab', id: 'playlist-tab', onClick: this.handleTabClick },
-	              'Playlists'
-	            )
+	            trackTab,
+	            playlistTab
 	          ),
 	          tabDisplay
 	        )
@@ -61748,7 +61813,7 @@
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
 	var PlaylistItem = __webpack_require__(484);
-	var PlaylistStore = __webpack_require__(485);
+	var PlaylistStore = __webpack_require__(487);
 	
 	var UserPlaylists = React.createClass({
 	  displayName: 'UserPlaylists',
@@ -61778,8 +61843,6 @@
 	      return React.createElement(PlaylistItem, { key: playlist.id, user: user, playlist: playlist });
 	    });
 	
-	    console.log(userPlaylists);
-	
 	    return React.createElement(
 	      'div',
 	      { className: 'user-playlists' },
@@ -61797,8 +61860,8 @@
 
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
-	var PlaylistTrackStore = __webpack_require__(487);
-	var PlaylistTrackItem = __webpack_require__(489);
+	var PlaylistTrackStore = __webpack_require__(485);
+	var PlaylistTrackItem = __webpack_require__(486);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -61870,6 +61933,97 @@
 	var Store = __webpack_require__(263).Store;
 	var Dispatcher = __webpack_require__(250);
 	var PlaylistConstants = __webpack_require__(260);
+	
+	var PlaylistTrackStore = new Store(Dispatcher);
+	
+	_playlistTracks = {};
+	
+	var addPlaylistTrack = function (playlistId, track) {
+	  _playlistTracks[playlistId].push(track);
+	  PlaylistTrackStore.__emitChange();
+	};
+	
+	var setPlaylist = function (playlistId, tracks) {
+	  _playlistTracks[playlistId] = tracks;
+	  PlaylistTrackStore.__emitChange();
+	};
+	
+	PlaylistTrackStore.findAllTracksByPlaylist = function (playlistId) {
+	  return _playlistTracks[playlistId];
+	};
+	
+	PlaylistTrackStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case PlaylistConstants.GET_PLAYLIST_TRACKS:
+	      setPlaylist(payload.playlistId, payload.tracks);
+	      break;
+	  }
+	};
+	
+	module.exports = PlaylistTrackStore;
+
+/***/ },
+/* 486 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var PlayButton = __webpack_require__(304);
+	var PauseButton = __webpack_require__(305);
+	var PlayStore = __webpack_require__(306);
+	
+	var PlaylistTrackItem = React.createClass({
+	  displayName: 'PlaylistTrackItem',
+	
+	  getInitialState: function () {
+	    return {
+	      isPlaying: PlayStore.isTrackPlaying(this.props.track)
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    this.playStoreListener = PlayStore.addListener(this.onChange);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.playlistListener.remove();
+	  },
+	
+	  onChange: function () {
+	    this.setState({ isPlaying: PlayStore.isTrackPlaying(this.props.track) });
+	  },
+	
+	  render: function () {
+	    var playPauseButton;
+	    if (this.state.isPlaying) {
+	      playPauseButton = React.createElement(PauseButton, { track: this.props.track });
+	    } else {
+	      playPauseButton = React.createElement(PlayButton, { track: this.props.track });
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'playlist-track' },
+	      React.createElement('img', { className: 'playlist-track-album', src: this.props.track.image_url }),
+	      playPauseButton,
+	      React.createElement(
+	        'p',
+	        { className: 'playlist-track-title' },
+	        this.props.track.title
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = PlaylistTrackItem;
+
+/***/ },
+/* 487 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(263).Store;
+	var Dispatcher = __webpack_require__(250);
+	var PlaylistConstants = __webpack_require__(260);
 	var PlaylistStore = new Store(Dispatcher);
 	
 	_playlists = {};
@@ -61924,93 +62078,22 @@
 	module.exports = PlaylistStore;
 
 /***/ },
-/* 486 */,
-/* 487 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(263).Store;
-	var Dispatcher = __webpack_require__(250);
-	var PlaylistConstants = __webpack_require__(260);
-	
-	var PlaylistTrackStore = new Store(Dispatcher);
-	
-	_playlistTracks = {};
-	
-	var addPlaylistTrack = function (playlistId, track) {
-	  _playlistTracks[playlistId].push(track);
-	  PlaylistTrackStore.__emitChange();
-	};
-	
-	var setPlaylist = function (playlistId, tracks) {
-	  _playlistTracks[playlistId] = tracks;
-	  PlaylistTrackStore.__emitChange();
-	};
-	
-	PlaylistTrackStore.findAllTracksByPlaylist = function (playlistId) {
-	  return _playlistTracks[playlistId];
-	};
-	
-	PlaylistTrackStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case PlaylistConstants.GET_PLAYLIST_TRACKS:
-	      setPlaylist(payload.playlistId, payload.tracks);
-	      break;
-	  }
-	};
-	
-	module.exports = PlaylistTrackStore;
-
-/***/ },
 /* 488 */,
 /* 489 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ClientActions = __webpack_require__(247);
-	var PlayButton = __webpack_require__(304);
-	var PauseButton = __webpack_require__(305);
-	var PlayStore = __webpack_require__(306);
 	
-	var PlaylistTrackItem = React.createClass({
-	  displayName: 'PlaylistTrackItem',
-	
-	  getInitialState: function () {
-	    return {
-	      isPlaying: PlayStore.isTrackPlaying(this.props.track)
-	    };
-	  },
-	
-	  componentDidMount: function () {
-	    this.playStoreListener = PlayStore.addListener(this.onChange);
-	  },
-	
-	  onChange: function () {
-	    this.setState({ isPlaying: PlayStore.isTrackPlaying(this.props.track) });
-	  },
+	var OptionsButton = React.createClass({
+	  displayName: 'OptionsButton',
 	
 	  render: function () {
-	    var playPauseButton;
-	    if (this.state.isPlaying) {
-	      playPauseButton = React.createElement(PauseButton, { track: this.props.track });
-	    } else {
-	      playPauseButton = React.createElement(PlayButton, { track: this.props.track });
-	    }
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'playlist-track' },
-	      React.createElement('img', { className: 'playlist-track-album', src: this.props.track.image_url }),
-	      playPauseButton,
-	      React.createElement(
-	        'p',
-	        { className: 'playlist-track-title' },
-	        this.props.track.title
-	      )
-	    );
+	    return React.createElement('i', { className: 'fa fa-ellipsis-h fa-2x', style: { ariaHidden: "true" } });
 	  }
 	});
 	
-	module.exports = PlaylistTrackItem;
+	module.exports = OptionsButton;
 
 /***/ }
 /******/ ]);

@@ -29,8 +29,6 @@ var UserPlaylists = React.createClass({
         return <PlaylistItem key={playlist.id} user={user} playlist={playlist}/>;
       });
 
-      console.log(userPlaylists);
-
     return (
       <div className='user-playlists' >
         {userPlaylists}

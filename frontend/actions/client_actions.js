@@ -24,7 +24,6 @@ var ClientActions = window.CA = {
   },
 
   createTrack: function(track) {
-    console.log(track);
     TrackUtil.createTrack(track);
   },
 

@@ -54,7 +54,7 @@ var TrackIndex = React.createClass({
     return (
       <Masonry
                 className={'trackList'}
-                elementType={'ul'}
+                elementType={'div'}
                 disableImagesLoaded={false}
                 options={masonryOptions}
             >

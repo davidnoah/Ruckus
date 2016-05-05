@@ -15,6 +15,10 @@ var PlaylistTrackItem = React.createClass({
     this.playStoreListener = PlayStore.addListener(this.onChange);
   },
 
+  componentWillUnmount: function () {
+    this.playlistListener.remove();
+  },
+
   onChange: function() {
     this.setState({isPlaying: PlayStore.isTrackPlaying(this.props.track)});
   },

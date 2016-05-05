@@ -17,15 +17,24 @@
   flex-direction: column;
   list-style-type: none;
   padding: 0px;
-  margin-left: 5px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  margin-top: 5px;
   float: left;
   position: relative;
   width: 230px;
   height: 230px;
   box-shadow: 10px 10px 5px white;
+  background-size: 230px 230px;
+
+}
+
+.options-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  background-color: black;
+  opacity: 0.6;
 }
 
 .play-button-container {
@@ -39,9 +48,37 @@
   opacity: 0;
   box-shadow: 1px, 1px;
   cursor: pointer;
+  margin-left: 5px;
+}
+
+.playlist-button-container {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  z-index: 9999;
+  top: 0;
+  box-shadow: 1px, 1px;
+  cursor: pointer;
+  right: 0;
+  background-color: black;
+  opacity: 0;
+  margin-top: 1px;
+  border-radius: 3px;
+}
+
+.fa-ellipsis-h {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .play-button-container:hover {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.playlist-button-container:hover {
   opacity: 1;
   transition: opacity 0.5s ease;
 }
@@ -50,8 +87,17 @@
   opacity: 0.6;
 }
 
+.playlist-button-container:hover ~ .track-title-container {
+  opacity: 0.6;
+}
+
 .track:hover .play-button-container {
   opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.track:hover .playlist-button-container {
+  opacity: 0.6;
   transition: opacity 0.5s ease;
 }
 
@@ -97,6 +143,7 @@
   transition-duration: 0.3s;
   -webkit-transition-property: transform;
   transition-property: transform;
+  margin: 5px;
 }
 .hvr-shrink:hover, .hvr-shrink:focus, .hvr-shrink:active {
   -webkit-transform: scale(0.9);
@@ -113,7 +160,7 @@
   opacity: 0.6;
 }
 
-.album-cover:hover ~ .track-title-container {
+.track:hover .track-title-container {
   opacity: 0.6;
   transition: opacity 0.5s ease;
 }

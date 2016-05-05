@@ -36,6 +36,7 @@ var App = React.createClass({
   },
 
   userProfileCB: function() {
+    // TODO: change hashHistory
     var userRoute = "user/" + this.state.currentUser.id.toString() + "/music";
     this.props.history.push(userRoute);
   },
