@@ -73,6 +73,7 @@
   align-items: center;
   justify-content: center;
   width: 220px;
+
   border-radius: 10px;
   background-color: #323232;
   box-shadow: 4px 4px 2px #191919;
@@ -82,7 +83,7 @@
   display: flex;
   justify-content: space-around;
   flex-direction: row;
-  align-items: center;
+  align-items: baseline;
   padding-top: 40px;
   width: 100%;
 }
@@ -127,11 +128,118 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 720px;
 }
 
 .track-playlist-tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
   width: 100%;
   height: 30px;
   border-bottom: 1px solid white;
-  margin-bottom: 10px;
+}
+
+.tab {
+  color: white;
+  background: black;
+  border: none;
+  height: 100%;
+  width: auto;
+  border-top: 1px solid white;
+  border-left: 1px solid white;
+  border-right: 1px solid white;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  transition-property: color;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+}
+
+.tab:hover {
+  color: #ff7b29;
+  cursor: pointer;
+}
+
+.user-playlists {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+
+.user-playlist-item {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+.playlist-title {
+  display: flex;
+  flex-direction: row;
+  height: auto;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  border-bottom: 1px solid white;
+  font-family: Varela Round, Consolas, sans-serif;
+}
+
+.playlist-name {
+  color: white;
+}
+
+.fa-plus-square-o {
+  margin-right: 10px;
+  transition-property: color;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+}
+
+.fa-minus-square-o {
+  margin-right: 10px;
+  transition-property: color;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+}
+
+.fa-plus-square-o:hover {
+  cursor: pointer;
+  color: #ff7b29;
+}
+
+.fa-minus-square-o:hover {
+  cursor: pointer;
+  color: #ff7b29;
+}
+
+.playlist-track {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 30px;
+  border-bottom: 1px solid white;
+  width: 100%;
+}
+
+.playlist-track-title {
+  color: white;
+  height: auto;
+  width: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-family: Varela Round, Consolas, sans-serif;
+}
+
+.playlist-track-album {
+  height: 100%;
+  width: 30px;
+  margin-right: 10px;
 }

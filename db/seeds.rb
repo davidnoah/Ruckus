@@ -31,14 +31,14 @@ Track.create!(
               playing: false
               )
 
-  Track.create!(
-                title: "Emancipator - First Snow",
-                image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_250/v1461732074/soon_it_will_be_cold_fwr3km.jpg",
-                audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Emancipator+-+First+Snow.mp3",
-                uploader_id: 1,
-                num_played: 0,
-                playing: false
-                )
+Track.create!(
+              title: "Emancipator - First Snow",
+              image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_250/v1461732074/soon_it_will_be_cold_fwr3km.jpg",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Emancipator+-+First+Snow.mp3",
+              uploader_id: 1,
+              num_played: 0,
+              playing: false
+              )
 Track.create!(
               title: "Bob Moses - Tearing me up",
               image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236526/Bob-Moses-tearing_me_up_xbctoq.jpg",
@@ -143,4 +143,54 @@ User.create!(
               email: "david.t.noah@gmail.com",
               picture: "http://res.cloudinary.com/davidnoah/image/upload/v1462317980/11112216_10155701957995483_491753383287939197_n_kwmx1u.jpg",
               description: "feelin' funky"
+)
+
+Playlist.create!(
+              name: "Funk Discotheque",
+              creator_id: 1,
+)
+
+Playlist.create!(
+              name: "Hoodrat Jamz",
+              creator_id: 1,
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 6
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 8
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 9
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 12
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 13
+)
+
+PlaylistTrack.create!(
+              playlist_id: 2,
+              track_id: 1
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 2
+)
+
+PlaylistTrack.create!(
+              playlist_id: 1,
+              track_id: 3
 )

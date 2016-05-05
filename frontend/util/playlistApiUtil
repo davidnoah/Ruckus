@@ -1,0 +1,25 @@
+var PlaylistActions = require('../actions/playlist_actions');
+
+module.exports = {
+  fetchPlaylists: function() {
+    $.ajax({
+      url: 'api/playlists',
+      method: 'GET',
+      success: function(playlists) {
+        console.log("ajax return", playlists);
+        PlaylistActions.getPlaylists(playlists);
+      }
+    });
+  },
+
+  fetchPlaylistTracks: function(playlistId) {
+    $.ajax({
+      url: 'api/playlist_tracks',
+      method: 'GET',
+      data: {id: playlistId},
+      success: function(tracks) {
+        PlaylistActions.fetchPlaylistTracks(playlistId, tracks);
+      }
+    });
+  }
+};

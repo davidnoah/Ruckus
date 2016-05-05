@@ -4,30 +4,12 @@ var ClientActions = require('../../actions/client_actions');
 var Masonry = require('react-masonry-component');
 var TrackIndexItem = require('../tracks/trackIndexItem');
 
-var shuffle = function(array) {
-  var newArray = array;
-  var currentIndex = newArray.length, temporaryValue, randomIndex;
-
-  while (0 !== currentIndex) {
-
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    temporaryValue = newArray[currentIndex];
-    newArray[currentIndex] = newArray[randomIndex];
-    newArray[randomIndex] = temporaryValue;
-  }
-
-  return newArray;
-};
-
 var UserTracks = React.createClass({
   getInitialState: function() {
     return {userTracks: TrackStore.findTracksByUser(this.props.user.id)};
   },
 
   componentDidMount: function() {
-    console.log("userTracks cdm");
     this.listener = TrackStore.addListener(this.onChange);
     ClientActions.fetchTracks();
   },
@@ -42,10 +24,8 @@ var UserTracks = React.createClass({
 
   render: function() {
     var allTracks;
-    console.log(this.state.userTracks);
     if (this.state.userTracks.length !== 0) {
-      var shuffledTracks = shuffle(this.state.userTracks);
-      allTracks = shuffledTracks.map(function(track) {
+      allTracks = this.state.userTracks.map(function(track) {
         return <TrackIndexItem track={track} key={track.id}/>;
       });
     } else {

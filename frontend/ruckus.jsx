@@ -17,6 +17,8 @@ var React = require('react'),
     UserProfile = require('./components/user/userProfile'),
     TrackIndex = require('./components/tracks/trackIndex.js');
 
+    window.playlistUtil = require('./util/playlistApiUtil');
+
 var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={Splash} />

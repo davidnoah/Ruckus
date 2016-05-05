@@ -1,5 +1,6 @@
 var UserUtil = require('../util/userApiUtil.js');
 var TrackUtil = require('../util/trackApiUtil.js');
+var PlaylistUtil = require('../util/playlistApiUtil');
 
 var ClientActions = window.CA = {
   loginUser: function(user) {
@@ -45,6 +46,14 @@ var ClientActions = window.CA = {
 
   resetPlayStore: function() {
     TrackUtil.resetPlayStore();
+  },
+
+  fetchPlaylists: function() {
+    PlaylistUtil.fetchPlaylists();
+  },
+
+  fetchPlaylistTracks: function(id) {
+    PlaylistUtil.fetchPlaylistTracks(id);
   }
 };
 
