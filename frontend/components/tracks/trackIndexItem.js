@@ -12,6 +12,7 @@ var SessionStore = require('../../stores/session');
 var TrackIndexItem = React.createClass({
 
   getInitialState: function() {
+    // Combine options / playlist properties to single state
     return {
       isPlaying: PlayStore.isTrackPlaying(this.props.track),
       optionsOpen: false,
@@ -62,10 +63,9 @@ var TrackIndexItem = React.createClass({
 
   stopPropagate: function(event) {
     event.stopPropagation();
-    debugger;
     this.setState({
       optionsOpen: false,
-      playlistOpen: false
+      playlistListOpen: false
     });
   },
 
@@ -105,6 +105,7 @@ var TrackIndexItem = React.createClass({
   },
 
   renderPlaylistList: function() {
+    //TODO just return userPlaylists
     var track = this.props.track;
     var userPlaylists = <UserPlaylists key="userPlaylist" user={this.state.currentUser} track={track}/>;
     return (
@@ -113,6 +114,7 @@ var TrackIndexItem = React.createClass({
   },
 
   render: function() {
+    // TODO change to case statement
     var track = this.props.track;
 
     var content = (this.state.optionsOpen) ? this.renderOptions() : this.renderPlayPause();
@@ -120,12 +122,12 @@ var TrackIndexItem = React.createClass({
     if (this.state.playlistListOpen) {
       content = this.renderPlaylistList();
     }
-
     backgroundImage = {backgroundImage: "url(" + track.image_url + ")"};
 
 
     return (
 
+      // TODO refactor onmouseleave to here
       <div className="track hvr-shrink" style={backgroundImage} key={track.id} id={track.id} onClick={this.handleClick}>
           {content}
       </div>

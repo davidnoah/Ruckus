@@ -28,6 +28,11 @@ gem 'cloudinary'
 gem 'aws-sdk'
 gem 'figaro'
 
+group :production do
+  gem 'newrelic_rpm'
+  gem 'rails_12factor'
+end
+
 
 # Use Unicorn as the app server
 # gem 'unicorn'

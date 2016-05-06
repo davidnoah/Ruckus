@@ -15,7 +15,7 @@ Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thoro
 
 ### Single-Page App
 
-FresherNote is truly a single-page; all content is delivered on one static page.  The root page listens to a `SessionStore` and renders content based on a call to `SessionStore.currentUser()`.  Sensitive information is kept out of the frontend of the app by making an API call to `SessionsController#get_user`.
+Ruckus was built using React.js and is truly a single page app.
 
 ```ruby
 class Api::SessionsController < ApplicationController
