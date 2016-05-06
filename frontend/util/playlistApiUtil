@@ -6,7 +6,6 @@ module.exports = {
       url: 'api/playlists',
       method: 'GET',
       success: function(playlists) {
-        console.log("ajax return", playlists);
         PlaylistActions.getPlaylists(playlists);
       }
     });
@@ -19,6 +18,28 @@ module.exports = {
       data: {id: playlistId},
       success: function(tracks) {
         PlaylistActions.fetchPlaylistTracks(playlistId, tracks);
+      }
+    });
+  },
+
+  addTrackToPlaylist: function(playlistId, trackId) {
+    $.ajax({
+      url: 'api/playlist_tracks',
+      method: 'POST',
+      data: {playlist_track: {playlist_id: playlistId, track_id: trackId}},
+      success: function(track) {
+        PlaylistActions.addPlaylistTrack(playlistId, track);
+      }
+    });
+  },
+
+  createPlaylist: function(playlistData) {
+    $.ajax({
+      url: 'api/playlists',
+      method: 'POST',
+      data: playlistData,
+      success: function(playlist) {
+        PlaylistActions.addPlaylist(playlist);
       }
     });
   }

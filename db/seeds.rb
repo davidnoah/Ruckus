@@ -135,6 +135,46 @@ Track.create!(
               num_played: 0,
               playing: false
               )
+  Track.create!(
+                title: "Snarky Puppy - Lingus",
+                image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462494549/snarky-puppy_srjuph.jpg",
+                audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Snarky+Puppy+-+Lingus+(We+Like+It+Here).mp3",
+                uploader_id: 1,
+                num_played: 0,
+                playing: false
+                )
+Track.create!(
+              title: "Hall & Oates - I Can't Go For That",
+              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462494955/1981_I_Cant_Go_For_That_lnwww9.jpg",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Hall+%26+Oates+-+I+Cant+Go+For+That+(1981).mp3",
+              uploader_id: 2,
+              num_played: 0,
+              playing: false
+              )
+Track.create!(
+              title: "Aesop Rock - None Shall Pass",
+              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462495174/None_shall_pass_aes_rock_a8tf44.jpg",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Aesop+Rock+-+None+Shall+Pass.mp3",
+              uploader_id: 2,
+              num_played: 0,
+              playing: false
+              )
+Track.create!(
+              title: "The Brothers Comatose - 120 East",
+              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462495491/brothers_hf46ym.jpg",
+              audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/The+Brothers+Comatose+-+120+East.mp3",
+              uploader_id: 1,
+              num_played: 0,
+              playing: false
+              )
+  Track.create!(
+                title: "Kanye West - Ultralight Beam",
+                image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462496692/kanye_iqo6ww.jpg",
+                audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Kanye+West+-+Ultralight+Beam+(Lyrics).mp3",
+                uploader_id: 1,
+                num_played: 0,
+                playing: false
+                )
 
 
 User.create!(

@@ -5,13 +5,18 @@ var PlayButton = require('../play.jsx');
 var PlayStore = require('../../stores/play');
 var PauseButton = require('../pause.jsx');
 var OptionsButton = require('../optionsButton.jsx');
+var UserPlaylists = require('../user/userPlaylistsModal');
+var ModalStyle = require('../../constants/playlistModalConstant');
+var SessionStore = require('../../stores/session');
 
 var TrackIndexItem = React.createClass({
 
   getInitialState: function() {
     return {
       isPlaying: PlayStore.isTrackPlaying(this.props.track),
-      optionsOpen: false
+      optionsOpen: false,
+      currentUser: SessionStore.currentUser(),
+      playlistListOpen: false
     };
   },
 
@@ -27,7 +32,7 @@ var TrackIndexItem = React.createClass({
     this.setState({isPlaying: PlayStore.isTrackPlaying(this.props.track)});
   },
 
-  handleClick: function() {
+  handleClick: function(event) {
     if (this.state.isPlaying === true) {
       ClientActions.pauseTrack();
     } else {
@@ -35,8 +40,33 @@ var TrackIndexItem = React.createClass({
     }
   },
 
-  openOptions: function() {
+  openOptions: function(event) {
+    event.stopPropagation();
     this.setState({optionsOpen: true});
+  },
+
+  closeOptions: function() {
+    this.setState({
+      optionsOpen: false,
+      playlistListOpen: false
+    });
+  },
+
+  openPlaylistList: function(event) {
+    event.stopPropagation();
+    this.setState({
+      optionsOpen: false,
+      playlistListOpen: true
+    });
+  },
+
+  stopPropagate: function(event) {
+    event.stopPropagation();
+    debugger;
+    this.setState({
+      optionsOpen: false,
+      playlistOpen: false
+    });
   },
 
   renderPlayPause: function() {
@@ -54,20 +84,31 @@ var TrackIndexItem = React.createClass({
     var options = <div key="options" className="playlist-button-container">
                     <OptionsButton track={track} onClick={this.openOptions}/>
                   </div>;
+    var trackTitle = <div key="trackTitle" className="track-title-container">
+                        <p className="track-title">{track.title}</p>
+                      </div>;
 
-    return [playPauseButton, options];
+    return [playPauseButton, options, trackTitle];
   },
 
   renderOptions: function() {
     return (
-      <div className="options-container" >
-        <div className="options-button-container" >
-          <p>Add to Playlist</p>
+      <div className="options-container" onMouseLeave={this.closeOptions}>
+        <div className="options-button-container" onClick={this.openPlaylistList}>
+          <h2 className="options-button" >Add to Playlist</h2>
         </div>
-        <div className="option-button-container" >
-          <p>Add to Queue</p>
+        <div className="options-button-container" >
+          <h2 className="options-button">Add to Queue</h2>
         </div>
       </div>
+    );
+  },
+
+  renderPlaylistList: function() {
+    var track = this.props.track;
+    var userPlaylists = <UserPlaylists key="userPlaylist" user={this.state.currentUser} track={track}/>;
+    return (
+      <div id="playlists" onMouseLeave={this.closeOptions} onClick={this.stopPropagate} className="add-track-playlist">{userPlaylists}</div>
     );
   },
 
@@ -75,13 +116,18 @@ var TrackIndexItem = React.createClass({
     var track = this.props.track;
 
     var content = (this.state.optionsOpen) ? this.renderOptions() : this.renderPlayPause();
+
+    if (this.state.playlistListOpen) {
+      content = this.renderPlaylistList();
+    }
+
     backgroundImage = {backgroundImage: "url(" + track.image_url + ")"};
+
+
     return (
+
       <div className="track hvr-shrink" style={backgroundImage} key={track.id} id={track.id} onClick={this.handleClick}>
           {content}
-        <div className="track-title-container">
-          <p className="track-title">{track.title}</p>
-        </div>
       </div>
     );
   }

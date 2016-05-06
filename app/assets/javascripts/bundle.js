@@ -27628,6 +27628,14 @@
 	
 	  fetchPlaylistTracks: function (id) {
 	    PlaylistUtil.fetchPlaylistTracks(id);
+	  },
+	
+	  addTrackToPlaylist: function (playlistId, trackId) {
+	    PlaylistUtil.addTrackToPlaylist(playlistId, trackId);
+	  },
+	
+	  createPlaylist: function (playlistData) {
+	    PlaylistUtil.createPlaylist(playlistData);
 	  }
 	};
 	
@@ -28240,7 +28248,6 @@
 	      url: 'api/playlists',
 	      method: 'GET',
 	      success: function(playlists) {
-	        console.log("ajax return", playlists);
 	        PlaylistActions.getPlaylists(playlists);
 	      }
 	    });
@@ -28253,6 +28260,28 @@
 	      data: {id: playlistId},
 	      success: function(tracks) {
 	        PlaylistActions.fetchPlaylistTracks(playlistId, tracks);
+	      }
+	    });
+	  },
+	
+	  addTrackToPlaylist: function(playlistId, trackId) {
+	    $.ajax({
+	      url: 'api/playlist_tracks',
+	      method: 'POST',
+	      data: {playlist_track: {playlist_id: playlistId, track_id: trackId}},
+	      success: function(track) {
+	        PlaylistActions.addPlaylistTrack(playlistId, track);
+	      }
+	    });
+	  },
+	
+	  createPlaylist: function(playlistData) {
+	    $.ajax({
+	      url: 'api/playlists',
+	      method: 'POST',
+	      data: playlistData,
+	      success: function(playlist) {
+	        PlaylistActions.addPlaylist(playlist);
 	      }
 	    });
 	  }
@@ -28274,11 +28303,26 @@
 	    });
 	  },
 	
+	  addPlaylist: function (playlist) {
+	    Dispatcher.dispatch({
+	      actionType: PlaylistConstants.ADD_PLAYLIST,
+	      playlist: playlist
+	    });
+	  },
+	
 	  fetchPlaylistTracks: function (playlistId, tracks) {
 	    Dispatcher.dispatch({
 	      actionType: PlaylistConstants.GET_PLAYLIST_TRACKS,
 	      playlistId: playlistId,
 	      tracks: tracks
+	    });
+	  },
+	
+	  addPlaylistTrack: function (playlistId, track) {
+	    Dispatcher.dispatch({
+	      actionType: PlaylistConstants.ADD_PLAYLIST_TRACK,
+	      playlistId: playlistId,
+	      track: track
 	    });
 	  }
 	};
@@ -28289,7 +28333,9 @@
 
 	module.exports = {
 	  GET_PLAYLISTS: "GET_PLAYLISTS",
-	  GET_PLAYLIST_TRACKS: "GET_PLAYLIST_TRACKS"
+	  ADD_PLAYLIST: "ADD_PLAYLIST",
+	  GET_PLAYLIST_TRACKS: "GET_PLAYLIST_TRACKS",
+	  ADD_PLAYLIST_TRACK: "ADD_PLAYLIST_TRACK"
 	};
 
 /***/ },
@@ -35596,11 +35642,7 @@
 
 	CONTENT_STYLE = {
 	  overlay: {
-	    position: 'fixed',
-	    top: 0,
-	    left: 0,
-	    right: 0,
-	    bottom: 0,
+	    position: 'absolute',
 	    backgroundColor: 'rgba(255, 255, 255, 0.75)'
 	  },
 	  content: {
@@ -58340,6 +58382,9 @@
 	var PlayStore = __webpack_require__(306);
 	var PauseButton = __webpack_require__(469);
 	var OptionsButton = __webpack_require__(489);
+	var UserPlaylists = __webpack_require__(490);
+	var ModalStyle = __webpack_require__(492);
+	var SessionStore = __webpack_require__(262);
 	
 	var TrackIndexItem = React.createClass({
 	  displayName: 'TrackIndexItem',
@@ -58348,7 +58393,9 @@
 	  getInitialState: function () {
 	    return {
 	      isPlaying: PlayStore.isTrackPlaying(this.props.track),
-	      optionsOpen: false
+	      optionsOpen: false,
+	      currentUser: SessionStore.currentUser(),
+	      playlistListOpen: false
 	    };
 	  },
 	
@@ -58364,7 +58411,7 @@
 	    this.setState({ isPlaying: PlayStore.isTrackPlaying(this.props.track) });
 	  },
 	
-	  handleClick: function () {
+	  handleClick: function (event) {
 	    if (this.state.isPlaying === true) {
 	      ClientActions.pauseTrack();
 	    } else {
@@ -58372,8 +58419,33 @@
 	    }
 	  },
 	
-	  openOptions: function () {
+	  openOptions: function (event) {
+	    event.stopPropagation();
 	    this.setState({ optionsOpen: true });
+	  },
+	
+	  closeOptions: function () {
+	    this.setState({
+	      optionsOpen: false,
+	      playlistListOpen: false
+	    });
+	  },
+	
+	  openPlaylistList: function (event) {
+	    event.stopPropagation();
+	    this.setState({
+	      optionsOpen: false,
+	      playlistListOpen: true
+	    });
+	  },
+	
+	  stopPropagate: function (event) {
+	    event.stopPropagation();
+	    debugger;
+	    this.setState({
+	      optionsOpen: false,
+	      playlistOpen: false
+	    });
 	  },
 	
 	  renderPlayPause: function () {
@@ -58397,32 +58469,51 @@
 	      { key: 'options', className: 'playlist-button-container' },
 	      React.createElement(OptionsButton, { track: track, onClick: this.openOptions })
 	    );
+	    var trackTitle = React.createElement(
+	      'div',
+	      { key: 'trackTitle', className: 'track-title-container' },
+	      React.createElement(
+	        'p',
+	        { className: 'track-title' },
+	        track.title
+	      )
+	    );
 	
-	    return [playPauseButton, options];
+	    return [playPauseButton, options, trackTitle];
 	  },
 	
 	  renderOptions: function () {
 	    return React.createElement(
 	      'div',
-	      { className: 'options-container' },
+	      { className: 'options-container', onMouseLeave: this.closeOptions },
 	      React.createElement(
 	        'div',
-	        { className: 'options-button-container' },
+	        { className: 'options-button-container', onClick: this.openPlaylistList },
 	        React.createElement(
-	          'p',
-	          null,
+	          'h2',
+	          { className: 'options-button' },
 	          'Add to Playlist'
 	        )
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'option-button-container' },
+	        { className: 'options-button-container' },
 	        React.createElement(
-	          'p',
-	          null,
+	          'h2',
+	          { className: 'options-button' },
 	          'Add to Queue'
 	        )
 	      )
+	    );
+	  },
+	
+	  renderPlaylistList: function () {
+	    var track = this.props.track;
+	    var userPlaylists = React.createElement(UserPlaylists, { key: 'userPlaylist', user: this.state.currentUser, track: track });
+	    return React.createElement(
+	      'div',
+	      { id: 'playlists', onMouseLeave: this.closeOptions, onClick: this.stopPropagate, className: 'add-track-playlist' },
+	      userPlaylists
 	    );
 	  },
 	
@@ -58430,20 +58521,17 @@
 	    var track = this.props.track;
 	
 	    var content = this.state.optionsOpen ? this.renderOptions() : this.renderPlayPause();
+	
+	    if (this.state.playlistListOpen) {
+	      content = this.renderPlaylistList();
+	    }
+	
 	    backgroundImage = { backgroundImage: "url(" + track.image_url + ")" };
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'track hvr-shrink', style: backgroundImage, key: track.id, id: track.id, onClick: this.handleClick },
-	      content,
-	      React.createElement(
-	        'div',
-	        { className: 'track-title-container' },
-	        React.createElement(
-	          'p',
-	          { className: 'track-title' },
-	          track.title
-	        )
-	      )
+	      content
 	    );
 	  }
 	});
@@ -61820,7 +61908,8 @@
 	
 	  getInitialState: function () {
 	    return {
-	      playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id)
+	      playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id),
+	      playlistName: ""
 	    };
 	  },
 	
@@ -61837,6 +61926,17 @@
 	    this.setState({ playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id) });
 	  },
 	
+	  createPlaylist: function () {
+	    var playlist = { playlist: { name: this.state.playlistName, creator_id: this.props.user.id } };
+	    ClientActions.createPlaylist(playlist);
+	  },
+	
+	  handleChange: function (event) {
+	    var state = {};
+	    state[event.target.id] = event.target.value;
+	    this.setState(state);
+	  },
+	
 	  render: function () {
 	    var user = this.props.user;
 	    var userPlaylists = this.state.playlists.map(function (playlist) {
@@ -61846,7 +61946,13 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'user-playlists' },
-	      userPlaylists
+	      userPlaylists,
+	      React.createElement(
+	        'form',
+	        { className: 'create-playlist-form', onSubmit: this.createPlaylist },
+	        React.createElement('input', { className: 'create-playlist-text', type: 'text', value: this.state.playlistName, onChange: this.handleChange, id: 'playlistName' }),
+	        React.createElement('input', { className: 'create-playlist-button', type: 'submit', value: 'Create Playlist' })
+	      )
 	    );
 	  }
 	
@@ -61957,6 +62063,9 @@
 	    case PlaylistConstants.GET_PLAYLIST_TRACKS:
 	      setPlaylist(payload.playlistId, payload.tracks);
 	      break;
+	    case PlaylistConstants.ADD_PLAYLIST_TRACK:
+	      addPlaylistTrack(payload.playlistId, payload.track);
+	      break;
 	  }
 	};
 	
@@ -61986,7 +62095,7 @@
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.playlistListener.remove();
+	    this.playStoreListener.remove();
 	  },
 	
 	  onChange: function () {
@@ -62059,7 +62168,7 @@
 	  PlaylistStore.__emitChange();
 	};
 	
-	var resetPlaylist = function (playlist) {
+	var addPlaylist = function (playlist) {
 	  _playlists[playlist.id] = playlist;
 	  PlaylistStore.__emitChange();
 	};
@@ -62069,8 +62178,8 @@
 	    case PlaylistConstants.GET_PLAYLISTS:
 	      resetPlaylists(payload.playlists);
 	      break;
-	    case PlaylistConstants.GET_PLAYLIST:
-	      resetPlaylist(payload.playlist);
+	    case PlaylistConstants.ADD_PLAYLIST:
+	      addPlaylist(payload.playlist);
 	      break;
 	  }
 	};
@@ -62089,11 +62198,158 @@
 	  displayName: 'OptionsButton',
 	
 	  render: function () {
-	    return React.createElement('i', { className: 'fa fa-ellipsis-h fa-2x', style: { ariaHidden: "true" } });
+	    return React.createElement('i', { className: 'fa fa-ellipsis-h fa-2x', onClick: this.props.onClick, style: { ariaHidden: "true" } });
 	  }
 	});
 	
 	module.exports = OptionsButton;
+
+/***/ },
+/* 490 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var PlaylistItem = __webpack_require__(491);
+	var PlaylistStore = __webpack_require__(487);
+	
+	var UserPlaylists = React.createClass({
+	  displayName: 'UserPlaylists',
+	
+	  getInitialState: function () {
+	    return {
+	      playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id)
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    this.playlistListener = PlaylistStore.addListener(this.onChange);
+	    ClientActions.fetchPlaylists();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.playlistListener.remove();
+	  },
+	
+	  onChange: function () {
+	    this.setState({ playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id) });
+	  },
+	
+	  render: function () {
+	    var user = this.props.user;
+	    var track = this.props.track;
+	    var userPlaylists = this.state.playlists.map(function (playlist) {
+	      return React.createElement(PlaylistItem, { key: playlist.id, user: user, track: track, playlist: playlist });
+	    });
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'user-playlists-modal' },
+	      userPlaylists
+	    );
+	  }
+	
+	});
+	module.exports = UserPlaylists;
+
+/***/ },
+/* 491 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ClientActions = __webpack_require__(247);
+	var PlaylistTrackStore = __webpack_require__(485);
+	var PlaylistTrackItem = __webpack_require__(486);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return {
+	      disabled: false,
+	      playlistTracks: PlaylistTrackStore.findAllTracksByPlaylist(this.props.playlist.id)
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    this.playlistTrackListener = PlaylistTrackStore.addListener(this.onChange);
+	    ClientActions.fetchPlaylistTracks(this.props.playlist.id);
+	  },
+	
+	  onChange: function () {
+	    this.setState({ playlistTracks: PlaylistTrackStore.findAllTracksByPlaylist(this.props.playlist.id) });
+	  },
+	
+	  addTrack: function () {
+	    ClientActions.addTrackToPlaylist(this.props.playlist.id, this.props.track.id);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.playlistTrackListener.remove();
+	  },
+	
+	  render: function () {
+	    if (this.state.playlistTracks !== undefined) {
+	      if (this.state.playlistTracks.indexOf(this.props.track) === -1) {
+	        return React.createElement(
+	          'div',
+	          { className: 'playlist-button-modal' },
+	          React.createElement(
+	            'button',
+	            { onClick: this.addTrack, className: 'add-track-playlist-button' },
+	            this.props.playlist.name
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          'div',
+	          { className: 'playlist-button-modal' },
+	          React.createElement(
+	            'button',
+	            { className: 'add-track-playlist-button' },
+	            this.props.playlist.name
+	          ),
+	          React.createElement('i', { className: 'fa fa-check', style: { ariaHidden: "true" } })
+	        );
+	      }
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
+	});
+
+/***/ },
+/* 492 */
+/***/ function(module, exports) {
+
+	CONTENT_STYLE = {
+	  overlay: {
+	    position: 'absolute',
+	    top: 0,
+	    left: 0,
+	    right: 0,
+	    bottom: 0,
+	    background: "none",
+	    width: "auto",
+	    height: "auto",
+	    alignSelf: "center"
+	  },
+	  content: {
+	    position: 'relative',
+	    border: '0.5px solid #999999',
+	    background: '#FFFFFF',
+	    overflow: 'auto',
+	    WebkitOverflowScrolling: 'touch',
+	    borderRadius: '10px',
+	    outline: 'none',
+	    padding: '20px',
+	    width: "200px",
+	    height: "200px"
+	
+	  }
+	};
+	
+	module.exports = CONTENT_STYLE;
 
 /***/ }
 /******/ ]);

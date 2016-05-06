@@ -16,7 +16,7 @@ var PlaylistTrackItem = React.createClass({
   },
 
   componentWillUnmount: function () {
-    this.playlistListener.remove();
+    this.playStoreListener.remove();
   },
 
   onChange: function() {

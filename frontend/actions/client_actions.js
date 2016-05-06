@@ -53,6 +53,14 @@ var ClientActions = window.CA = {
 
   fetchPlaylistTracks: function(id) {
     PlaylistUtil.fetchPlaylistTracks(id);
+  },
+
+  addTrackToPlaylist: function(playlistId, trackId) {
+    PlaylistUtil.addTrackToPlaylist(playlistId, trackId);
+  },
+
+  createPlaylist: function(playlistData) {
+    PlaylistUtil.createPlaylist(playlistData);
   }
 };
 

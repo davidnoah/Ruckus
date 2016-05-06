@@ -243,3 +243,37 @@
   width: 30px;
   margin-right: 10px;
 }
+
+.create-playlist-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.create-playlist-text {
+  border-radius: 5px;
+  color: white;
+  background-color: #262626;
+  border: 1px solid white;
+  border-right: none;
+}
+
+.create-playlist-button {
+  background-color: black;
+  color: white;
+  border-color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  border-left: none;
+  transition-property: color;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+}
+
+.create-playlist-button:hover {
+  cursor: pointer;
+  cursor: pointer;
+  color: #ff7b29;
+}

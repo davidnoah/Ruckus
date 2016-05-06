@@ -36,7 +36,7 @@ var resetPlaylists = function(playlists) {
   PlaylistStore.__emitChange();
 };
 
-var resetPlaylist = function(playlist) {
+var addPlaylist = function(playlist) {
   _playlists[playlist.id] = playlist;
   PlaylistStore.__emitChange();
 };
@@ -46,8 +46,8 @@ PlaylistStore.__onDispatch = function(payload) {
     case PlaylistConstants.GET_PLAYLISTS:
       resetPlaylists(payload.playlists);
       break;
-    case PlaylistConstants.GET_PLAYLIST:
-      resetPlaylist(payload.playlist);
+    case PlaylistConstants.ADD_PLAYLIST:
+      addPlaylist(payload.playlist);
       break;
   }
 };

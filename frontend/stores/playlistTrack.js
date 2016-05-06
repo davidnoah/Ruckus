@@ -25,6 +25,9 @@ PlaylistTrackStore.__onDispatch = function(payload) {
     case PlaylistConstants.GET_PLAYLIST_TRACKS:
       setPlaylist(payload.playlistId, payload.tracks);
       break;
+    case PlaylistConstants.ADD_PLAYLIST_TRACK:
+      addPlaylistTrack(payload.playlistId, payload.track);
+      break;
   }
 };
 
