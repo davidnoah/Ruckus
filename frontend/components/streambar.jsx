@@ -63,7 +63,6 @@ var StreamBar = React.createClass({
   },
 
   render: function() {
-    console.log(PlayStore);
     var currentTrack = this.state.currentTrack;
     var audio_url;
 

@@ -6,18 +6,29 @@ var React = require('react'),
     TrackIndex = require('./tracks/trackIndex.js'),
     TrackUpload = require('./tracks/trackUpload'),
     Modal = require('react-modal');
+    Scroll = require('react-scroll');
 
 var masonryOptions = {
     transitionDuration: 0
 };
 
 var Splash = React.createClass({
+  scrollToPx: function() {
+    var options = {
+      smooth: true
+    };
+
+    var scroll = Scroll.animateScroll;
+    scroll.scrollTo(950, options);
+  },
+
   render: function() {
     return (
       <div className="splash">
         <div className="splash-image">
           <h3 className="splash-slogan">Funkify Your Life</h3>
           <h3 className="splash-description">Challenge yourself & discover music you have never listened to</h3>
+          <button className="scroll-button" onClick={this.scrollToPx}>Start Listening...</button>
           <div className="splash-icons">
             <div className="splash-icon-container">
               <i className="fa fa-music fa-5x" style={{ariaHidden: "true"}}></i>

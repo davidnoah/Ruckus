@@ -26,7 +26,6 @@ module.exports = {
     var presignedUrl = url.presigned_url;
     var publicUrl = url.public_url;
     var filetype = file.type;
-    console.log(url);
 
     var xhr = new XMLHttpRequest();
 

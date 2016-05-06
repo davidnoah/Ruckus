@@ -1,14 +1,17 @@
-# FresherNote
+# Ruckus
 
-[FresherNote live][heroku] **NB:** This should be a link to your production site
+[Ruckus Live][heroku]
 
-[heroku]: http://www.herokuapp.com
+[heroku]: http://www.ruckusmusic.herokuapp.com
 
-FresherNote is a full-stack web application inspired by Evernote.  It utilizes Ruby on Rails on the backend, a PostgreSQL database, and React.js with a Flux architectural framework on the frontend.  
+Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thorough back-end built with Ruby on Rails and single-page rendering powered by React.js.
 
 ## Features & Implementation
 
- **NB**: don't copy and paste any of this.  Many folks will implement similar features, and many employers will see the READMEs of a lot of a/A grads.  You must write in a way that distinguishes your README from that of other students', but use this as a guide for what topics to cover.  
+1. Allows a user to stream single songs that persists through the entire website.
+2. Ruckus maintains a direct connection to Amazon S3. This promotes quick uploads of audio/image files and      instantaneous playback via a public url. The uploads use a one time only "pre-signed url" to upload tracks securely to Amazon's cloud.
+3. Once logged in, a user has access to all the tracks uploaded by other users, along with the ability to organize their own music within playlists.
+
 
 ### Single-Page App
 

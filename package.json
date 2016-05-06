@@ -37,6 +37,7 @@
     "react-player": "^0.5.8",
     "react-progressbar": "^1.2.0",
     "react-router": "^2.3.0",
+    "react-scroll": "^1.0.15",
     "react-search-bar": "^1.1.4",
     "webpack": "^1.13.0"
   }

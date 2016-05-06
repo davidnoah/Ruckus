@@ -28,7 +28,6 @@ PlaylistStore.findPlaylistsByUser = function(id) {
 };
 
 var resetPlaylists = function(playlists) {
-  console.log("reset playlists", playlists);
   _playlists = {};
   playlists.forEach(function(playlist) {
     _playlists[playlist.id] = playlist;

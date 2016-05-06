@@ -22,7 +22,6 @@ var loginUser = function(user) {
 };
 
 var logoutUser = function() {
-  console.log('user logged out!');
   _loggedIn = false;
   _currentUser = null;
   localStorage.removeItem("currentUser");
