@@ -104,6 +104,11 @@
   border: 1px dotted #999999;
 }
 
+.user-drop-zone:hover {
+  border-style: solid;
+  border-width: 2px;
+}
+
 .user-drop-text {
   font-family: Varela Round, Consolas, sans-serif;
   font-size: 10px;
@@ -112,6 +117,10 @@
 }
 
 .userFormLabel {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   font-family: Varela Round, Consolas, sans-serif;
   font-weight: 300;
   color: white;
@@ -276,4 +285,12 @@
   cursor: pointer;
   cursor: pointer;
   color: #ff7b29;
+}
+
+.textbox {
+  border-radius: 5px;
+}
+
+.desc-textbox {
+  border-radius: 5px;
 }

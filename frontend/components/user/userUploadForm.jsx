@@ -54,7 +54,14 @@ var TrackUpload = React.createClass({
       uploader_id: this.state.uploaderId
     }};
     ClientActions.createTrack(track);
-    this.getInitialState();
+
+    this.setState({
+      title: "",
+      description: "",
+      audio_url: "",
+      image_url: "",
+      uploader_id: SessionStore.currentUser().id
+    });
   },
 
   render: function() {
@@ -81,7 +88,7 @@ var TrackUpload = React.createClass({
             Description:
             <br/>
             <input type="text"
-              className="textbox"
+              className="desc-textbox"
               value={this.state.description}
               onChange={this.onChange}
               id="description" />

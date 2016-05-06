@@ -15,19 +15,7 @@ Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thoro
 
 ### Single-Page App
 
-Ruckus was built using React.js and is truly a single page app.
-
-```ruby
-class Api::SessionsController < ApplicationController
-    def get_user
-      if current_user
-        render :current_user
-      else
-        render json: errors.full_messages
-      end
-    end
- end
-  ```
+Ruckus was built using React.js and is truly a single page app. React has the ability to surgically render various "components" during a state change as opposed to re-rendering an entire page. A good example is the persisted stream bar when a song is being played. Since that component is listening to the play store, it only renders when there is a song playing.
 
 ### Note Rendering and Editing
 

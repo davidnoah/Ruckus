@@ -24,7 +24,8 @@ var UserPlaylists = React.createClass({
     this.setState({playlists: PlaylistStore.findPlaylistsByUser(this.props.user.id)});
   },
 
-  createPlaylist: function() {
+  createPlaylist: function(event) {
+    event.preventDefault();
     var playlist = {playlist: {name: this.state.playlistName, creator_id: this.props.user.id}};
     ClientActions.createPlaylist(playlist);
   },

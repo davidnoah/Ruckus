@@ -138,6 +138,11 @@
   border: 1px dotted #999999;
 }
 
+.drop-zone:hover {
+  border-style: solid;
+  border-width: 2px;
+}
+
 .drop-text {
   font-family: Varela Round, Consolas, sans-serif;
   font-size: 10px;
@@ -167,6 +172,7 @@ input.submit-button {
   opacity: 0.6;
   color: white;
   margin-bottom: 5px;
+  border-radius: 5px;
 }
 
 button.submit-button {
