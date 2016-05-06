@@ -150,7 +150,7 @@
    color: #ff7b29;
  }
 
-@import url('./navbar.css');
+@import url('./navbar.css.scss');
 @import url('./modal.css');
 @import url('./track.css');
 @import url('./streambar.css');

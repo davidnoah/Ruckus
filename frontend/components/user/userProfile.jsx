@@ -3,7 +3,7 @@ var SessionStore = require('../../stores/session');
 var UserTracks = require('./userTracks');
 var UploadTrack = require('./userUploadForm');
 var UserDetail = require('./userDetail');
-var UserPlaylists = require('./UserPlaylists');
+var UserPlaylists = require('./userPlaylists');
 
 var UserProfile = React.createClass({
   getInitialState: function() {
