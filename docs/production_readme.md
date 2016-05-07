@@ -17,49 +17,53 @@ Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thoro
 
 Ruckus was built using React.js and is truly a single page app. React has the ability to surgically render various "components" during a state change as opposed to re-rendering an entire page. A good example is the persisted stream bar when a song is being played. Since that component is listening to the play store, it only renders when there is a song playing.
 
-### Note Rendering and Editing
+# Screenshots!
 
-  On the database side, the notes are stored in one table in the database, which contains columns for `id`, `user_id`, `content`, and `updated_at`.  Upon login, an API call is made to the database which joins the user table and the note table on `user_id` and filters by the current user's `id`.  These notes are held in the `NoteStore` until the user's session is destroyed.  
+## Splash Page
 
-  Notes are rendered in two different components: the `CondensedNote` components, which show the title and first few words of the note content, and the `ExpandedNote` components, which are editable and show all note text.  The `NoteIndex` renders all of the `CondensedNote`s as subcomponents, as well as one `ExpandedNote` component, which renders based on `NoteStore.selectedNote()`. The UI of the `NoteIndex` is taken directly from Evernote for a professional, clean look:  
+![splash]
 
-![image of notebook index](https://github.com/appacademy/sample-project-proposal/blob/master/docs/noteIndex.png)
+## Track Listing
 
-Note editing is implemented using the Quill.js library, allowing for a Word-processor-like user experience.
+![tracks]
 
-### Notebooks
+## Profile Page
 
-Implementing Notebooks started with a notebook table in the database.  The `Notebook` table contains two columns: `title` and `id`.  Additionally, a `notebook_id` column was added to the `Note` table.  
+![profile]
 
-The React component structure for notebooks mirrored that of notes: the `NotebookIndex` component renders a list of `CondensedNotebook`s as subcomponents, along with one `ExpandedNotebook`, kept track of by `NotebookStore.selectedNotebook()`.  
+## User Playlists
 
-`NotebookIndex` render method:
+![playlists]
 
-```javascript
-render: function () {
-  return ({this.state.notebooks.map(function (notebook) {
-    return <CondensedNotebook notebook={notebook} />
-  }
-  <ExpandedNotebook notebook={this.state.selectedNotebook} />)
-}
+[splash]: ./screenshots/splash.png
+[tracks]: ./screenshots/track_list.png
+[profile]: ./screenshots/user_profile.png
+[playlists]: ./screenshots/user_playlists.png
+
+## Notable Code
+
+In order to allow for instantaneous playback and to steer clear from using Cloudinary, I was able to implement integration with Amazon S3. This was an interesting process. When a user makes an upload request, the file name and path prefix travels to my Rails backend and is validated using the AWS SDK gem. This will then, on success, respond with a one-time use "pre-signed URL". Ruckus then uses the pre-signed URL to make an XMLHTTPRequest to Amazon to ultimately upload the file.
+
+## Creates Pre-Signed URL
+
+```ruby
+class Upload < ActiveRecord::Base
+  def self.presign(prefix, filename, limit: limit)
+    extname = File.extname(filename)
+    filename = "#{SecureRandom.uuid}#{extname}"
+    upload_key = Pathname.new(prefix).join(filename).to_s
+
+    creds = Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
+    s3 = Aws::S3::Resource.new(region: 'us-west-1', credentials: creds)
+    obj = s3.bucket('ruckus-music').object(upload_key)
+
+    params = { acl: 'public-read' }
+    params[:content_length] = limit if limit
+
+    {
+      presigned_url: obj.presigned_url(:put, params),
+      public_url: obj.public_url
+    }
+  end
+end
 ```
-
-### Tags
-
-As with notebooks, tags are stored in the database through a `tag` table and a join table.  The `tag` table contains the columns `id` and `tag_name`.  The `tagged_notes` table is the associated join table, which contains three columns: `id`, `tag_id`, and `note_id`.  
-
-Tags are maintained on the frontend in the `TagStore`.  Because creating, editing, and destroying notes can potentially affect `Tag` objects, the `NoteIndex` and the `NotebookIndex` both listen to the `TagStore`.  It was not necessary to create a `Tag` component, as tags are simply rendered as part of the individual `Note` components.  
-
-![tag screenshot](https://github.com/appacademy/sample-project-proposal/blob/master/docs/tagScreenshot.png)
-
-## Future Directions for the Project
-
-In addition to the features already implemented, I plan to continue work on this project.  The next steps for FresherNote are outlined below.
-
-### Search
-
-Searching notes is a standard feature of Evernote.  I plan to utilize the Fuse.js library to create a fuzzy search of notes and notebooks.  This search will look go through tags, note titles, notebook titles, and note content.  
-
-### Direct Messaging
-
-Although this is less essential functionality, I also plan to implement messaging between FresherNote users.  To do this, I will use WebRTC so that notifications of messages happens seamlessly.  

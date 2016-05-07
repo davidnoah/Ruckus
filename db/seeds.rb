@@ -8,7 +8,7 @@
 
 Track.create!(title: "Thievery Corperation - Exile",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Exilio+-+Thievery+Corporation.mp3",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_230/v1461730612/the-richest-man-in-babylon-5296d2c4b3c51_pyj7je.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/c_scale,w_230/v1461730612/the-richest-man-in-babylon-5296d2c4b3c51_pyj7je.jpg",
               uploader_id: 1,
               num_played: 0,
               playing: false)
@@ -16,7 +16,7 @@ Track.create!(title: "Thievery Corperation - Exile",
 Track.create!(
               title: "BoomBox - Midnight on the Run",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Midnight+On+The+Run.mp3",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_180/v1461731209/boombox_s348mv.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/c_scale,w_180/v1461731209/boombox_s348mv.jpg",
               uploader_id: 2,
               num_played: 0,
               playing: false
@@ -24,7 +24,7 @@ Track.create!(
 
 Track.create!(
               title: "Punch Brothers - Julep",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_220/v1461731412/10440244_10152947525233729_6534460003081292977_n.png_xatvjc.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/c_scale,w_220/v1461731412/10440244_10152947525233729_6534460003081292977_n.png_xatvjc.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Punch+Brothers+-+Julep.mp3",
               uploader_id: 3,
               num_played: 0,
@@ -33,7 +33,7 @@ Track.create!(
 
 Track.create!(
               title: "Emancipator - First Snow",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/c_scale,w_250/v1461732074/soon_it_will_be_cold_fwr3km.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/c_scale,w_250/v1461732074/soon_it_will_be_cold_fwr3km.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Emancipator+-+First+Snow.mp3",
               uploader_id: 1,
               num_played: 0,
@@ -41,7 +41,7 @@ Track.create!(
               )
 Track.create!(
               title: "Bob Moses - Tearing me up",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236526/Bob-Moses-tearing_me_up_xbctoq.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236526/Bob-Moses-tearing_me_up_xbctoq.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Bob+Moses+-+Tearing+me+up.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -49,7 +49,7 @@ Track.create!(
               )
 Track.create!(
               title: "Incubus - Hilikus",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236493/Incubus_-_Hilikus_s7xd0e.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236493/Incubus_-_Hilikus_s7xd0e.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/INCUBUS+-+Hilikus.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -57,7 +57,7 @@ Track.create!(
               )
 Track.create!(
               title: "A Tribe Called Quest - Luck of Lucien",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236489/A_Tribe_Called_Quest_-_Luck_of_Lucien_wm998s.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236489/A_Tribe_Called_Quest_-_Luck_of_Lucien_wm998s.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Luck+of+Lucien+by.+A+Tribe+Called+Quest.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -65,7 +65,7 @@ Track.create!(
               )
 Track.create!(
               title: "Shook - Hold Tight",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236523/Hold-Tight_Album_kpemzz.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236523/Hold-Tight_Album_kpemzz.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Shook+-+Hold+Tight.mp3",
               uploader_id: 1,
               num_played: 0,
@@ -73,7 +73,7 @@ Track.create!(
               )
 Track.create!(
               title: "Vulfpeck - It Gets Funkier II",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236497/Vulfpeck_-_It_Gets_Funkier_II_oadg4a.png",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236497/Vulfpeck_-_It_Gets_Funkier_II_oadg4a.png",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/VULFPECK+---+It+Gets+Funkier+II.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -81,7 +81,7 @@ Track.create!(
               )
 Track.create!(
               title: "Santana - Black Magic Woman",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462236501/Santana_qmu4fy.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462236501/Santana_qmu4fy.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/santana-+black+magic+woman.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -89,7 +89,7 @@ Track.create!(
               )
 Track.create!(
               title: "Leon Bridges - Twistin' and Groovin'",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462238067/LEON_BRIDGES_dffzcf.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462238067/LEON_BRIDGES_dffzcf.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Leon+Bridges+-+Twistin%27+%26+Groovin%27+-+Coming+Home.mp3",
               uploader_id: 1,
               num_played: 0,
@@ -97,7 +97,7 @@ Track.create!(
               )
 Track.create!(
               title: "Turkuaz - Zynth",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462238482/turkuaz-digitonium_wrctk7.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462238482/turkuaz-digitonium_wrctk7.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Zynth.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -105,7 +105,7 @@ Track.create!(
               )
   Track.create!(
                 title: "123 - The Motet",
-                image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462240349/The_Motet-Dig_Deep_b_mj4ass.jpg",
+                image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462240349/The_Motet-Dig_Deep_b_mj4ass.jpg",
                 audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/%27123%27+-+Track+2+from+the+album+The+Motet.mp3",
                 uploader_id: 4,
                 num_played: 0,
@@ -113,7 +113,7 @@ Track.create!(
                 )
 Track.create!(
               title: "One Self - Bluebird",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462241108/bluebird-main_eowqfe.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462241108/bluebird-main_eowqfe.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/One+Self+-+Bluebird.mp3",
               uploader_id: 1,
               num_played: 0,
@@ -121,7 +121,7 @@ Track.create!(
               )
 Track.create!(
               title: "James Brown - The Boss",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462241295/The_Boss_album_artwork_c4jov5.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462241295/The_Boss_album_artwork_c4jov5.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/James+Brown+-+The+Boss.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -129,7 +129,7 @@ Track.create!(
               )
 Track.create!(
               title: "Billy Stewart - Summertime",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462241435/billy-stewart-summertime_qe9xut.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462241435/billy-stewart-summertime_qe9xut.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Billy+Stewart+-+Summertime.mp3",
               uploader_id: 4,
               num_played: 0,
@@ -137,7 +137,7 @@ Track.create!(
               )
   Track.create!(
                 title: "Snarky Puppy - Lingus",
-                image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462494549/snarky-puppy_srjuph.jpg",
+                image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462494549/snarky-puppy_srjuph.jpg",
                 audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Snarky+Puppy+-+Lingus+(We+Like+It+Here).mp3",
                 uploader_id: 1,
                 num_played: 0,
@@ -145,7 +145,7 @@ Track.create!(
                 )
 Track.create!(
               title: "Hall & Oates - I Can't Go For That",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462494955/1981_I_Cant_Go_For_That_lnwww9.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462494955/1981_I_Cant_Go_For_That_lnwww9.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Hall+%26+Oates+-+I+Cant+Go+For+That+(1981).mp3",
               uploader_id: 2,
               num_played: 0,
@@ -153,7 +153,7 @@ Track.create!(
               )
 Track.create!(
               title: "Aesop Rock - None Shall Pass",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462495174/None_shall_pass_aes_rock_a8tf44.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462495174/None_shall_pass_aes_rock_a8tf44.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Aesop+Rock+-+None+Shall+Pass.mp3",
               uploader_id: 2,
               num_played: 0,
@@ -161,7 +161,7 @@ Track.create!(
               )
 Track.create!(
               title: "The Brothers Comatose - 120 East",
-              image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462495491/brothers_hf46ym.jpg",
+              image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462495491/brothers_hf46ym.jpg",
               audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/The+Brothers+Comatose+-+120+East.mp3",
               uploader_id: 1,
               num_played: 0,
@@ -169,7 +169,7 @@ Track.create!(
               )
   Track.create!(
                 title: "Kanye West - Ultralight Beam",
-                image_url: "http://res.cloudinary.com/davidnoah/image/upload/v1462496692/kanye_iqo6ww.jpg",
+                image_url: "https://res.cloudinary.com/davidnoah/image/upload/v1462496692/kanye_iqo6ww.jpg",
                 audio_url: "https://s3-us-west-1.amazonaws.com/ruckus-music/Kanye+West+-+Ultralight+Beam+(Lyrics).mp3",
                 uploader_id: 1,
                 num_played: 0,
@@ -181,7 +181,7 @@ User.create!(
               username: "DavidNoah",
               password: "password",
               email: "david.t.noah@gmail.com",
-              picture: "http://res.cloudinary.com/davidnoah/image/upload/v1462317980/11112216_10155701957995483_491753383287939197_n_kwmx1u.jpg",
+              picture: "https://res.cloudinary.com/davidnoah/image/upload/v1462317980/11112216_10155701957995483_491753383287939197_n_kwmx1u.jpg",
               description: "feelin' funky"
 )
 

@@ -9,7 +9,6 @@ var React = require('react'),
 
     App = require('./components/app.jsx'),
     SessionStore = require('./stores/session.js'),
-    TrackStore = require('./stores/track.js'),
     Signup = require('./components/auth/signup.jsx'),
     Login = require('./components/auth/login.jsx'),
     Splash = require('./components/splash.jsx'),
@@ -17,7 +16,7 @@ var React = require('react'),
     UserProfile = require('./components/user/userProfile'),
     TrackIndex = require('./components/tracks/trackIndex.js');
 
-    window.playlistUtil = require('./util/playlistApiUtil');
+    window.TrackStore = require('./stores/track.js');
 
 var routes = (
   <Route path="/" component={App}>

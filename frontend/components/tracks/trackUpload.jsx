@@ -17,7 +17,11 @@ var TrackUpload = React.createClass({
   },
 
   componentDidMount: function() {
-    UploadStore.addListener(this.onAudioUpload);
+    this.uploadlistener = UploadStore.addListener(this.onAudioUpload);
+  },
+
+  componentWillUnmount: function() {
+    this.uploadlistener.remove();
   },
 
   onAudioUpload: function() {
@@ -58,9 +62,12 @@ var TrackUpload = React.createClass({
   },
 
   render: function() {
-    var picturePreview = {
-      backgroundImage: "url(" + this.state.imageUrl + ")"
-    };
+    var picturePreview;
+    if (this.state.imageUrl) {
+      picturePreview = {backgroundImage: "url(" + this.state.imageUrl + ")"};
+    } else {
+      picturePreview = {};
+    }
 
     return (
       <div className='uploadForm'>
