@@ -1,146 +1,94 @@
 # Ruckus
 
-[Heroku link][heroku]
+[Ruckus Live][heroku]
 
-[heroku]: https://ruckusmusic.herokuapp.com/
+[heroku]: http://www.ruckusmusic.herokuapp.com
 
-## Minimum Viable Product
+Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thorough back-end built with Ruby on Rails and single-page rendering powered by React.js.
 
-Ruckus is a music-sharing and streaming web application inspired by SoundCloud that will be built using Ruby on Rails and React.js.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
+## Features & Implementation
 
-- [ ] New account creation, login, and guest/demo login
-- [ ] Smooth, bug-free navigation
-- [ ] Adequate seed data to demonstrate the site's features
-- [ ] The minimally necessary features for a SoundCloud-inspired site: music listening, music uploading, and organization of music within playlists
-- [ ] Hosting on Heroku
-- [ ] CSS styling that is satisfactorily visually appealing
-- [ ] A production README, replacing this README
+1. Allows a user to stream single songs that persists through the entire website.
+2. Ruckus maintains a direct connection to Amazon S3. This promotes quick uploads of audio/image files and      instantaneous playback via a public url. The uploads use a one time only "pre-signed url" to upload tracks securely to Amazon's cloud.
+3. Once logged in, a user has access to all the tracks uploaded by other users, along with the ability to organize their own music within playlists.
 
-## Product Goals and Priorities
 
-Ruckus will allow users to do the following:
+### Single-Page App
 
-<!-- This is a Markdown checklist. Use it to keep track of your
-progress. Put an x between the brackets for a checkmark: [x] -->
+Ruckus was built using React.js and is truly a single page app. React has the ability to surgically render various "components" during a state change as opposed to re-rendering an entire page. A good example is the persisted stream bar when a song is being played. Since that component is listening to the play store, it only renders when there is a song playing.
 
-- [ ] Create an account (MVP)
-- [ ] Log in / Log out, including as a Guest/Demo User (MVP)
-- [ ] Upload and listen to music tracks (MVP)
-- [ ] Organize music within playlists (MVP)
-- [ ] Search by track, artist, or genre to find new music (expected feature, but not MVP)
+# Screenshots!
 
-## Design Docs
-* [View Wireframes][views]
-* [React Components][components]
-* [Flux Cycles][flux-cycles]
-* [API endpoints][api-endpoints]
-* [DB schema][schema]
+## Splash Page
 
-[views]: ./docs/views.md
-[components]: ./docs/components.md
-[flux-cycles]: ./docs/flux-cycles.md
-[api-endpoints]: ./docs/api-endpoints.md
-[schema]: ./docs/schema.md
+![splash]
 
-## Implementation Timeline
+## Track Listing
 
-### Phase 1: Backend setup and User Authentication (0.5 days)
+![tracks]
 
-**Objective:** Functioning rails project with Authentication
+## Profile Page
 
-- [ ] create new project
-- [ ] create `User` model
-- [ ] authentication
-- [ ] user signup/signin pages
-- [ ] blank landing page after signin
-  - [ ] `Login`
-  - [ ] `Signup` Components
-  ** There is potential use for third-party auth help here. My plan at this moment is to create all the auth myself, assuming that it integrates very easily into React.
+![profile]
 
-This phase is all about creating the ability to Sign In and out of Ruckus while also being able to Sign Up. It will be important to remember to create a GUEST login!
+## User Playlists
 
-### Phase 2: Track Model, API, and basic APIUtil (1.5 days)
+![playlists]
 
-**Objective:** Notes can be created, read, edited and destroyed through
-the API.
+[splash]: ./screenshots/splash.png
+[tracks]: ./screenshots/track_list.png
+[profile]: ./screenshots/user_profile.png
+[playlists]: ./screenshots/user_playlists.png
 
-- [ ] create `Track` model
-- [ ] seed the database with a small amount of test data
-- [ ] CRUD API for tracks (`TracksController`)
-- [ ] jBuilder views for tracks
-- [ ] setup Webpack & Flux scaffold
-- [ ] setup `APIUtil` to interact with the API
-- [ ] test out API interaction in the console.
+## Notable Code
 
-Tracks must have a title and description, along with the actual audio url and image url. It will be important for keeping the seed data nice and pretty! In this phase, we are still dealing with the backend.. Looking forward, Ill also add a 'num_of_views' column for easy sorting on the Explore page.
+In order to allow for instantaneous playback and to steer clear from using Cloudinary, I was able to implement integration with Amazon S3. This was an interesting process. When a user makes an upload request, the file name and path prefix travels to my Rails backend and is validated using the AWS SDK gem. This will then, on success, respond with a one-time use "pre-signed URL". Ruckus then uses the pre-signed URL to make an XMLHTTPRequest to Amazon to ultimately upload the file.
 
-### Phase 3: Flux Architecture and Router (1.5 days)
+## Creates Pre-Signed URL
 
-**Objective:** Tracks can be created, read, edited and destroyed with the
-user interface.
+```ruby
+class Upload < ActiveRecord::Base
+  def self.presign(prefix, filename, limit: limit)
+    extname = File.extname(filename)
+    filename = "#{SecureRandom.uuid}#{extname}"
+    upload_key = Pathname.new(prefix).join(filename).to_s
 
-- [ ] setup the flux loop with skeleton files
-- [ ] setup React Router
-- implement each track component, building out the flux loop as needed.
-  - [ ] `TrackIndex`
-  - [ ] `TrackIndexItem`
-  - [ ] `TrackDetail`
-  - [ ] `TrackForm`
-  - [ ] `SearchIndex`
-- Build out Search functionality
+    creds = Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
+    s3 = Aws::S3::Resource.new(region: 'us-west-1', credentials: creds)
+    obj = s3.bucket('ruckus-music').object(upload_key)
 
-This is a very important phase. Here I will begin to build out the logic for actually rendering a track. The track components will ultimately give me the ability to render all the tracks at once, or one at a time. Also, in this phase I want to implement the ability to search for a track by genre, artist, or album.
+    params = { acl: 'public-read' }
+    params[:content_length] = limit if limit
 
-### Phase 4: Build the Player(1 day)
+    {
+      presigned_url: obj.presigned_url(:put, params),
+      public_url: obj.public_url
+    }
+  end
+end
+```
+## Direct Upload to Amazon S3
 
-**Objective** The Player will be initialized on play, and Player will continue
-to play during other rendering.
+```javascript
+uploadToS3: function(file, url) {
+  var presignedUrl = url.presigned_url;
+  var publicUrl = url.public_url;
+  var filetype = file.type;
 
-- [ ] setup the flux loop with skeleton files
-- [ ] setup React Router
-- [ ] ensure track plays
-- [ ] ensure track stays playing while other actions are taken
+  var xhr = new XMLHttpRequest();
 
-In my opinion, this is the most crucial phase. I must implement the ability to play a track! The track must remain playing no matter what the user does. If other urls are rendered, the track will remain. My initial game plan is to create a React store solely for the music player.
+  xhr.open('PUT', presignedUrl, true);
+  xhr.setRequestHeader("Content-Type", filetype);
 
-### Phase 5: Start Styling (0.5 days)
-
-**Objective:** Existing pages (including signup/signin) will look good.
-
-- [ ] create a basic style guide
-- [ ] position elements on the page
-- [ ] add basic colors & styles
-
-### Phase 6: Playlists (1 day)
-
-**Objective:** Tracks can be in a playlist, and could be viewed within a playlist.
-
-- [ ] create `Playlist` model
-- build out API, Flux loop, and components for:
-  - [ ] Playlist CRUD
-  - [ ] any track can be added to a playlist
-  - [ ] moving tracks to a different playlist
-  - [ ] viewing tracks within a playlist
-- Use CSS to style new views
-
-In this phase I will need to not only migrate a playlist table but also migrate a join table called `playlistings`. This will allow me to simulate a many to many relationship. A track doesn't necessarily always belong to a playlist.
-
-### Phase 7: Styling Cleanup and Seeding (1 day)
-
-**objective:** Make the site feel more cohesive and awesome.
-
-- [ ] Get feedback on my UI from others
-- [ ] Refactor HTML classes & CSS rules
-- [ ] Add modals, transitions, and other styling flourishes.
-
-### Bonus Features (TBD)
-- [ ] Add comments to each track
-- [ ] Pagination / infinite scroll for Tracks Index
-- [ ] Reward users for listening to new music
-- [ ] Multiple sessions
-
-[phase-one]: ./docs/phases/phase1.md
-[phase-two]: ./docs/phases/phase2.md
-[phase-three]: ./docs/phases/phase3.md
-[phase-four]: ./docs/phases/phase4.md
-[phase-six]: ./docs/phases/phase6.md
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (file.type.match(/^audio.*$/) !== null) {
+        TrackActions.receivePublicAudioUrl(publicUrl);
+      } else {
+        TrackActions.receivePublicImageUrl(publicUrl);
+      }
+    }
+  };
+  xhr.send(file);
+},
+```

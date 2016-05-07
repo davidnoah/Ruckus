@@ -67,3 +67,28 @@ class Upload < ActiveRecord::Base
   end
 end
 ```
+## Direct Upload to Amazon S3
+
+```javascript
+uploadToS3: function(file, url) {
+  var presignedUrl = url.presigned_url;
+  var publicUrl = url.public_url;
+  var filetype = file.type;
+
+  var xhr = new XMLHttpRequest();
+
+  xhr.open('PUT', presignedUrl, true);
+  xhr.setRequestHeader("Content-Type", filetype);
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (file.type.match(/^audio.*$/) !== null) {
+        TrackActions.receivePublicAudioUrl(publicUrl);
+      } else {
+        TrackActions.receivePublicImageUrl(publicUrl);
+      }
+    }
+  };
+  xhr.send(file);
+},
+```
