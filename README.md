@@ -35,10 +35,10 @@ Ruckus was built using React.js and is truly a single page app. React has the ab
 
 ![playlists]
 
-[splash]: ./screenshots/splash.png
-[tracks]: ./screenshots/track_list.png
-[profile]: ./screenshots/user_profile.png
-[playlists]: ./screenshots/user_playlists.png
+[splash]: ./docs/screenshots/splash.png
+[tracks]: ./docs/screenshots/track_list.png
+[profile]: ./docs/screenshots/user_profile.png
+[playlists]: ./docs/screenshots/user_playlists.png
 
 ## Notable Code
 
