@@ -2,7 +2,7 @@
 
 [Ruckus Live][heroku]
 
-[heroku]: http://ruckusmusic.herokuapp.com
+[heroku]: http://www.ruckusmusic.org/
 
 Ruckus is a full-stack web-application inspired by SoundCloud. It boasts a thorough back-end built with Ruby on Rails and single-page rendering powered by React.js.
 
