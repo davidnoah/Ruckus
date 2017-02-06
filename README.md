@@ -92,3 +92,4 @@ uploadToS3: function(file, url) {
   xhr.send(file);
 },
 ```
+
