@@ -7,7 +7,7 @@ var PlayStore = require('../stores/play.js');
 var ProgressBar = require('react-progressbar');
 
 
-var StreamBar = React.createClass({
+module.exports = React.createClass({
   getInitialState: function() {
     return {
       trackDuration: 0,
@@ -118,5 +118,3 @@ var StreamBar = React.createClass({
     );
   }
 });
-
-module.exports = StreamBar;
