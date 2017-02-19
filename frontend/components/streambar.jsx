@@ -107,13 +107,6 @@ module.exports = React.createClass({
           <ProgressBar completed={this.state.progress} style={{backgroundColor: 'white'}} />
           <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
         </div>
-        // <ReactPlayer
-        //   className='track-player'
-        //   onDuration={this.onDuration}
-        //   onProgress={this.onProgress}
-        //   onEnded={this.onEnded}
-        //   url={audio_url}
-        //   playing={this.state.isPlaying} />
       </ul>
     );
   }
