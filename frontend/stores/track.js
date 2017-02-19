@@ -3,7 +3,7 @@ var Dispatcher = require('../dispatcher/dispatcher.js');
 var TrackConstants = require('../constants/trackConstants.js');
 var TrackStore = new Store(Dispatcher);
 
-_tracks = {};
+let _tracks = {};
 
 TrackStore.all = function() {
   var tracks = [];

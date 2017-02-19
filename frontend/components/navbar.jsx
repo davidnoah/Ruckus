@@ -4,8 +4,8 @@ var React = require('react'),
     Signup = require('./auth/signup.jsx'),
     Upload = require('./tracks/trackUpload.jsx'),
     SessionStore = require('../stores/session.js'),
-    ModalStyle = require('../constants/modalConstant.js'),
     ClientActions = require('../actions/client_actions.js'),
+    ModalStyle = require('../constants/modalConstant.js'),
     Modal = require('react-modal');
 
 var NavBar = React.createClass({

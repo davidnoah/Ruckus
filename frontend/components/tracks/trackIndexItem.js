@@ -122,7 +122,7 @@ var TrackIndexItem = React.createClass({
     if (this.state.playlistListOpen) {
       content = this.renderPlaylistList();
     }
-    backgroundImage = {backgroundImage: "url(" + track.image_url + ")"};
+    let backgroundImage = {backgroundImage: "url(" + track.image_url + ")"};
 
 
     return (

@@ -1,4 +1,4 @@
-CONTENT_STYLE = {
+const CONTENT_STYLE = {
   overlay : {
     position          : 'absolute',
     backgroundColor   : 'rgba(255, 255, 255, 0.75)'

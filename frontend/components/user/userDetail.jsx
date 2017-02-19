@@ -1,6 +1,6 @@
 var React = require('react');
 
-UserDetail = React.createClass({
+let UserDetail = React.createClass({
 
   render: function() {
 

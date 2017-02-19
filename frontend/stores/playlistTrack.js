@@ -4,7 +4,7 @@ var PlaylistConstants = require('../constants/playlistConstants.js');
 
 var PlaylistTrackStore = new Store(Dispatcher);
 
-_playlistTracks = {};
+let _playlistTracks = {};
 
 var addPlaylistTrack = function(playlistId, track) {
   _playlistTracks[playlistId].push(track);

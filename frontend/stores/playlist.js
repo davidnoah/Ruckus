@@ -3,7 +3,7 @@ var Dispatcher = require('../dispatcher/dispatcher.js');
 var PlaylistConstants = require('../constants/playlistConstants.js');
 var PlaylistStore = new Store(Dispatcher);
 
-_playlists = {};
+let _playlists = {};
 
 PlaylistStore.all = function() {
   var playlist = [];
