@@ -1,32 +1,40 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var ReactPlayer = require('react-player');
+import ReactPlayer from 'react-player';
 var PlayButton = require('./streamplay.jsx');
 var PauseButton = require('./streampause.jsx');
 var PlayStore = require('../stores/play.js');
-var ProgressBar = require('react-progressbar');
+import Progress from 'react-progressbar';
 
 
-module.exports = React.createClass({
-  getInitialState: function() {
-    return {
+class StreamBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       trackDuration: 0,
       trackElapsed: 0,
       currentTrack: PlayStore.currentTrack(),
       isPlaying: PlayStore.isPlaying(),
       progress: 0
     };
-  },
 
-  componentDidMount: function() {
+    this.onDuration = this.onDuration.bind(this);
+    this.secondsToHms = this.secondsToHms.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.onEnded = this.onEnded.bind(this);
+    this.onProgress = this.onProgress.bind(this);
+    this.playPauseButton = this.playPauseButton.bind(this);
+  }
+
+  componentDidMount() {
     PlayStore.addListener(this.onChange);
-  },
+  }
 
-  onDuration: function(duration) {
+  onDuration(duration) {
     this.setState({trackDuration: duration});
-  },
+  }
 
-  secondsToHms: function(d) {
+  secondsToHms(d) {
     d = Number(d);
     var m = Math.floor(d % 3600 / 60).toString();
     var s = Math.floor(d % 3600 % 60).toString();
@@ -34,9 +42,9 @@ module.exports = React.createClass({
       s = "0" + s;
     }
     return m + ":" + s;
-  },
+  }
 
-  onChange: function() {
+  onChange() {
     if (this.state.currentTrack !== PlayStore.currentTrack()) {
       this.setState({progress: 0, trackElapsed: 0});
     }
@@ -44,25 +52,25 @@ module.exports = React.createClass({
       currentTrack: PlayStore.currentTrack(),
       isPlaying: PlayStore.isPlaying()
     });
-  },
+  }
 
-  onEnded: function() {
+  onEnded() {
     this.setState({
       progress: 0,
       trackDuration: 0,
       trackElapsed: 0
     });
     ClientActions.resetPlayStore();
-  },
+  }
 
-  onProgress: function() {
+  onProgress() {
     this.setState({
       trackElapsed: this.state.trackElapsed + 1,
       progress: (this.state.trackElapsed / this.state.trackDuration) * 100
     });
-  },
+  }
 
-  playPauseButton: function() {
+  playPauseButton() {
     if (this.state.isPlaying) {
       return (<div className='stream-play-container'>
                 <PauseButton className='stream-play-button' track={this.state.currentTrack} parent={this} />
@@ -72,9 +80,9 @@ module.exports = React.createClass({
                 <PlayButton className='stream-play-button' track={this.state.currentTrack} parent={this} />
               </div>);
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var currentTrack = this.state.currentTrack;
     var audio_url;
 
@@ -95,6 +103,7 @@ module.exports = React.createClass({
       imageUrl =  currentTrack.image_url;
       trackTitle = currentTrack.title;
     }
+    debugger;
     return (
       <ul className="stream-bar" >
         <div className="stream-section" >
@@ -104,10 +113,19 @@ module.exports = React.createClass({
         </div>
         <div className="stream-section" >
           <p className="stream-track-time">{this.secondsToHms(this.state.trackElapsed)}</p>
-          <ProgressBar completed={this.state.progress} style={{backgroundColor: 'white'}} />
+          <Progress completed={this.state.progress} style={{backgroundColor: 'white'}} />
           <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
         </div>
+        <ReactPlayer
+          className='track-player'
+          onDuration={this.onDuration}
+          onProgress={this.onProgress}
+          onEnded={this.onEnded}
+          url={audio_url}
+          playing={this.state.isPlaying} />
       </ul>
     );
   }
-});
+}
+
+module.exports = StreamBar;
