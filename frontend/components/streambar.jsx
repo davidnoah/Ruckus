@@ -1,6 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-import ReactPlayer from 'react-player';
+import { ReactPlayer } from 'react-player';
 var PlayButton = require('./streamplay.jsx');
 var PauseButton = require('./streampause.jsx');
 var PlayStore = require('../stores/play.js');
