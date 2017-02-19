@@ -103,7 +103,7 @@ class StreamBar extends React.Component {
       imageUrl =  currentTrack.image_url;
       trackTitle = currentTrack.title;
     }
-    debugger;
+
     return (
       <ul className="stream-bar" >
         <div className="stream-section" >
@@ -116,13 +116,13 @@ class StreamBar extends React.Component {
           <Progress completed={this.state.progress} style={{backgroundColor: 'white'}} />
           <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
         </div>
-        <ReactPlayer
-          className='track-player'
-          onDuration={this.onDuration}
-          onProgress={this.onProgress}
-          onEnded={this.onEnded}
-          url={audio_url}
-          playing={this.state.isPlaying} />
+        // <ReactPlayer
+        //   className='track-player'
+        //   onDuration={this.onDuration}
+        //   onProgress={this.onProgress}
+        //   onEnded={this.onEnded}
+        //   url={audio_url}
+        //   playing={this.state.isPlaying} />
       </ul>
     );
   }
