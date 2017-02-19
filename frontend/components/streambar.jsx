@@ -113,7 +113,7 @@ class StreamBar extends React.Component {
         </div>
         <div className="stream-section" >
           <p className="stream-track-time">{this.secondsToHms(this.state.trackElapsed)}</p>
-          <Progress completed={this.state.progress} style={{backgroundColor: 'white'}} />
+          <Progress completed={this.state.progress} style={{backgroundColor: 'black'}} />
           <p className="stream-track-time">{this.secondsToHms(this.state.trackDuration)}</p>
         </div>
         <ReactPlayer
