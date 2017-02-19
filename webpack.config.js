@@ -7,6 +7,10 @@ module.exports = {
     path: path.join(__dirname, 'app', 'assets', 'javascripts'),
     filename: "bundle.js"
   },
+  scripts: {
+    start: "npm install",
+    postinstall: "webpack --progress --color --config  public/webpack.config.js"
+  },
   resolve: {
     extensions: ["", ".js", ".jsx"]
   },
