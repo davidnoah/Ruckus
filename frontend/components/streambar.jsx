@@ -1,6 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-import { ReactPlayer } from 'react-player';
+import ReactPlayer from 'react-player';
 var PlayButton = require('./streamplay.jsx');
 var PauseButton = require('./streampause.jsx');
 var PlayStore = require('../stores/play.js');
@@ -62,6 +62,18 @@ var StreamBar = React.createClass({
     });
   },
 
+  playPauseButton: function() {
+    if (this.state.isPlaying) {
+      return (<div className='stream-play-container'>
+                <PauseButton className='stream-play-button' track={this.state.currentTrack} parent={this} />
+              </div>);
+    } else {
+      return (<div className='stream-play-container'>
+                <PlayButton className='stream-play-button' track={this.state.currentTrack} parent={this} />
+              </div>);
+    }
+  },
+
   render: function() {
     var currentTrack = this.state.currentTrack;
     var audio_url;
@@ -72,16 +84,7 @@ var StreamBar = React.createClass({
       audio_url = currentTrack.audio_url;
     }
 
-    var playPauseButton;
-    if (this.state.isPlaying) {
-      playPauseButton = <div className="stream-play-container">
-                           <PauseButton className="stream-play-button" track={currentTrack} parent={this} />
-                         </div>;
-    } else {
-      playPauseButton = <div className="stream-play-container">
-                          <PlayButton className="stream-play-button" track={currentTrack} parent={this} />
-                        </div>;
-    }
+    var playPauseButton = this.playPauseButton();
 
     var imageUrl;
     var trackTitle;
