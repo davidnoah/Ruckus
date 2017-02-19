@@ -25,9 +25,8 @@ Rails.application.configure do
   config.serve_static_files = true
 
   # Compress JavaScripts and CSS.
-  # config.assets.js_compressor = :uglifier
+  config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
-  config.browserify_rails.commandline_options = "-t [ babelify --presets [ es2015 ] ]"
 
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
